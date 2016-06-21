@@ -8,6 +8,7 @@ var jobTypesPath = path.join(__dirname, 'queues_config', 'job-types.json');
 
 // load jobTypes file only if not loaded yet
 function loadJobTypesJson() {
+    console.log(jobTypesPath);
     if (!jobTypes)
         return jobTypes = JSON.parse(fs.readFileSync(jobTypesPath, "utf8"));
     else
