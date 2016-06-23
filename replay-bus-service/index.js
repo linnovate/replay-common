@@ -44,8 +44,13 @@ function consume(queueName, callback){
 	});
 
 	// connect the redis instances
-	if(!bus.isOnline())
+	try{
 		bus.connect();
+	} catch(err){
+		// ignore errors of already connected, everything should still work
+		if(!err.context === 'already connected')
+			throw err;
+	}
 }
 
 // used because some of the consumers are also the producers of another jobs
@@ -61,6 +66,11 @@ function produce(queueName, message){
 	});
 
 	// connect the redis instances
-	if(!bus.isOnline())
+	try{
 		bus.connect();
+	} catch(err){
+		// ignore errors of already connected, everything should still work
+		if(!err.context === 'already connected')
+			throw err;
+	}
 }
