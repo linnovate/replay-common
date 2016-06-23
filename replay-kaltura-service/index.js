@@ -1,13 +1,15 @@
 var kaltura = require('./kaltura'),
     Promise = require('bluebird');
 
+var KalturaClient;
+
 module.exports = {
 
     initialize: initialize,
 
     getVideo: function(id) {
         return new Promise(function(resolve, reject) {
-            sails.KalturaClient.media.get(function(result) {
+            KalturaClient.media.get(function(result) {
                 if (result.code) {
                     console.log(result);
                     reject(new Error(result.message));
@@ -39,7 +41,7 @@ function addContentToMedia(entryId, path) {
     kalturaResource.localFilePath = path;
 
     return new Promise(function(resolve, reject) {
-        sails.KalturaClient.media.addContent(kalturaResultCallback(resolve, reject), entryId, kalturaResource);
+        KalturaClient.media.addContent(kalturaResultCallback(resolve, reject), entryId, kalturaResource);
     });
 }
 
@@ -49,46 +51,50 @@ function addMediaEntry() {
     kalturaMediaEntry.mediaType = kaltura.kc.enums.KalturaMediaType.VIDEO;
 
     return new Promise(function(resolve, reject) {
-        sails.KalturaClient.media.add(kalturaResultCallback(resolve, reject), kalturaMediaEntry);
+        KalturaClient.media.add(kalturaResultCallback(resolve, reject), kalturaMediaEntry);
     });
 }
 
 function initialize() {
 
-    // store client in global variable for later use
-    sails.KalturaClient = createKalturaClient();
+    return new Promise(function(resolve, reject){
+        var partner_id = process.env.KALTURA_PARTNER_ID,
+            secret = process.env.KALTURA_ADMIN_SECRET,
+            url = process.env.KALTURA_URL;
 
-    // create session and store in global variable
-    createSession(function(result) {
+        if(!partner_id || !secret || !url)
+            throw 'Some parameters are missing.';
 
-        // if code is set there was an error
-        if (result.code) return console.log(result);
+        // store client in global variable for later use
+        KalturaClient = createKalturaClient(partner_id, url);
 
-        console.log('Got a kaltura session: ', result);
-        sails.kalturaSession = result;
-        sails.KalturaClient.setSessionId(sails.kalturaSession);
+        // create session and store in global variable
+        createSession(partner_id, secret, function(result) {
+
+            // if code is set there was an error
+            if (result.code) return console.log(result);
+
+            console.log('Got a kaltura session: ', result);
+            var kalturaSession = result;
+            KalturaClient.setSessionId(kalturaSession);
+            resolve();
+        });
     });
 }
 
 // create an admin session with kaltura
 // session is returned to callback, which expects 1 result argument
-function createSession(callback) {
-    var partner_id = sails.config.settings.services.kaltura.partner_id,
-        secret = sails.config.settings.services.kaltura.secret;
-
+function createSession(partner_id, secret, callback) {
     // admin session
     var type = kaltura.kc.enums.KalturaSessionType.ADMIN;
     // 1 year session
     var expiry = 31622400;
     // ignored when admin
     var privileges = null;
-    var ks = sails.KalturaClient.session.start(callback, secret, '', type, partner_id, expiry, privileges);
+    var ks = KalturaClient.session.start(callback, secret, '', type, partner_id, expiry, privileges);
 }
 
-function createKalturaClient() {
-    var partner_id = sails.config.settings.services.kaltura.partner_id,
-        url = sails.config.settings.services.kaltura.url;
-
+function createKalturaClient(partner_id, url) {
     // init kaltura configuration
     var kaltura_conf = new kaltura.kc.KalturaConfiguration(partner_id);
 
@@ -103,13 +109,13 @@ function createKalturaClient() {
 }
 
 var kalturaResultCallback = function(resolve, reject) {
-	return function(result){
-		console.trace("Recieved a result: ", result);
-	    if (result.code) {
-	    	reject(new Error(result.message));
-	    }
-	    else{
-	    	resolve(result);
-	    }
-	};
+    return function(result){
+        console.trace("Recieved a result: ", result);
+        if (result.code) {
+            reject(new Error(result.message));
+        }
+        else{
+            resolve(result);
+        }
+    };
 }
