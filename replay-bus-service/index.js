@@ -44,7 +44,8 @@ function consume(queueName, callback){
 	});
 
 	// connect the redis instances
-	bus.connect();
+	if(!bus.isOnline())
+		bus.connect();
 }
 
 // used because some of the consumers are also the producers of another jobs
@@ -58,5 +59,8 @@ function produce(queueName, message){
 	  q.attach();
 	  q.push(message);
 	});
-	bus.connect();
+
+	// connect the redis instances
+	if(!bus.isOnline())
+		bus.connect();
 }

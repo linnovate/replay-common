@@ -100,8 +100,6 @@ function createKalturaClient(partner_id, url) {
 
     kaltura_conf.serviceUrl = url;
 
-    console.log(kaltura_conf);
-
     // init kaltura client
     var client = new kaltura.kc.KalturaClient(kaltura_conf);
 
