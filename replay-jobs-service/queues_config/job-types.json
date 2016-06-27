@@ -1,12 +1,12 @@
 [
 	{
 		"type": "MetadataParser",
-		"service": "MetadataParserService",
+		"service": "metadata-parser-service",
 		"queue": "MetadataParserQueue"
 	},
 	{
 		"type": "SaveVideo",
-		"service": "SaveVideoService",
+		"service": "save-video-service",
 		"queue": "NewVideosQueue"
 	},
 	{
