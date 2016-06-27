@@ -5,6 +5,16 @@
 		"queue": "MetadataParserQueue"
 	},
 	{
+		"type": "MetadataToMongo",
+		"service": "metadata-to-mongo-service",
+		"queue": "MetadataToMongoQueue"
+	},
+	{
+		"type": "MetadataToElastic",
+		"service": "metadata-to-elastic-service",
+		"queue": "MetadataToElasticQueue"
+	},
+	{
 		"type": "SaveVideo",
 		"service": "save-video-service",
 		"queue": "NewVideosQueue"
