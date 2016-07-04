@@ -1,41 +1,52 @@
-var mongoose = require('mongoose');
-var Schema = mongoose.Schema;
+var Waterline = require('waterline'),
+	nestedValidator = require('./services/nested-model-validator');
 
-// create a schema
-var VideoSchema = new Schema({
-	sourceId: {
-		type: Number,
-		required: true
+var Video = Waterline.Collection.extend({
+
+	identity: 'video',
+	connection: 'mongo',
+	schema: true,
+
+	attributes: {
+		sourceId: {
+			type: 'string',
+			required: true
+		},
+		provider: {
+			type: 'string',
+			enum: ['kaltura']
+		},
+		providerId: {
+			type: 'string'
+		},
+		relativePath: {
+			type: 'string',
+			required: true
+		},
+		providerData: {
+			type: 'json'
+		},
+		name: {
+			type: 'string',
+			required: true
+		},
+		receivingMethod: {
+			type: 'json',
+			validateReceivingMethod: true
+		},
+		status: {
+			type: 'string',
+			enum: ['processing', 'ready'],
+			defaultsTo: 'processing'
+		}
 	},
-	provider: {
-		type: String,
-		enum: ['kaltura']
-	},
-	providerId: {
-		type: String
-	},
-	relativePath: {
-		type: String,
-		required: true
-	},
-	prodiverData: {
-		type: Schema.Types.Mixed
-	},
-	name: {
-		type: String,
-		required: true
-	},
-	receivingMethod: {
-		standard: { type: String, required: true },
-		version: { type: String, required: true }
-	},
-	status: {
-		type: String,
-		enum: ['processing', 'ready'],
-		default: 'processing'
+
+	types: {
+		validateReceivingMethod: function(obj) {
+			console.log('Validating ReceivingMethod...');
+			return nestedValidator(global.models.receivingmethod, obj);
+		}
 	}
 });
-
-var Video = mongoose.model('Video', VideoSchema);
 
 module.exports = Video;

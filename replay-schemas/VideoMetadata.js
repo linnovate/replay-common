@@ -1,35 +1,56 @@
-var mongoose = require('mongoose');
-var Schema = mongoose.Schema;
+var Waterline = require('waterline'),
+	nestedValidator = require('./services/nested-model-validator');
 
-// create a schema
-var VideoMetadataSchema = new Schema({
-	sourceId: {
-		type: Number,
-		required: true
+var VideoMetadata = Waterline.Collection.extend({
+
+	identity: 'videometadata',
+	connection: 'mongo',
+	schema: true,
+
+	attributes: {
+		sourceId: {
+			type: 'string',
+			required: true
+		},
+		videoId: {
+			type: 'string'
+		},
+		receivingMethod: {
+			type: 'json',
+			required: true
+		},
+		timestamp: {
+			type: 'date'
+		},
+		sensorPosition: {
+			type: 'json',
+			validateCoordinate: true
+		},
+		sensorTrace: {
+			type: 'json',
+			validateGeoJson: true
+		},
+		data: {
+			type: 'json'
+		}
 	},
-	videoId: {
-		type: String
-	},
-	receivingMethod: {
-		standard: { type: String, required: true },
-		version: { type: String, required: true }
-	},
-	timestamp: {
-		type: Date
-	},
-	sensorPosition: {
-		lat: { type: Number },
-		lon: { type: Number }
-	},
-	sensorTrace: { // Geo-Json
-		type: { type: String, enum: ['polygon'] },
-		coordinates: Schema.Types.Mixed // Geo-Json coordinates are [[lon,lat]]
-	},
-	data: {
-		type: Schema.Types.Mixed
+
+	types: {
+		validateReceivingMethod: function(obj) {
+			console.log('Validating receivingMethod...');
+			return nestedValidator(global.models.receivingmethod, obj);
+		},
+
+		validateCoordinate: function(obj) {
+			console.log('Validating sensorPosition...');
+			return nestedValidator(global.models.coordinate, obj);
+		},
+
+		validateGeoJson: function(obj) {
+			console.log('Validating sensorTrace...');
+			return nestedValidator(global.models.geojson, obj);
+		}
 	}
 });
-
-var VideoMetadata = mongoose.model('VideoMetadata', VideoMetadataSchema);
 
 module.exports = VideoMetadata;
