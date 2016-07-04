@@ -43,7 +43,6 @@ var Video = Waterline.Collection.extend({
 
 	types: {
 		validateReceivingMethod: function(obj) {
-			console.log('Validating ReceivingMethod...');
 			return nestedValidator(global.models.receivingmethod, obj);
 		}
 	}

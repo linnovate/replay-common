@@ -37,17 +37,14 @@ var VideoMetadata = Waterline.Collection.extend({
 
 	types: {
 		validateReceivingMethod: function(obj) {
-			console.log('Validating receivingMethod...');
 			return nestedValidator(global.models.receivingmethod, obj);
 		},
 
 		validateCoordinate: function(obj) {
-			console.log('Validating sensorPosition...');
 			return nestedValidator(global.models.coordinate, obj);
 		},
 
 		validateGeoJson: function(obj) {
-			console.log('Validating sensorTrace...');
 			return nestedValidator(global.models.geojson, obj);
 		}
 	}
