@@ -1,4 +1,5 @@
-var Waterline = require('waterline');
+var Waterline = require('waterline'),
+	_ = require('lodash');
 
 var GeoJson = Waterline.Collection.extend({
 
@@ -12,7 +13,7 @@ var GeoJson = Waterline.Collection.extend({
 			enum: ['polygon'],
 			required: true
 		},
-		// should be [[lon,lat]]
+		// should be [[[lon,lat],[lon,lat],...]]
 		coordinates: {
 			type: 'array',
 			isCoordinatesArray: true,
@@ -22,19 +23,31 @@ var GeoJson = Waterline.Collection.extend({
 
 	types: {
 		isCoordinatesArray: function(obj) {
-			// polygon array should have at least 3 coordinates
-			if (obj.length < 3) {
-				return false;
-			}
+			if(this.type === 'polygon'){
+				// check first []
+				if(obj.length != 1)
+					return false;
 
-			// iterate through the array and validate each object is indeed coordinates array
-			obj.forEach(function(coordinate) {
-				if (coordinate.length !== 2 || typeof coordinate[0] !== 'number' ||
-					typeof coordinate[1] !== 'number') {
+				var coordinates = obj[0];
+
+				// polygon array should have at least 3(+1) coordinates
+				if (coordinates.length < 4) {
 					return false;
 				}
-			});
 
+				// iterate through the array and validate each object is indeed coordinates array
+				coordinates.forEach(function(coordinate) {
+					if (coordinate.length !== 2 || !_.isFinite(coordinate[0]) || !_.isFinite(coordinate[1])) {
+						return false;
+					}
+				});
+
+				// validate first and last coordinates are equal
+				if(coordinates[0][0] !== coordinates[coordinates.length - 1][0] ||
+					coordinates[0][1] !== coordinates[coordinates.length - 1][1]){
+					return false;
+				}
+			}
 			return true;
 		}
 	}
