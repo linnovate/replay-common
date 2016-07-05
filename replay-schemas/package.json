@@ -1,6 +1,6 @@
 {
   "name": "replay-schemas",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -9,6 +9,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "bluebird": "^3.4.1",
     "deasync": "^0.1.7",
     "mongoose": "^4.5.1",
     "sails-mongo": "^0.12.0",

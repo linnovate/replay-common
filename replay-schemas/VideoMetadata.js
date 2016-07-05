@@ -17,6 +17,7 @@ var VideoMetadata = Waterline.Collection.extend({
 		},
 		receivingMethod: {
 			type: 'json',
+			validateReceivingMethod: true,
 			required: true
 		},
 		timestamp: {
