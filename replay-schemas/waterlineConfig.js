@@ -13,67 +13,65 @@ var Video = require('./Video'),
 var mongoKeepAliveInSeconds = 60 * 60 * 24 * 30; // 30 days
 
 module.exports = function() {
-	return new Promise(function(reject, resolve) {
-		console.log('Initializing waterline...');
+	console.log('Initializing waterline...');
 
-		// instantiate a new instance of the ORM
-		var orm = new Waterline();
+	// instantiate a new instance of the ORM
+	var orm = new Waterline();
 
-		var config = {
+	var config = {
 
-			// setup Adapters
-			// creates named adapters that have been required
-			adapters: {
-				mongo: mongoAdapter
-			},
+		// setup Adapters
+		// creates named adapters that have been required
+		adapters: {
+			mongo: mongoAdapter
+		},
 
-			// build connections config
-			// setup connections using the named adapter configs
-			connections: {
-				mongo: {
-					adapter: 'mongo',
-					host: process.env.MONGO_HOST,
-					port: process.env.MONGO_PORT,
-					database: process.env.MONGO_DATABASE,
-					server: {
-						socketOptions: {
-							keepAlive: mongoKeepAliveInSeconds
-						}
-					},
-					replSet: {
-						socketOptions: {
-							keepAlive: mongoKeepAliveInSeconds
-						}
+		// build connections config
+		// setup connections using the named adapter configs
+		connections: {
+			mongo: {
+				adapter: 'mongo',
+				host: process.env.MONGO_HOST,
+				port: process.env.MONGO_PORT,
+				database: process.env.MONGO_DATABASE,
+				server: {
+					socketOptions: {
+						keepAlive: mongoKeepAliveInSeconds
+					}
+				},
+				replSet: {
+					socketOptions: {
+						keepAlive: mongoKeepAliveInSeconds
 					}
 				}
-			},
-
-			defaults: {
-				migrate: 'alter'
 			}
+		},
 
-		};
+		defaults: {
+			migrate: 'alter'
+		}
 
-		// load waterline models
+	};
 
-		orm.loadCollection(Video);
-		orm.loadCollection(VideoMetadata);
-		orm.loadCollection(ReceivingMethod);
-		orm.loadCollection(Coordinate);
-		orm.loadCollection(GeoJson);
+	// load waterline models
 
-		// wrap the callback in promise also
-		return new Promise(function(resolve, reject) {
-			orm.initialize(config, function(err, models) {
-				if (err) {
-					reject(err);
-				}
-				// set models global object so it will be accessible everywhere
-				global.models = models.collections;
+	orm.loadCollection(Video);
+	orm.loadCollection(VideoMetadata);
+	orm.loadCollection(ReceivingMethod);
+	orm.loadCollection(Coordinate);
+	orm.loadCollection(GeoJson);
 
-				console.log('Waterline initialization finished.');
-				resolve();
-			});
+	// wrap the callback in promise
+	return new Promise(function(resolve, reject) {
+		orm.initialize(config, function(err, models) {
+			if (err) {
+				return reject(err);
+			}
+			// set models global object so it will be accessible everywhere
+			global.models = models.collections;
+
+			console.log('Waterline initialization finished.');
+			return resolve();
 		});
 	});
 };
