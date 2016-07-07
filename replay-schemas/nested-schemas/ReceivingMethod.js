@@ -1,6 +1,4 @@
-var Waterline = require('waterline');
-
-var ReceivingMethod = Waterline.Collection.extend({
+var ReceivingMethod = {
 
 	identity: 'receivingmethod',
 	connection: 'mongo',
@@ -18,6 +16,6 @@ var ReceivingMethod = Waterline.Collection.extend({
 			required: true
 		}
 	}
-});
+};
 
 module.exports = ReceivingMethod;

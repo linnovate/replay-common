@@ -1,6 +1,4 @@
-var Waterline = require('waterline');
-
-var Position = Waterline.Collection.extend({
+var Position = {
 
 	identity: 'coordinate',
 	connection: 'mongo',
@@ -16,6 +14,6 @@ var Position = Waterline.Collection.extend({
 			required: true
 		}
 	}
-});
+};
 
 module.exports = Position;

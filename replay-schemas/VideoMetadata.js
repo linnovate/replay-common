@@ -1,7 +1,6 @@
-var Waterline = require('waterline'),
-	nestedValidator = require('./services/nested-model-validator');
+var nestedValidator = require('./services/nested-model-validator');
 
-var VideoMetadata = Waterline.Collection.extend({
+var VideoMetadata = {
 
 	identity: 'videometadata',
 	connection: 'mongo',
@@ -16,39 +15,22 @@ var VideoMetadata = Waterline.Collection.extend({
 			type: 'string'
 		},
 		receivingMethod: {
-			type: 'json',
-			validateReceivingMethod: true,
+			model: 'receivingmethod',
 			required: true
 		},
 		timestamp: {
 			type: 'date'
 		},
 		sensorPosition: {
-			type: 'json',
-			validateCoordinate: true
+			model: 'coordinate'
 		},
 		sensorTrace: {
-			type: 'json',
-			validateGeoJson: true
+			model: 'geojson'
 		},
 		data: {
 			type: 'json'
 		}
-	},
-
-	types: {
-		validateReceivingMethod: function(obj) {
-			return nestedValidator(global.models.receivingmethod, obj);
-		},
-
-		validateCoordinate: function(obj) {
-			return nestedValidator(global.models.coordinate, obj);
-		},
-
-		validateGeoJson: function(obj) {
-			return nestedValidator(global.models.geojson, obj);
-		}
 	}
-});
+};
 
 module.exports = VideoMetadata;

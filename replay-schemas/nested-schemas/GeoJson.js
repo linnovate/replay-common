@@ -1,7 +1,6 @@
-var Waterline = require('waterline'),
-	_ = require('lodash');
+var _ = require('lodash');
 
-var GeoJson = Waterline.Collection.extend({
+var GeoJson = {
 
 	identity: 'geojson',
 	connection: 'mongo',
@@ -23,9 +22,14 @@ var GeoJson = Waterline.Collection.extend({
 
 	types: {
 		isCoordinatesArray: function(obj) {
-			if(this.type === 'polygon'){
+			// when obj was serialized to json, the inside array would appear as string
+			if (_.isString(obj[0])) {
+				obj = JSON.parse(obj);
+			}
+
+			if (this.type === 'polygon') {
 				// check first []
-				if(obj.length != 1)
+				if (obj.length != 1)
 					return false;
 
 				var coordinates = obj[0];
@@ -43,14 +47,14 @@ var GeoJson = Waterline.Collection.extend({
 				});
 
 				// validate first and last coordinates are equal
-				if(coordinates[0][0] !== coordinates[coordinates.length - 1][0] ||
-					coordinates[0][1] !== coordinates[coordinates.length - 1][1]){
+				if (coordinates[0][0] !== coordinates[coordinates.length - 1][0] ||
+					coordinates[0][1] !== coordinates[coordinates.length - 1][1]) {
 					return false;
 				}
 			}
 			return true;
 		}
 	}
-});
+};
 
 module.exports = GeoJson;

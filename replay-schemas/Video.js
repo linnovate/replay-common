@@ -1,7 +1,6 @@
-var Waterline = require('waterline'),
-	nestedValidator = require('./services/nested-model-validator');
+var nestedValidator = require('./services/nested-model-validator');
 
-var Video = Waterline.Collection.extend({
+var Video = {
 
 	identity: 'video',
 	connection: 'mongo',
@@ -31,21 +30,14 @@ var Video = Waterline.Collection.extend({
 			required: true
 		},
 		receivingMethod: {
-			type: 'json',
-			validateReceivingMethod: true
+			model: 'receivingmethod'
 		},
 		status: {
 			type: 'string',
 			enum: ['processing', 'ready'],
 			defaultsTo: 'processing'
 		}
-	},
-
-	types: {
-		validateReceivingMethod: function(obj) {
-			return nestedValidator(global.models.receivingmethod, obj);
-		}
 	}
-});
+};
 
 module.exports = Video;

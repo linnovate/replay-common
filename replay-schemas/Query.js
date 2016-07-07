@@ -1,7 +1,7 @@
-var Waterline = require('waterline'),
-	nestedValidator = require('./services/nested-model-validator');
+var nestedValidator = require('./services/nested-model-validator'),
+	_ = require('lodash');
 
-var Query = Waterline.Collection.extend({
+module.exports = {
 
 	identity: 'query',
 	connection: 'mongo',
@@ -10,9 +10,11 @@ var Query = Waterline.Collection.extend({
 	attributes: {
 		fromVideoTime: {
 			type: 'date',
+			validateDate: true
 		},
 		toVideoTime: {
-			type: 'date'
+			type: 'date',
+			validateDate: true
 		},
 		minVideoDuration: {
 			type: 'integer'
@@ -32,18 +34,14 @@ var Query = Waterline.Collection.extend({
 		source: {
 			type: 'string'
 		},
-		boundingPolygon:{
-			type: 'json',
-			validateGeoJson: true
+		boundingPolygon: {
+			model: 'geojson'
 		}
 	},
 
 	types: {
-		validateGeoJson: function(obj) {
-			// validate we get only polygon, as well as valid Geo-Json
-			return obj.type !== 'polygon' || nestedValidator(global.models.geojson, obj);
+		validateDate: function(obj) {
+			return _.isDate(obj);
 		}
 	}
-});
-
-module.exports = Query;
+};
