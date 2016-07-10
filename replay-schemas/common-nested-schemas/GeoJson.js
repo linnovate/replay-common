@@ -1,15 +1,26 @@
-module.exports = function(obj) {
-	// when obj was serialized to json, the inside array would appear as string
-	if (_.isString(obj[0])) {
-		obj = JSON.parse(obj);
-	}
+var mongoose = require('mongoose'),
+	_ = require('lodash');
 
-	if (this.type === 'polygon') {
+var Schema = mongoose.Schema;
+
+var GeoJson = new Schema({
+	type: { type: String, enum: ['polygon'] },
+	coordinates: Schema.Types.Mixed // Geo-Json coordinates are [[[lon,lat]]]
+});
+
+module.exports = {
+	type: GeoJson,
+	validate: validateGeoJson
+};
+
+function validateGeoJson(obj) {
+	if (obj.type === 'polygon') {
 		// check first []
-		if (obj.length != 1)
+		if (obj.coordinates.length !== 1) {
 			return false;
+		}
 
-		var coordinates = obj[0];
+		var coordinates = obj.coordinates[0];
 
 		// polygon array should have at least 3(+1) coordinates
 		if (coordinates.length < 4) {

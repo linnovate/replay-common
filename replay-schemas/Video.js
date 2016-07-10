@@ -1,48 +1,40 @@
-var Video = {
+var mongoose = require('mongoose');
 
-	identity: 'video',
-	connection: 'mongo',
-	schema: true,
+var Schema = mongoose.Schema,
+	ReceivingMethod = require('./common-nested-schemas/ReceivingMethod');
 
-	attributes: {
-		sourceId: {
-			type: 'string',
-			required: true
-		},
-		provider: {
-			type: 'string',
-			enum: ['kaltura']
-		},
-		providerId: {
-			type: 'string'
-		},
-		relativePath: {
-			type: 'string',
-			required: true
-		},
-		providerData: {
-			type: 'json'
-		},
-		name: {
-			type: 'string',
-			required: true
-		},
-		receivingMethodStandard: {
-			type: 'string',
-			enum: ['VideoStandard', 'stanag'],
-			required: true
-		},
-		receivingMethodVersion: {
-			type: 'string',
-			enum: ['0.9', '1.0', '4609'],
-			required: true
-		},
-		status: {
-			type: 'string',
-			enum: ['processing', 'ready'],
-			defaultsTo: 'processing'
-		}
+// create a schema
+var VideoSchema = new Schema({
+	sourceId: {
+		type: String,
+		required: true
+	},
+	provider: {
+		type: String,
+		enum: ['kaltura']
+	},
+	providerId: {
+		type: String
+	},
+	relativePath: {
+		type: String,
+		required: true
+	},
+	prodiverData: {
+		type: Schema.Types.Mixed
+	},
+	name: {
+		type: String,
+		required: true
+	},
+	receivingMethod: ReceivingMethod,
+	status: {
+		type: String,
+		enum: ['processing', 'ready'],
+		default: 'processing'
 	}
-};
+});
+
+var Video = mongoose.model('Video', VideoSchema);
 
 module.exports = Video;

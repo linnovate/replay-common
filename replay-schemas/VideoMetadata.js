@@ -1,54 +1,32 @@
-var coordinatesValidator = require('./services/attributes-validators/coordinates');
+var mongoose = require('mongoose');
 
-var VideoMetadata = {
+var Schema = mongoose.Schema,
+	ReceivingMethod = require('./common-nested-schemas/ReceivingMethod'),
+	GeoJson = require('./common-nested-schemas/GeoJson');
 
-	identity: 'videometadata',
-	connection: 'mongo',
-	schema: true,
-
-	attributes: {
-		sourceId: {
-			type: 'string',
-			required: true
-		},
-		videoId: {
-			type: 'string'
-		},
-		receivingMethodStandard: {
-			type: 'string',
-			enum: ['VideoStandard', 'stanag'],
-			required: true
-		}
-		receivingMethodVersion: {
-			type: 'string',
-			enum: ['0.9', '1.0', '4609'],
-			required: true
-		},
-		timestamp: {
-			type: 'date'
-		},
-		sensorPositionLat: {
-			type: 'float'
-		},
-		sensorPositionLon: {
-			type: 'float'
-		},
-		sensorTraceShape: {
-			type: 'string',
-			enum: ['polygon']
-		},
-		sensorTraceCoordinates: {
-			type: 'array',
-			isCoordinatesArray: true
-		},
-		data: {
-			type: 'json'
-		}
+// create a schema
+var VideoMetadataSchema = new Schema({
+	sourceId: {
+		type: String,
+		required: true
 	},
-
-	types: {
-		isCoordinatesArray: coordinatesValidator
+	videoId: {
+		type: String
+	},
+	receivingMethod: ReceivingMethod,
+	timestamp: {
+		type: Date
+	},
+	sensorPosition: {
+		lat: { type: Number },
+		lon: { type: Number }
+	},
+	sensorTrace: GeoJson,
+	data: {
+		type: Schema.Types.Mixed
 	}
-};
+});
+
+var VideoMetadata = mongoose.model('VideoMetadata', VideoMetadataSchema);
 
 module.exports = VideoMetadata;

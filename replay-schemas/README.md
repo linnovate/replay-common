@@ -1,25 +1,17 @@
 ## Purpose
 
-The purpose of this module is to hold and share all the Waterline schemas across the app.
+The purpose of this module is to hold and share all the Mongoose schemas across the app.
 
 ## Usage
 
-If using Sails.js, create an appropriate Model under /api/models, for example Video, and then:
+Make sure to connect database by calling connectMongo before using the schemas:
 ```
-var Video = require('replay-schemas/Video');
+var connectMongo = require('replay-schemas/connectMongo');
 
-module.exports = Video;
+connectMongo()
+.then(...);
 ```
-
-If using plain Node.js, make sure to call:
-```
-waterlineConfig()
-.then(...)
-```
-At the beginning of your code, and it will fully initialize Waterline within your process.
-
-
 Access to the models is achieved via:
 ```
-global.models.<model-name>
+var ModelName = require('replay-schemas/ModelName');
 ```
