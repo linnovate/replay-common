@@ -1,10 +1,12 @@
 var mongoose = require('mongoose');
-var Schema = mongoose.Schema;
+
+var Schema = mongoose.Schema,
+	ReceivingMethod = require('./common-nested-schemas/ReceivingMethod');
 
 // create a schema
 var VideoSchema = new Schema({
 	sourceId: {
-		type: Number,
+		type: String,
 		required: true
 	},
 	provider: {
@@ -25,10 +27,7 @@ var VideoSchema = new Schema({
 		type: String,
 		required: true
 	},
-	receivingMethod: {
-		standard: { type: String, required: true },
-		version: { type: String, required: true }
-	},
+	receivingMethod: ReceivingMethod,
 	status: {
 		type: String,
 		enum: ['processing', 'ready'],

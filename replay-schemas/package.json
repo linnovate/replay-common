@@ -9,6 +9,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "lodash": "^4.13.1",
     "mongoose": "^4.5.1"
   }
 }

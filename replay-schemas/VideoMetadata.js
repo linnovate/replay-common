@@ -1,19 +1,19 @@
 var mongoose = require('mongoose');
-var Schema = mongoose.Schema;
+
+var Schema = mongoose.Schema,
+	ReceivingMethod = require('./common-nested-schemas/ReceivingMethod'),
+	GeoJson = require('./common-nested-schemas/GeoJson');
 
 // create a schema
 var VideoMetadataSchema = new Schema({
 	sourceId: {
-		type: Number,
+		type: String,
 		required: true
 	},
 	videoId: {
 		type: String
 	},
-	receivingMethod: {
-		standard: { type: String, required: true },
-		version: { type: String, required: true }
-	},
+	receivingMethod: ReceivingMethod,
 	timestamp: {
 		type: Date
 	},
@@ -21,10 +21,7 @@ var VideoMetadataSchema = new Schema({
 		lat: { type: Number },
 		lon: { type: Number }
 	},
-	sensorTrace: { // Geo-Json
-		type: { type: String, enum: ['polygon'] },
-		coordinates: Schema.Types.Mixed // Geo-Json coordinates are [[lon,lat]]
-	},
+	sensorTrace: GeoJson,
 	data: {
 		type: Schema.Types.Mixed
 	}
