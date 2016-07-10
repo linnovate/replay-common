@@ -1,4 +1,4 @@
-var nestedValidator = require('./services/nested-model-validator');
+var coordinatesValidator = require('./services/attributes-validators/coordinates');
 
 var VideoMetadata = {
 
@@ -14,22 +14,40 @@ var VideoMetadata = {
 		videoId: {
 			type: 'string'
 		},
-		receivingMethod: {
-			model: 'receivingmethod',
+		receivingMethodStandard: {
+			type: 'string',
+			enum: ['VideoStandard', 'stanag'],
+			required: true
+		}
+		receivingMethodVersion: {
+			type: 'string',
+			enum: ['0.9', '1.0', '4609'],
 			required: true
 		},
 		timestamp: {
 			type: 'date'
 		},
-		sensorPosition: {
-			model: 'coordinate'
+		sensorPositionLat: {
+			type: 'float'
 		},
-		sensorTrace: {
-			model: 'geojson'
+		sensorPositionLon: {
+			type: 'float'
+		},
+		sensorTraceShape: {
+			type: 'string',
+			enum: ['polygon']
+		},
+		sensorTraceCoordinates: {
+			type: 'array',
+			isCoordinatesArray: true
 		},
 		data: {
 			type: 'json'
 		}
+	},
+
+	types: {
+		isCoordinatesArray: coordinatesValidator
 	}
 };
 

@@ -1,4 +1,4 @@
-var nestedValidator = require('./services/nested-model-validator'),
+var coordinatesValidator = require('./services/attributes-validators/coordinates'),
 	_ = require('lodash');
 
 module.exports = {
@@ -34,14 +34,17 @@ module.exports = {
 		source: {
 			type: 'string'
 		},
-		boundingPolygon: {
-			model: 'geojson'
+		boundingShapeType: {
+			type: 'string',
+			enum: ['polygon']
+		},
+		boundingShapeCoordinates: {
+			type: 'array',
+			isCoordinatesArray: true
 		}
 	},
 
 	types: {
-		validateDate: function(obj) {
-			return _.isDate(obj);
-		}
+		isCoordinatesArray: coordinatesValidator
 	}
 };

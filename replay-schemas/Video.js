@@ -1,5 +1,3 @@
-var nestedValidator = require('./services/nested-model-validator');
-
 var Video = {
 
 	identity: 'video',
@@ -29,8 +27,15 @@ var Video = {
 			type: 'string',
 			required: true
 		},
-		receivingMethod: {
-			model: 'receivingmethod'
+		receivingMethodStandard: {
+			type: 'string',
+			enum: ['VideoStandard', 'stanag'],
+			required: true
+		},
+		receivingMethodVersion: {
+			type: 'string',
+			enum: ['0.9', '1.0', '4609'],
+			required: true
 		},
 		status: {
 			type: 'string',

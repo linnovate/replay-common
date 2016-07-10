@@ -4,9 +4,6 @@ var Waterline = require('waterline'),
 
 var Video = require('./Video'),
 	VideoMetadata = require('./VideoMetadata'),
-	ReceivingMethod = require('./nested-schemas/ReceivingMethod'),
-	Coordinate = require('./nested-schemas/Coordinate'),
-	GeoJson = require('./nested-schemas/GeoJson'),
 	Query = require('./Query');
 
 // the duration in seconds to keep alive the connection with mongo
@@ -58,9 +55,6 @@ module.exports = function() {
 
 	orm.loadCollection(Waterline.Collection.extend(Video));
 	orm.loadCollection(Waterline.Collection.extend(VideoMetadata));
-	orm.loadCollection(Waterline.Collection.extend(ReceivingMethod));
-	orm.loadCollection(Waterline.Collection.extend(Coordinate));
-	orm.loadCollection(Waterline.Collection.extend(GeoJson));
 	orm.loadCollection(Waterline.Collection.extend(Query));
 
 	// wrap the callback in promise
