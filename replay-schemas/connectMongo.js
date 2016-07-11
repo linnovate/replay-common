@@ -3,10 +3,13 @@ var mongoose = require('mongoose'),
 
 mongoose.Promise = Promise;
 
-module.exports = function(){
-	return new Promise(function(resolve, reject){
-		var host = process.env.MONGO_HOST || 'localhost';
-		var port = process.env.MONGO_PORT || 27017;
+module.exports = function(host, port, database) {
+	return new Promise(function(resolve, reject) {
+		var host = host || 'localhost';
+		var port = port || 27017;
+		var database = database || 'replay_dev';
+
+		console.log('Conencting to mongo...', ' Database: ', database, '. URI: ', host + ':' + port + '.');
 
 		var keepAliveInSeconds = 60 * 60 * 24 * 30; // 30 days
 		// initialize options
@@ -23,7 +26,7 @@ module.exports = function(){
 			}
 		};
 
-		var uri = 'mongodb://' + host + ':' + port + '/' + process.env.MONGO_DATABASE;
+		var uri = 'mongodb://' + host + ':' + port + '/' + database;
 		// connect to mongo
 		mongoose.connect(uri, options);
 		console.log('Connected to mongo.');
