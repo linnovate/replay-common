@@ -30,6 +30,9 @@ var QuerySchema = new Schema({
 		type: String
 	},
 	boundingShape: GeoJson
+},
+{
+	timestamps: true
 });
 
 var Query = mongoose.model('Query', QuerySchema);

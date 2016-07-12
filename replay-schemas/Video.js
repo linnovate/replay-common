@@ -33,6 +33,9 @@ var VideoSchema = new Schema({
 		enum: ['processing', 'ready'],
 		default: 'processing'
 	}
+},
+{
+	timestamps: true
 });
 
 var Video = mongoose.model('Video', VideoSchema);

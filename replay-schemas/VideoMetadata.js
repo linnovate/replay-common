@@ -25,6 +25,9 @@ var VideoMetadataSchema = new Schema({
 	data: {
 		type: Schema.Types.Mixed
 	}
+},
+{
+	timestamps: true
 });
 
 var VideoMetadata = mongoose.model('VideoMetadata', VideoMetadataSchema);
