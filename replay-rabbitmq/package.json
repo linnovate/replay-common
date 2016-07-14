@@ -9,6 +9,6 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "busmq": "^1.5.4"
+    "amqplib": "^0.4.2"
   }
 }
