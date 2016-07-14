@@ -1,47 +1,41 @@
-var nestedValidator = require('./services/nested-model-validator'),
-	_ = require('lodash');
+var mongoose = require('mongoose');
 
-module.exports = {
+var Schema = mongoose.Schema,
+	GeoJson = require('./common-nested-schemas/GeoJson');
 
-	identity: 'query',
-	connection: 'mongo',
-	schema: true,
-
-	attributes: {
-		fromVideoTime: {
-			type: 'date',
-			validateDate: true
-		},
-		toVideoTime: {
-			type: 'date',
-			validateDate: true
-		},
-		minVideoDuration: {
-			type: 'integer'
-		},
-		maxVideoDuration: {
-			type: 'integer'
-		},
-		copyright: {
-			type: 'string'
-		},
-		minTraceHeight: {
-			type: 'integer'
-		},
-		minTraceWidth: {
-			type: 'integer'
-		},
-		source: {
-			type: 'string'
-		},
-		boundingPolygon: {
-			model: 'geojson'
-		}
+// create a schema
+var QuerySchema = new Schema({
+	fromVideoTime: {
+		type: Date
 	},
+	toVideoTime: {
+		type: Date
+	},
+	minVideoDuration: {
+		type: Number
+	},
+	maxVideoDuration: {
+		type: Number
+	},
+	copyright: {
+		type: String
+	},
+	minTraceHeight: {
+		type: Number
+	},
+	minTraceWidth: {
+		type: Number
+	},
+	source: {
+		type: String
+	},
+	boundingShape: GeoJson
+},
+{
+	timestamps: true
+});
 
-	types: {
-		validateDate: function(obj) {
-			return _.isDate(obj);
-		}
-	}
-};
+var Query = mongoose.model('Query', QuerySchema);
+
+module.exports = Query;
+

@@ -1,36 +1,35 @@
-var nestedValidator = require('./services/nested-model-validator');
+var mongoose = require('mongoose');
 
-var VideoMetadata = {
+var Schema = mongoose.Schema,
+	ReceivingMethod = require('./common-nested-schemas/ReceivingMethod'),
+	GeoJson = require('./common-nested-schemas/GeoJson');
 
-	identity: 'videometadata',
-	connection: 'mongo',
-	schema: true,
-
-	attributes: {
-		sourceId: {
-			type: 'string',
-			required: true
-		},
-		videoId: {
-			type: 'string'
-		},
-		receivingMethod: {
-			model: 'receivingmethod',
-			required: true
-		},
-		timestamp: {
-			type: 'date'
-		},
-		sensorPosition: {
-			model: 'coordinate'
-		},
-		sensorTrace: {
-			model: 'geojson'
-		},
-		data: {
-			type: 'json'
-		}
+// create a schema
+var VideoMetadataSchema = new Schema({
+	sourceId: {
+		type: String,
+		required: true
+	},
+	videoId: {
+		type: String
+	},
+	receivingMethod: ReceivingMethod,
+	timestamp: {
+		type: Date
+	},
+	sensorPosition: {
+		lat: { type: Number },
+		lon: { type: Number }
+	},
+	sensorTrace: GeoJson,
+	data: {
+		type: Schema.Types.Mixed
 	}
-};
+},
+{
+	timestamps: true
+});
+
+var VideoMetadata = mongoose.model('VideoMetadata', VideoMetadataSchema);
 
 module.exports = VideoMetadata;

@@ -1,43 +1,43 @@
-var nestedValidator = require('./services/nested-model-validator');
+var mongoose = require('mongoose');
 
-var Video = {
+var Schema = mongoose.Schema,
+	ReceivingMethod = require('./common-nested-schemas/ReceivingMethod');
 
-	identity: 'video',
-	connection: 'mongo',
-	schema: true,
-
-	attributes: {
-		sourceId: {
-			type: 'string',
-			required: true
-		},
-		provider: {
-			type: 'string',
-			enum: ['kaltura']
-		},
-		providerId: {
-			type: 'string'
-		},
-		relativePath: {
-			type: 'string',
-			required: true
-		},
-		providerData: {
-			type: 'json'
-		},
-		name: {
-			type: 'string',
-			required: true
-		},
-		receivingMethod: {
-			model: 'receivingmethod'
-		},
-		status: {
-			type: 'string',
-			enum: ['processing', 'ready'],
-			defaultsTo: 'processing'
-		}
+// create a schema
+var VideoSchema = new Schema({
+	sourceId: {
+		type: String,
+		required: true
+	},
+	provider: {
+		type: String,
+		enum: ['kaltura']
+	},
+	providerId: {
+		type: String
+	},
+	relativePath: {
+		type: String,
+		required: true
+	},
+	prodiverData: {
+		type: Schema.Types.Mixed
+	},
+	name: {
+		type: String,
+		required: true
+	},
+	receivingMethod: ReceivingMethod,
+	status: {
+		type: String,
+		enum: ['processing', 'ready'],
+		default: 'processing'
 	}
-};
+},
+{
+	timestamps: true
+});
+
+var Video = mongoose.model('Video', VideoSchema);
 
 module.exports = Video;
