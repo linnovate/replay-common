@@ -28,5 +28,10 @@
 		"type": "FetchVideoFromProvider",
 		"service": "provider-services/fetch",
 		"queue": "FetchProviderQueue"
+	},
+	{
+		"type": "MetadataToCaptions",
+		"service": "metadata-to-captions-service",
+		"queue": "MetadataToCaptionsQueue"
 	}
 ]
