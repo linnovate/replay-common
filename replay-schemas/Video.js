@@ -20,7 +20,7 @@ var VideoSchema = new Schema({
 		type: String,
 		required: true
 	},
-	prodiverData: {
+	providerData: {
 		type: Schema.Types.Mixed
 	},
 	name: {
