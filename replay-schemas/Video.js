@@ -32,6 +32,10 @@ var VideoSchema = new Schema({
 		type: String,
 		enum: ['processing', 'ready'],
 		default: 'processing'
+	},
+	jobStatusId: {
+		type: String,
+		required: true
 	}
 },
 {
