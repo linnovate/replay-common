@@ -15,7 +15,7 @@ var Schema = mongoose.Schema;
 var JobStatusSchema = new Schema({
 	statuses: {
 		type: [String],
-		enum: ['started', 'video-object-saved'],
+		enum: ['started', 'video-object-saved', 'uploaded-to-kaltura', 'fetched-from-kaltura'],
 		default: ['started']
 	}
 },
