@@ -16,3 +16,27 @@ In order to manage the maximum amount of connections upon launch, open up and ed
 sudo nano /etc/default/rabbitmq-server
 ```
 Uncomment the limit line (i.e. remove #) before saving and exit by pressing CTRL+X followed with Y.
+
+Now enable management plugin:
+```
+rabbitmq-plugins enable rabbitmq_management
+```
+
+If it doesn't work for some reason, try run this before the above command:
+```
+sudo rabbitmqctl start_app
+```
+
+## Management
+
+Visit the following url to  view the management plugin, where you can view connections,
+channels, queues, and administer the RabbitMQ:
+```
+http://server-name:15672/
+```
+## Configurations
+
+Possible environment variables:
+```
+RABBITMQ_MAX_RESEND_ATTEMPS
+```
