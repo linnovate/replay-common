@@ -1,5 +1,5 @@
 {
-  "name": "replay-bus-service",
+  "name": "replay-rabbitmq",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -9,6 +9,6 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "busmq": "^1.5.4"
+    "amqplib": "^0.4.2"
   }
 }

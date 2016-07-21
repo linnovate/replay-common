@@ -20,7 +20,7 @@ var VideoSchema = new Schema({
 		type: String,
 		required: true
 	},
-	prodiverData: {
+	providerData: {
 		type: Schema.Types.Mixed
 	},
 	name: {
@@ -32,6 +32,10 @@ var VideoSchema = new Schema({
 		type: String,
 		enum: ['processing', 'ready'],
 		default: 'processing'
+	},
+	jobStatusId: {
+		type: String,
+		required: true
 	}
 },
 {
