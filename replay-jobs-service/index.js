@@ -1,6 +1,7 @@
 var fs = require('fs'),
 	path = require('path'),
-	_ = require('lodash');
+	_ = require('lodash'),
+	JobStatus = require('replay-schemas/JobStatus');
 
 // try to save jobTypes here insteas of reloading them on each request
 var jobTypes;
@@ -46,3 +47,18 @@ module.exports.getQueueName = function(jobType) {
 module.exports.getQueueMaxMessagesAmount = function(jobType) {
 	return getJobConfig(jobType).maxMessagesAmount;
 }
+
+// find a JobStatus with such id or create one if not exists.
+module.exports.findOrCreateJobStatus = function(transactionId) {
+	// upsert: create if not exist; new: return updated value
+	return JobStatus.findByIdAndUpdate({ _id: transactionId }, {}, { upsert: true, new: true, setDefaultsOnInsert: true });
+};
+
+module.exports.findJobStatus = function(transactionId) {
+	return JobStatus.findById(transactionId);
+};
+
+module.exports.updateJobStatus = function(transactionId, jobStatusTag) {
+	// addToSet: add to array list as set (e.g. no duplicates);
+	return JobStatus.findOneAndUpdate({ _id: transactionId }, { $addToSet: { statuses: jobStatusTag } });
+};
