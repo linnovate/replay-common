@@ -1,7 +1,8 @@
 var fs = require('fs'),
-	path = require('path'),
-	_ = require('lodash'),
-	JobStatus = require('replay-schemas/JobStatus');
+	path = require('path');
+
+var JobStatus = require('replay-schemas/JobStatus'),
+	_ = require('lodash');
 
 // try to save jobTypes here insteas of reloading them on each request
 var jobTypes;
@@ -9,10 +10,11 @@ var jobTypesPath = path.join(__dirname, 'queues_config', 'job-types.json');
 
 // load jobTypes file only if not loaded yet
 function loadJobTypesJson() {
-	if (!jobTypes)
-		return jobTypes = JSON.parse(fs.readFileSync(jobTypesPath, "utf8"));
-	else
+	if (!jobTypes) {
+		jobTypes = JSON.parse(fs.readFileSync(jobTypesPath, 'utf8'));
 		return jobTypes;
+	}
+	return jobTypes;
 }
 
 function getJobConfig(jobType) {
@@ -32,21 +34,21 @@ module.exports.isKnownJobType = function(jobType) {
 	return _.some(jobTypes, function(job) {
 		return job.type === jobType;
 	});
-}
+};
 
 // get service name from the jobTypes array
 module.exports.getServiceName = function(jobType) {
 	return getJobConfig(jobType).service;
-}
+};
 
 // get queue name from the jobTypes array
 module.exports.getQueueName = function(jobType) {
 	return getJobConfig(jobType).queue;
-}
+};
 
 module.exports.getQueueMaxMessagesAmount = function(jobType) {
 	return getJobConfig(jobType).maxMessagesAmount;
-}
+};
 
 // find a JobStatus with such id or create one if not exists.
 module.exports.findOrCreateJobStatus = function(transactionId) {
