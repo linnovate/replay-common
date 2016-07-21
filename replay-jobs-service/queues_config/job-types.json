@@ -2,37 +2,31 @@
 	{
 		"type": "MetadataParser",
 		"service": "metadata-parser-service",
-		"queue": "MetadataParserQueue",
-		"maxMessagesAmount": 2
+		"queue": "MetadataParserQueue"
 	},
 	{
 		"type": "MetadataToMongo",
 		"service": "metadata-to-mongo-service",
-		"queue": "MetadataToMongoQueue",
-		"maxMessagesAmount": 2
+		"queue": "MetadataToMongoQueue"
 	},
 	{
 		"type": "MetadataToElastic",
 		"service": "metadata-to-elastic-service",
-		"queue": "MetadataToElasticQueue",
-		"maxMessagesAmount": 2
+		"queue": "MetadataToElasticQueue"
 	},
 	{
 		"type": "SaveVideo",
 		"service": "save-video-service",
-		"queue": "NewVideosQueue",
-		"maxMessagesAmount": 10
+		"queue": "NewVideosQueue"
 	},
 	{
 		"type": "UploadVideoToProvider",
 		"service": "provider-services/upload",
-		"queue": "UploadProviderQueue",
-		"maxMessagesAmount": 10
+		"queue": "UploadProviderQueue"
 	},
 	{
 		"type": "FetchVideoFromProvider",
 		"service": "provider-services/fetch",
-		"queue": "FetchProviderQueue",
-		"maxMessagesAmount": 10
+		"queue": "FetchProviderQueue"
 	}
 ]
