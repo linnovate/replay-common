@@ -4,7 +4,7 @@ var mongoose = require('mongoose'),
 var Schema = mongoose.Schema;
 
 var GeoJson = new Schema({
-	type: { type: String, enum: ['polygon'] },
+	type: { type: String, enum: ['Polygon'] },
 	coordinates: Schema.Types.Mixed // Geo-Json coordinates are [[[lon,lat]]]
 });
 
@@ -14,7 +14,7 @@ module.exports = {
 };
 
 function validateGeoJson(obj) {
-	if (obj.type === 'polygon') {
+	if (obj.type === 'Polygon') {
 		// check first []
 		if (obj.coordinates.length !== 1) {
 			return false;
