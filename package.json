@@ -4,9 +4,8 @@
 	"description": "This repo is intended to share code between Replay micro services.",
 	"main": "index.js",
 	"devDependencies": {
-		"eslint": "^2.12.0",
-		"eslint-config-google": "^0.6.0",
-		"pre-commit": "^1.1.3"
+		"pre-commit": "^1.1.3",
+		"replay-eslint-config": "*"
 	},
 	"scripts": {
 		"test": "echo \"Error: no test specified\" && exit 1",

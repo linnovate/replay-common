@@ -1,0 +1,3 @@
+{
+	"extends": "./replay-eslint-config/index.js"
+}
