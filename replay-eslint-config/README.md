@@ -1,2 +1,2 @@
 
-# A Shareable ESLint configuration settings for all Replay project
+## A Shareable ESLint configuration settings for all Replay project
