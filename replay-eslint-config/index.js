@@ -1,5 +1,6 @@
 module.exports = {
 	'extends': 'google',
+
 	'installedESLint': true,
 
 	'globals': {
@@ -75,7 +76,7 @@ module.exports = {
 		// 	'initialized': 'always' // Exactly one declarator per initialized variable declaration per function (var) or block (let or const)
 		// }],
 		'one-var-declaration-per-line': ['warn', 'initializations'],
-		'spaced-comment': ['error', 'always', {
+		'spaced-comment': ['warn', 'always', {
 			'line': {
 				'markers': ['/'],
 				'exceptions': ['-', '+']
