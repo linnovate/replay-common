@@ -29,9 +29,13 @@ module.exports = function(_host, _port, _database) {
 		var database = _database || 'replay_dev';
 		var uri = 'mongodb://' + host + ':' + port + '/' + database;
 
-		setConnectionListeners(uri, database, host, port);
-		// connect to mongo
-		mongoose.connect(uri, _options);
+		// connect if not connected
+		if(mongoose.connection && mongoose.connection.readyState != 1){
+			setConnectionListeners(uri, database, host, port);
+			// connect to mongo
+			mongoose.connect(uri, _options);
+
+		}
 		resolve();
 	});
 };
