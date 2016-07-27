@@ -1,0 +1,27 @@
+{
+	"name": "replay-eslint-config",
+	"version": "1.0.2",
+	"description": "Shareable ESLint configuration settings for all Replay project",
+	"main": "index.js",
+	"scripts": {
+		"test": "echo \"Error: no test specified\" && exit 1"
+	},
+	"dependencies": {
+		"eslint": "^3.1.1",
+		"eslint-config-google": "^0.6.0"
+	},
+	"author": "motyros",
+	"license": "ISC",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/linnovate/replay-common/tree/develop/replay-eslint-config"
+	},
+	"keywords": [
+		"lint",
+		"linter",
+		"eslint",
+		"eslintconfig",
+		"repaly",
+		"cleancode"
+	]
+}
