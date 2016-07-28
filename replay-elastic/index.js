@@ -72,19 +72,23 @@ module.exports.createVideoMetadataIndex = function() {
 		index: videoMetadataIndex,
 		type: videoMetadataType,
 		body: {
-			videometadata: {
-				properties: {
-					sourceId: { type: 'integer' },
-					videoId: { type: 'string' },
-					receivingMethod: { type: 'nested' },
-					timestamp: { type: 'date' },
-					sensorPosition: { type: 'geo_point' },
-					sensorTrace: { type: 'geo_shape' },
-					data: { type: 'object' }
-				}
-			}
+			mappings: {}
 		}
 	};
+
+	var props = {
+		properties: {
+			sourceId: { type: 'integer' },
+			videoId: { type: 'string' },
+			receivingMethod: { type: 'nested' },
+			timestamp: { type: 'date' },
+			sensorPosition: { type: 'geo_point' },
+			sensorTrace: { type: 'geo_shape' },
+			data: { type: 'object' }
+		}
+	};
+
+	params.body.mappings[videoMetadataType] = props;
 
 	return _client.indices.create(params);
 };
