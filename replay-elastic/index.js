@@ -2,6 +2,8 @@ var elasticsearch = require('elasticsearch'),
 	Promise = require('bluebird');
 
 var _client;
+var videoMetadataIndex = process.env.ELASTIC_VIDEO_METADATA_INDEX || 'videometadatas';
+var videoMetadataType = process.env.ELASTIC_VIDEO_METADAT_TYPE || 'videometadata';
 
 // connect to ElasticSearch once so the service won't have to re-create connection each time
 module.exports.connect = function(_host, _port) {
@@ -25,26 +27,66 @@ module.exports.connect = function(_host, _port) {
 };
 
 module.exports.searchVideoMetadata = function(polygon) {
-	var body = {
-		query: {
-			geo_shape: {
-				sensorTrace: {
-					relation: 'intersects',
-					shape: {
-						type: 'Polygon',
-						coordinates: polygon
+
+	var body;
+	if (polygon) {
+		body = {
+			query: {
+				geo_shape: {
+					sensorTrace: {
+						relation: 'intersects',
+						shape: {
+							type: 'Polygon',
+							coordinates: polygon
+						}
 					}
+				}
+			}
+		};
+	} else {
+		body = {
+			query: {
+				match_all: {}
+			}
+		};
+	}
+
+	var query = {
+		index: videoMetadataIndex,
+		type: videoMetadataType,
+		body: body
+	};
+	return _client.search(query);
+};
+
+module.exports.deleteAllIndices = function() {
+	var query = {
+		index: '*'
+	};
+
+	return _client.indices.delete(query);
+};
+
+module.exports.createVideoMetadataIndex = function() {
+	var params = {
+		index: videoMetadataIndex,
+		type: videoMetadataType,
+		body: {
+			videometadata: {
+				properties: {
+					sourceId: { type: 'integer' },
+					videoId: { type: 'string' },
+					receivingMethod: { type: 'nested' },
+					timestamp: { type: 'date' },
+					sensorPosition: { type: 'geo_point' },
+					sensorTrace: { type: 'geo_shape' },
+					data: { type: 'object' }
 				}
 			}
 		}
 	};
-	var query = {
-		index: 'videometadatas',
-		type: 'videometadata',
-		body: body
-	};
 
-	return _client.search(query);
+	return _client.indices.create(params);
 };
 
 module.exports.getDataByName = function(index, type, name, sort, callback) {
