@@ -12,6 +12,9 @@
 		"lint": "./lintStagedFiles.sh",
 		"lintAll": "eslint ."
 	},
+	"eslintConfig": {
+		"extends": "./node_modules/replay-eslint-config/index.js"
+	},
 	"pre-commit": {
 		"run": "lint",
 		"colors": true
