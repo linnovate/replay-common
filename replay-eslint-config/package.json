@@ -1,6 +1,6 @@
 {
 	"name": "replay-eslint-config",
-	"version": "1.0.3",
+	"version": "1.0.4",
 	"description": "Shareable ESLint configuration settings for all Replay project",
 	"main": "index.js",
 	"scripts": {
