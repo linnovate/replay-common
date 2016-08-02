@@ -50,7 +50,7 @@ var VideoSchema = new Schema({
 		type: Number
 	},
 	tags: [{
-		type: mongoose.Types.ObjectId,
+		type: Schema.Types.ObjectId,
 		ref: 'Tag'
 	}],
 	copyright: {
