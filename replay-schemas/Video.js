@@ -70,10 +70,11 @@ function calculateDuration(next) {
 	var self = this;
 	var differenceInMillis = self.endTime - self.startTime;
 	self.durationInSeconds = differenceInMillis / 1000;
+	next();
 }
 
 function validateGreaterThanStartTime(obj) {
-	if(obj.startTime <= obj.endTime){
+	if (obj.startTime <= obj.endTime) {
 		return false;
 	}
 
