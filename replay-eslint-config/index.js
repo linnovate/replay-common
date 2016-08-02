@@ -6,7 +6,9 @@ module.exports = {
 	'globals': {
 		'jQuery': true,
 		'$': true,
-		'sails': true
+		'_': true,
+		'sails': true,
+		'expect': true
 	},
 
 	'env': {
