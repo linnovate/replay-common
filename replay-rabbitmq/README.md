@@ -1,6 +1,8 @@
+# RabbitMQ wrapper for Replay project.
+
 ## Installation of RabbitMQ
- 
- Simply download and install [RabbitMQ 3.6.4](http://www.rabbitmq.com/releases/rabbitmq-server/v3.6.4/rabbitmq-server_3.6.4-1_all.deb)
+
+Simply download and install [RabbitMQ 3.6.4](http://www.rabbitmq.com/releases/rabbitmq-server/v3.6.4/rabbitmq-server_3.6.4-1_all.deb)
 
 
 In order to manage the maximum amount of connections upon launch,  

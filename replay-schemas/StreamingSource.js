@@ -29,8 +29,9 @@ var StreamingSourceSchema = new Schema({
 	streamingMethod: ReceivingMethod,
 	streamingStatus: {
 		type: String,
+		enum: ['NONE', 'LISNTENING', 'CAPTURING'],
 		required: true,
-		default: 'NONE'
+		default: ['NONE']
 	}
 }, {
 	timestamps: true
