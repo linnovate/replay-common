@@ -28,11 +28,9 @@ var StreamingSourceSchema = new Schema({
 	},
 	streamingMethod: ReceivingMethod,
 	streamingStatus: {
-		status: {
-			type: String,
-			required: true,
-			default: 'NONE'
-		}
+		type: String,
+		required: true,
+		default: 'NONE'
 	}
 }, {
 	timestamps: true

@@ -26,8 +26,11 @@ var QuerySchema = new Schema({
 	minTraceWidth: {
 		type: Number
 	},
-	source: {
+	sourceId: {
 		type: String
+	},
+	tagsIds: {
+		type: [String]
 	},
 	boundingShape: GeoJson
 },

@@ -49,9 +49,10 @@ var VideoSchema = new Schema({
 	durationInSeconds: {
 		type: Number
 	},
-	tags: {
-		type: [String]
-	},
+	tags: [{
+		type: mongoose.Types.ObjectId,
+		ref: 'Tag'
+	}],
 	copyright: {
 		type: String
 	}
