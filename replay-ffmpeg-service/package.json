@@ -1,0 +1,19 @@
+{
+  "name": "replay-ffmpeg-service",
+  "version": "1.0.0",
+  "description": "service that export useful method for ffmpeg, using the fluent-ffmpeg module.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "replay",
+    "ffmpeg"
+  ],
+  "author": "dinzone",
+  "license": "ISC",
+  "dependencies": {
+    "bluebird": "^3.4.1",
+    "fluent-ffmpeg": "^2.1.0"
+  }
+}
