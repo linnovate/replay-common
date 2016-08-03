@@ -1,6 +1,8 @@
 var ffmpeg = require('fluent-ffmpeg'),
 	BluebirdPromise = require('bluebird');
-var event = require('events').EventEmitter();
+var event = require('events').EventEmitter;
+
+event.call(this);
 
 const SERVICE_NAME = '#FFmpegWrapper#';
 
