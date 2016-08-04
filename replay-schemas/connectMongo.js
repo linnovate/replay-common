@@ -21,23 +21,25 @@ var _options = {
 
 // used to count connection re-try seconds
 var _connectRetryInSeconds = 0;
-
+var _isFirstConnection = true;
 module.exports = function(_host, _port, _database) {
-	return new Promise(function(resolve, reject) {
-		var host = _host || 'localhost';
-		var port = _port || 27017;
-		var database = _database || 'replay_dev';
-		var uri = 'mongodb://' + host + ':' + port + '/' + database;
+	var host = _host || 'localhost';
+	var port = _port || 27017;
+	var database = _database || 'replay_dev';
+	var uri = 'mongodb://' + host + ':' + port + '/' + database;
 
-		// connect if not connected
-		if(mongoose.connection && mongoose.connection.readyState != 1){
-			setConnectionListeners(uri, database, host, port);
-			// connect to mongo
-			mongoose.connect(uri, _options);
+	// connect if not connected
+	if (mongoose.connection && mongoose.connection.readyState !== 1) {
+		setConnectionListeners(uri, database, host, port);
+		// connect to mongo, the empty function is a stub to make it return promise (it's mongoose known bug)
+		return mongoose.connect(uri, _options, function() {})
+			.then(function() {
+				console.log('Connected to mongo.');
+				return Promise.resolve();
+			});
+	}
 
-		}
-		resolve();
-	});
+	return Promise.resolve();
 };
 
 function setConnectionListeners(uri, database, host, port) {
@@ -54,6 +56,11 @@ function setConnectionListeners(uri, database, host, port) {
 		mongoose.disconnect();
 	});
 	connection.on('connected', function() {
+		// do not print to log if this is the first connection
+		if (_isFirstConnection) {
+			_isFirstConnection = false;
+			return;
+		}
 		console.log('Connected to mongo.');
 	});
 	connection.once('open', function() {
@@ -67,7 +74,11 @@ function setConnectionListeners(uri, database, host, port) {
 
 		// retry to connect with exponential backoff in order to off-load mongo
 		exponentialBackoff(function() {
-			mongoose.connect(uri, _options);
+			mongoose.connect(uri, _options, function(err) {
+				if(err) {
+					console.log(err);
+				}
+			});
 		});
 	});
 }
