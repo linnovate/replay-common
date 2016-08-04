@@ -196,6 +196,76 @@ var Ffmpeg = function() {
 		return promise;
 	};
 
+	/*********************************************************************************************************
+	 *
+	 *	@author din
+	 *
+	 *	record the stream into ts file.
+	 *	@params {object} contain the parameters.
+	 *	@params.input {string} contain the input for the recording.
+	 *	@params.duration {number} contain the durtion of the record, default to half hour(1800 Seconds).
+	 *	@params.output {string} contain the output path that will saved in the file system (witout suffix e.g .ts, .mp4 etc).
+	 *
+	 *	@emit "ffmpegWrapper_finish_recording" when the record finished, pass the path of the record file.
+	 *	@emit "ffmpegWrapper_error_while_recording" when error eccured, pass the error.
+	 *
+	 *	@return Promise that the command execute.
+	 *
+	 *********************************************************************************************************/
+	self.record = function(params) {
+		// init variables.
+		var input, output, duration, command;
+		var promise = new Promise(function(resolve, reject) {
+			// validate the parameters.
+			if (!_validateRecordParameters(params)) {
+				return reject('parameters are missing');
+			}
+			input = params.input;
+			output = params.output + '.tmp';
+			duration = (params.duration && typeof params.duration !== 'string' && params.duration > 0) ? params.duration : 1800;
+			return resolve(command);
+		});
+
+		promise
+			.then(function(command) {
+				// init new ffmpeg command.
+				command = ffmpeg();
+				// define the ffmpeg command with input,output and duration.
+				command
+					.input(input)
+					.output(output)
+					.duration(duration)
+					.format('mpegts');
+				return Promise.resolve(command);
+			})
+			.then(function(command) {
+				// init events for the ffmpeg command.
+				command
+					.on('start', function(commandLine) {
+						console.log(SERVICE_NAME, 'start record with the command:\n', commandLine);
+					})
+					.on('error', function(err) {
+						self.emit('ffmpegWrapper_error_while_recording', err);
+					})
+					.on('end', function() {
+						self.emit('ffmpegWrapper_finish_recording', output);
+					})
+					// running the command.
+					.run();
+				return Promise.resolve(command);
+			})
+			.catch(function(err) {
+				self.emit('ffmpegWrapper_error_while_recording', err);
+			});
+
+		return promise;
+	};
+
+	// validate the necessary prameters.
+	function _validateRecordParameters(params) {
+		return (params && params.input && params.output);
+	}
+
 	// Set events
 	function setEvents(command, params) {
 		var videoPath = params.dir + '/' + params.file + '.ts';
