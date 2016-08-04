@@ -1,14 +1,15 @@
+// Requires
 var ffmpeg = require('fluent-ffmpeg'),
 	BluebirdPromise = require('bluebird');
-var event = require('events').EventEmitter;
-
-event.call(this);
+var event = require('events').EventEmitter,
+	util = require('util');
 
 const SERVICE_NAME = '#FFmpegWrapper#';
 
-module.exports = {
+var Ffmpeg = function() {
+	var self = this;
 	// Params object (e.g{inputs:<[inputs]>,Directory:<dir/dir2>,file:<filename>,duration:<sec/hh:mm:ss.xxx>})
-	captureMuxedVideoTelemetry: function(params) {
+	self.captureMuxedVideoTelemetry = function(params) {
 		// setting the boolean requests to check params
 		var checkBadParams = (!params.duration || !params.file || !params.dir || !params.inputs || params.inputs.length === 0);
 		if (checkBadParams) {
@@ -41,13 +42,13 @@ module.exports = {
 				return runCommand(command);
 			})
 			.catch(function(err) {
-				event.emit('FFmpegError', err);
+				self.emit('FFmpegError', err);
 			});
 
 		return builder;
-	},
+	};
 
-	captureVideoWithoutTelemetry: function(params) {
+	self.captureVideoWithoutTelemetry = function(params) {
 		// setting the boolean requests to check params
 		var checkBadParams = (!params.duration || !params.file || !params.dir || !params.inputs || params.inputs.length === 0);
 		if (checkBadParams) {
@@ -76,13 +77,13 @@ module.exports = {
 				return runCommand(command);
 			})
 			.catch(function(err) {
-				event.emit('FFmpegError', err);
+				self.emit('FFmpegError', err);
 			});
 
 		return builder;
-	},
+	};
 
-	captureTelemetryWithoutVideo: function(params) {
+	self.captureTelemetryWithoutVideo = function(params) {
 		// setting the boolean requests to check params
 		var checkBadParams = (!params.duration || !params.file || !params.dir || !params.inputs || params.inputs.length === 0);
 		if (checkBadParams) {
@@ -111,11 +112,11 @@ module.exports = {
 				return runCommand(command);
 			})
 			.catch(function(err) {
-				event.emit('FFmpegError', err);
+				self.emit('FFmpegError', err);
 			});
 
 		return builder;
-	},
+	};
 
 	/*********************************************************************************************************
 	 *
@@ -129,7 +130,7 @@ module.exports = {
 	 *	@emit 'FFmpegWrapper_finishConverting' when finish the converting.
 	 *
 	 *********************************************************************************************************/
-	convertMpegTsFormatToMp4: function(params) {
+	self.convertMpegTsFormatToMp4 = function(params) {
 		var builder = new BluebirdPromise(function(resolve, reject) {
 			var command = ffmpeg();
 			resolve(command);
@@ -156,11 +157,11 @@ module.exports = {
 					})
 					// when any error happen when the ffmpeg process run.
 					.on('error', function(err) {
-						event.emit('FFmpegWrapper_errorOnConverting', err);
+						self.emit('FFmpegWrapper_errorOnConverting', err);
 					})
 					// when ffmpeg process done his job.
 					.on('end', function() {
-						event.emit('FFmpegWrapper_finishConverting', newFilePath, params.filePath, params.startTime);
+						self.emit('FFmpegWrapper_finishConverting', newFilePath, params.filePath, params.startTime);
 					})
 					.run();
 				return BluebirdPromise.resolve(command);
@@ -170,7 +171,7 @@ module.exports = {
 			});
 
 		return builder;
-	},
+	};
 
 	/*********************************************************************************************************
 	 *
@@ -181,7 +182,7 @@ module.exports = {
 	 *	@return Promise with the duration/error.
 	 *
 	 *********************************************************************************************************/
-	getDurationOfVideo: function(params) {
+	self.getDurationOfVideo = function(params) {
 		var promise = new BluebirdPromise(function(resolve, reject) {
 			ffmpeg.ffprobe(params.filePath, function(err, data) {
 				if (err) {
@@ -193,43 +194,44 @@ module.exports = {
 		});
 
 		return promise;
+	};
+
+	// Set events
+	function setEvents(command, params) {
+		var videoPath = params.dir + '/' + params.file + '.ts';
+		var telemetryPath = params.dir + '/' + params.file + '.data';
+		command
+			.on('start', function(commandLine) {
+				console.log(SERVICE_NAME, 'Spawned FFmpeg with command: ' + commandLine);
+				// Initialize indicator for data started flowing
+				self.emit('FFmpegBegin', { telemetryPath: telemetryPath, videoPath: videoPath });
+				command.bytesCaptureBegan = false;
+			})
+			.on('progress', function(progress) {
+				// Check if should notify for first bytes captured
+				if (command.bytesCaptureBegan === false) {
+					command.bytesCaptureBegan = true;
+					self.emit('FFmpegFirstProgress', { telemetryPath: telemetryPath, videoPath: videoPath });
+				}
+			})
+			.on('end', function() {
+				console.log(SERVICE_NAME, 'Processing finished !');
+				self.emit('FFmpegDone', { telemetryPath: telemetryPath, videoPath: videoPath });
+			})
+			.on('error', function(err) {
+				self.emit('FFmpegError', 'Error on FFmpegWrapper : ' + err);
+			});
+		return command;
 	}
 };
 
+// Start the ffmpeg process
 function runCommand(command) {
 	command.run();
 	return command;
 }
 
-function setEvents(command, params) {
-	var videoPath = params.dir + '/' + params.file + '.ts';
-	var telemetryPath = params.dir + '/' + params.file + '.data';
-	command
-		.on('start', function(commandLine) {
-			console.log(SERVICE_NAME, 'Spawned FFmpeg with command: ' + commandLine);
-			// Initialize indicator for data started flowing
-			event.emit('FFmpegBegin', { telemetryPath: telemetryPath, videoPath: videoPath });
-			command.bytesCaptureBegan = false;
-		})
-		.on('progress', function(progress) {
-			// Check if should notify for first bytes captured
-			if (command.bytesCaptureBegan === false) {
-				command.bytesCaptureBegan = true;
-				event.emit('FFmpegFirstProgress', { telemetryPath: telemetryPath, videoPath: videoPath });
-			}
-		})
-		.on('end', function() {
-			// command.kill('SIGKILL');
-			console.log(SERVICE_NAME, 'Processing finished !');
-			event.emit('FFmpegDone', { telemetryPath: telemetryPath, videoPath: videoPath });
-		})
-		.on('error', function(err) {
-			// command.kill('SIGKILL');
-			event.emit('FFmpegError', 'Error on FFmpegWrapper : ' + err);
-		});
-	return command;
-}
-
+// Initialize inputs
 function initializeInputs(command, params) {
 	params.inputs.forEach(function(value) {
 		command.input(value);
@@ -245,6 +247,20 @@ function videoOutput(command, params) {
 		.format('mpegts');
 	return command;
 }
+
+// Extracting binary data from stream
+function extractData(command, params) {
+	command.output(params.dir + '/' + params.file + '.data')
+		.duration(params.duration)
+		.outputOptions(['-map data-re', '-codec copy', '-f data', '-y']);
+	return command;
+}
+
+/*********************************************************************************
+
+							functions for resolutions
+
+**********************************************************************************/
 
 // Define a 360p video output
 
@@ -268,10 +284,8 @@ function videoOutput(command, params) {
 	return command;
 }*/
 
-// Extracting binary data from stream
-function extractData(command, params) {
-	command.output(params.dir + '/' + params.file + '.data')
-		.duration(params.duration)
-		.outputOptions(['-map data-re', '-codec copy', '-f data', '-y']);
-	return command;
-}
+// Inhertis from the eventEmitter object
+util.inherits(Ffmpeg, event);
+
+// Export the module
+module.exports = new Ffmpeg();
