@@ -453,6 +453,171 @@ function testPublicMethods() {
 				});
 		});
 	});
+
+	describe('Method: record', function() {
+		it('should reject when send null as parameter', function(done) {
+			ffmpeg.record()
+				.then(function() {
+					done('fail');
+				})
+				.catch(function() {
+					done();
+				});
+		});
+
+		it('should reject when send empty object as parameter', function(done) {
+			ffmpeg.record({})
+				.then(function() {
+					done('fail');
+				})
+				.catch(function() {
+					done();
+				});
+		});
+
+		it('should reject when send only duration as parameter', function(done) {
+			ffmpeg.record({ duration: 20 })
+				.then(function() {
+					done('fail');
+				})
+				.catch(function() {
+					done();
+				});
+		});
+
+		it('should reject when send just input object as parameter', function(done) {
+			ffmpeg.record({ input: '/bla' })
+				.then(function() {
+					done('fail');
+				})
+				.catch(function() {
+					done();
+				});
+		});
+
+		it('should reject when send just output object as parameter', function(done) {
+			ffmpeg.record({ output: '/bla' })
+				.then(function() {
+					done('fail');
+				})
+				.catch(function() {
+					done();
+				});
+		});
+
+		it('should reject when send just input and duration object as parameter', function(done) {
+			ffmpeg.record({ input: '/bla', duration: 20 })
+				.then(function() {
+					done('fail');
+				})
+				.catch(function() {
+					done();
+				});
+		});
+
+		it('should reject when send just output and duration object as parameter', function(done) {
+			ffmpeg.record({ output: '/bla', duration: 20 })
+				.then(function() {
+					done('fail');
+				})
+				.catch(function() {
+					done();
+				});
+		});
+
+		it('should reject when send just output and duration object as parameter', function(done) {
+			ffmpeg.record({ output: '/bla', duration: 20 })
+				.then(function() {
+					done('fail');
+				})
+				.catch(function() {
+					done();
+				});
+		});
+
+		it('should work when duration isnt number', function(done) {
+			ffmpeg.record({ output: '/bla', duration: 'asddsd', input: '/bla' })
+				.then(function() {
+					done();
+				})
+				.catch(function(err) {
+					done(err);
+				});
+		});
+
+		it('should work when duration is not valid as number e.g -1,0 etc', function(done) {
+			ffmpeg.record({ output: '/bla', duration: 0, input: '/bla' })
+				.then(function() {
+					done();
+				})
+				.catch(function(err) {
+					done(err);
+				});
+		});
+
+		it('should work when duration is not valid as number e.g -1,0 etc', function(done) {
+			ffmpeg.record({ output: '/bla', duration: -1, input: '/bla' })
+				.then(function() {
+					done();
+				})
+				.catch(function(err) {
+					done(err);
+				});
+		});
+
+		it('should work when there is no duration in the params object', function(done) {
+			ffmpeg.record({ output: '/bla', input: '/bla' })
+				.then(function() {
+					done();
+				})
+				.catch(function(err) {
+					done(err);
+				});
+		});
+
+		it('should emit event when the input file does not exist', function(done) {
+			var spy = sinon.spy();
+			ffmpeg.on('ffmpegWrapper_error_while_recording', spy);
+			ffmpeg.record({ output: '/bla', duration: -1, input: '/bla' })
+				.then(function() {
+					setTimeout(function() {
+						if (spy.called) {
+							done();
+						} else {
+							done('failed');
+						}
+					}, 1500);
+				})
+				.catch(function(err) {
+					done(err);
+				});
+		});
+
+		it('should emit event when it finish the work', function(done) {
+			this.timeout(11000);
+			var spyOnSuccess = sinon.spy();
+			var spyOnFailure = sinon.spy(function(err) {
+				console.log(err);
+			});
+			ffmpeg.on('ffmpegWrapper_error_while_recording', spyOnFailure);
+			ffmpeg.on('ffmpegWrapper_finish_recording', spyOnSuccess);
+			ffmpeg.record({ output: path.join(__dirname, './testOutput/bla'), duration: 10, input: path.join(__dirname, './assets/Sample_Ts_File_For_Testing.ts') })
+				.then(function() {
+					setTimeout(function() {
+						if (spyOnFailure.called) {
+							done('ffmpegWrapper_error_while_recording');
+						} else if (spyOnSuccess.called) {
+							done();
+						} else {
+							done('nothing');
+						}
+					}, 10500);
+				})
+				.catch(function(err) {
+					done(err);
+				});
+		});
+	});
 }
 
 test();
