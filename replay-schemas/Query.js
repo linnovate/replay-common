@@ -26,16 +26,20 @@ var QuerySchema = new Schema({
 	minTraceWidth: {
 		type: Number
 	},
-	source: {
+	minMinutesInsideShape: {
+		type: Number
+	},
+	sourceId: {
 		type: String
 	},
+	tagsIds: {
+		type: [String]
+	},
 	boundingShape: GeoJson
-},
-{
+}, {
 	timestamps: true
 });
 
 var Query = mongoose.model('Query', QuerySchema);
 
 module.exports = Query;
-

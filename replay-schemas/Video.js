@@ -36,12 +36,48 @@ var VideoSchema = new Schema({
 	jobStatusId: {
 		type: String,
 		required: true
+	},
+	startTime: {
+		type: Date,
+		required: true
+	},
+	endTime: {
+		type: Date,
+		validate: validateGreaterThanStartTime,
+		required: true
+	},
+	durationInSeconds: {
+		type: Number
+	},
+	tags: [{
+		type: Schema.Types.ObjectId,
+		ref: 'Tag'
+	}],
+	copyright: {
+		type: String
 	}
-},
-{
+}, {
 	timestamps: true
 });
+
+VideoSchema.pre('save', calculateDuration);
+VideoSchema.pre('update', calculateDuration);
 
 var Video = mongoose.model('Video', VideoSchema);
 
 module.exports = Video;
+
+function calculateDuration(next) {
+	var self = this;
+	var differenceInMillis = self.endTime - self.startTime;
+	self.durationInSeconds = differenceInMillis / 1000;
+	next();
+}
+
+function validateGreaterThanStartTime(obj) {
+	if (obj.startTime <= obj.endTime) {
+		return false;
+	}
+
+	return true;
+}
