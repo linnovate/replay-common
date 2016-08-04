@@ -1,0 +1,24 @@
+{
+  "name": "replay-ffmpeg",
+  "version": "1.0.3",
+  "description": "service that export useful method for ffmpeg, using the fluent-ffmpeg module.",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha test --recursive",
+    "coverage": "istanbul cover _mocha test -- --recursive; sensible-browser coverage/lcov-report/index.html"
+  },
+  "keywords": [
+    "replay",
+    "ffmpeg"
+  ],
+  "author": "dinzone",
+  "license": "ISC",
+  "dependencies": {
+    "bluebird": "^3.4.1",
+    "chai": "^3.5.0",
+    "fluent-ffmpeg": "^2.1.0",
+    "istanbul": "^0.4.4",
+    "mocha": "^3.0.1",
+    "sinon": "^1.17.5"
+  }
+}

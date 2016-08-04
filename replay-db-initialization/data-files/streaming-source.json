@@ -1,0 +1,34 @@
+[{
+	"sourceID": 100,
+	"sourceName": "VideoMuxedStream",
+	"sourceType": "VideoMuxedTelemetry",
+	"sourceIP": "238.0.0.1",
+	"sourcePort": 1234,
+	"streamingMethod": {
+		"standard": "VideoStandard",
+		"version": "1.0"
+	},
+	"streamingStatus": "NONE"
+}, {
+	"sourceID": 101,
+	"sourceName": "TelemetryStream",
+	"sourceType": "Telemetry",
+	"sourceIP": "238.0.0.1",
+	"sourcePort": 1235,
+	"streamingMethod": {
+		"standard": "VideoStandard",
+		"version": "0.9"
+	},
+	"streamingStatus": "NONE"
+}, {
+	"sourceID": 102,
+	"sourceName": "VideoStream",
+	"sourceType": "Video",
+	"sourceIP": "238.0.0.1",
+	"sourcePort": 1236,
+	"streamingMethod": {
+		"standard": "VideoStandard",
+		"version": "0.9"
+	},
+	"streamingStatus": "NONE"
+}]

@@ -1,0 +1,26 @@
+{
+	"name": "replay-db-initialization",
+	"version": "1.0.2",
+	"description": "DB initialization scripts for Replay project",
+	"scripts": {
+		"test": "echo \"Error: no test specified\" && exit 1"
+	},
+	"dependencies": {
+		"bluebird": "^3.4.1",
+		"replay-schemas": "*"
+	},
+	"bin": {
+		"mongo-init": "./bin/mongo-init.js",
+		"elastic-init": "./bin/elastic-init"
+	},
+	"author": "motyros",
+	"license": "ISC",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/linnovate/replay-common/tree/develop/replay-db-initialization"
+	},
+	"keywords": [
+		"repaly",
+		"DB"
+	]
+}
