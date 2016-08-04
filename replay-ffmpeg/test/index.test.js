@@ -1,7 +1,8 @@
 var assert = require('chai').assert,
 	sinon = require('sinon');
 var ffmpeg = require('../index.js');
-var fs = require('fs');
+var fs = require('fs'),
+	path = require('path');
 
 function test() {
 	describe('FFmpeg Wrapper Testing', testMethods);
@@ -436,6 +437,19 @@ function testPublicMethods() {
 				.then(handleConverting)
 				.catch(function(err) {
 					done(err);
+				});
+		});
+	});
+
+	describe('Method: getDurationOfVideo', function() {
+		it('should return the duration of the file given', function(done) {
+			ffmpeg.getDurationOfVideo({ filePath: path.join(__dirname, '/../test/assets/Sample_Ts_File_For_Testing.ts') })
+				.then(function(duration) {
+					if (duration) {
+						done();
+					} else {
+						done('didnt get duration');
+					}
 				});
 		});
 	});
