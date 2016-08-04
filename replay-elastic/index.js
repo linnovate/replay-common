@@ -26,27 +26,47 @@ module.exports.connect = function(_host, _port) {
 	});
 };
 
-module.exports.searchVideoMetadata = function(polygon) {
+module.exports.searchVideoMetadata = function(polygon, videoIds, returnFields) {
 
-	var body;
-	if (polygon) {
-		body = {
-			query: {
-				geo_shape: {
-					sensorTrace: {
-						relation: 'intersects',
-						shape: {
-							type: 'Polygon',
-							coordinates: polygon
-						}
-					}
-				}
+	var body = {
+		query: {
+			bool: {
+				must: {}
+			}
+		}
+	};
+
+	// append fields to body if requested specific fields
+	if (returnFields) {
+		body.fields = returnFields;
+	}
+
+	// continue to build the body
+
+	// if videoIds was inserted, results should be chosen among them
+	if (videoIds) {
+		body.query.bool.must = {
+			terms: {
+				videoId: videoIds
 			}
 		};
 	} else {
-		body = {
-			query: {
-				match_all: {}
+		body.query.bool.must = {
+			match_all: {}
+		};
+	}
+
+	// if polygon was inserted, filter with polygon geo_shape
+	if (polygon) {
+		body.query.bool.filter = {
+			geo_shape: {
+				sensorTrace: {
+					relation: 'intersects',
+					shape: {
+						type: 'Polygon',
+						coordinates: polygon
+					}
+				}
 			}
 		};
 	}
@@ -56,6 +76,8 @@ module.exports.searchVideoMetadata = function(polygon) {
 		type: videoMetadataType,
 		body: body
 	};
+
+	console.log('Performing elastic query:', JSON.stringify(query));
 	return _client.search(query);
 };
 
