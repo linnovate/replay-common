@@ -223,66 +223,65 @@ var Ffmpeg = function() {
 			});
 		return command;
 	}
+	// Start the ffmpeg process
+	function runCommand(command) {
+		command.run();
+		return command;
+	}
+
+	// Initialize inputs
+	function initializeInputs(command, params) {
+		params.inputs.forEach(function(value) {
+			command.input(value);
+		});
+		return command;
+	}
+
+	// Define a origin video output
+	function videoOutput(command, params) {
+		command.output(params.dir + '/' + params.file + '.ts')
+			.outputOptions(['-y'])
+			.duration(params.duration)
+			.format('mpegts');
+		return command;
+	}
+
+	// Extracting binary data from stream
+	function extractData(command, params) {
+		command.output(params.dir + '/' + params.file + '.data')
+			.duration(params.duration)
+			.outputOptions(['-map data-re', '-codec copy', '-f data', '-y']);
+		return command;
+	}
+
+	/*********************************************************************************
+
+								functions for resolutions
+
+	**********************************************************************************/
+
+	// Define a 360p video output
+
+	/* function videoOutput360p(command, params) {
+		command.output(params.dir + '/' + params.file + '_320p.mp4')
+			.duration(params.duration)
+			.outputOptions(['-y'])
+			.format('mp4')
+			.size('480x360');
+		return command;
+	}*/
+
+	// Define a 480p video output
+
+	/* function videoOutput480p(command, params) {
+		command.output(params.dir + '/' + params.file + '_480p.mp4')
+			.duration(params.duration)
+			.outputOptions(['-y'])
+			.format('mp4')
+			.size('640x480');
+		return command;
+	}*/
 };
-
-// Start the ffmpeg process
-function runCommand(command) {
-	command.run();
-	return command;
-}
-
-// Initialize inputs
-function initializeInputs(command, params) {
-	params.inputs.forEach(function(value) {
-		command.input(value);
-	});
-	return command;
-}
-
-// Define a origin video output
-function videoOutput(command, params) {
-	command.output(params.dir + '/' + params.file + '.ts')
-		.outputOptions(['-y'])
-		.duration(params.duration)
-		.format('mpegts');
-	return command;
-}
-
-// Extracting binary data from stream
-function extractData(command, params) {
-	command.output(params.dir + '/' + params.file + '.data')
-		.duration(params.duration)
-		.outputOptions(['-map data-re', '-codec copy', '-f data', '-y']);
-	return command;
-}
-
-/*********************************************************************************
-
-							functions for resolutions
-
-**********************************************************************************/
-
-// Define a 360p video output
-
-/* function videoOutput360p(command, params) {
-	command.output(params.dir + '/' + params.file + '_320p.mp4')
-		.duration(params.duration)
-		.outputOptions(['-y'])
-		.format('mp4')
-		.size('480x360');
-	return command;
-}*/
-
-// Define a 480p video output
-
-/* function videoOutput480p(command, params) {
-	command.output(params.dir + '/' + params.file + '_480p.mp4')
-		.duration(params.duration)
-		.outputOptions(['-y'])
-		.format('mp4')
-		.size('640x480');
-	return command;
-}*/
 
 // Inhertis from the eventEmitter object
 util.inherits(Ffmpeg, event);
