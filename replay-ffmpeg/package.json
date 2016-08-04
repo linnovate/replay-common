@@ -1,5 +1,5 @@
 {
-  "name": "replay-ffmpeg-service",
+  "name": "replay-ffmpeg",
   "version": "1.0.2",
   "description": "service that export useful method for ffmpeg, using the fluent-ffmpeg module.",
   "main": "index.js",
