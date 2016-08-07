@@ -182,18 +182,28 @@ var Ffmpeg = function() {
 	 *	@return Promise with the duration/error.
 	 *
 	 *********************************************************************************************************/
-	self.getDurationOfVideo = function(params) {
-		var promise = new BluebirdPromise(function(resolve, reject) {
+	self.duration = function(params, cb) {
+		// Check if there is callback
+		var callBack = cb || function() {};
+
+		// Check if in params there is the requires parameters
+		if (!_validateDurationParameters(params)) {
+			callBack('missing parameters');
+			return Promise.reject('missing parameters');
+		}
+
+		// Get info about the video
+		return new Promise(function(resolve, reject) {
 			ffmpeg.ffprobe(params.filePath, function(err, data) {
 				if (err) {
-					reject(err);
-				} else {
-					resolve(data.format.duration);
+					callBack(err);
+					return reject(err);
 				}
+				// Return the duration
+				callBack(null, data.format.duration);
+				return resolve(data.format.duration);
 			});
 		});
-
-		return promise;
 	};
 
 	/*********************************************************************************************************
@@ -261,6 +271,16 @@ var Ffmpeg = function() {
 		return promise;
 	};
 
+	/*****************************************************************************************************************
+
+											helper methods
+
+	******************************************************************************************************************/
+
+	function _validateDurationParameters(params) {
+		return (params && params.filePath && typeof params.filePath === 'string');
+	}
+
 	// validate the necessary prameters.
 	function _validateRecordParameters(params) {
 		return (params && params.input && params.output);
@@ -324,9 +344,11 @@ var Ffmpeg = function() {
 		return command;
 	}
 
+	/*****************************************************************************************************************/
+
 	/*********************************************************************************
 
-								functions for resolutions
+									functions for resolutions
 
 	**********************************************************************************/
 
@@ -351,6 +373,8 @@ var Ffmpeg = function() {
 			.size('640x480');
 		return command;
 	}*/
+
+	/*********************************************************************************/
 };
 
 // Inhertis from the eventEmitter object
