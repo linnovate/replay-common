@@ -31,4 +31,15 @@
 		"version": "0.9"
 	},
 	"streamingStatus": "NONE"
+}, {
+	"sourceID": 103,
+	"sourceName": "VideoStanag",
+	"sourceType": "VideoMuxedTelemetry",
+	"sourceIP": "238.0.0.1",
+	"sourcePort": 1237,
+	"streamingMethod": {
+		"standard": "stanag",
+		"version": "4609"
+	},
+	"streamingStatus": "NONE"
 }]
