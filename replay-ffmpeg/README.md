@@ -6,7 +6,7 @@ It uses Behind the Scenes the fluent-ffmpeg module.
 ###Install
 
 1. Install ffmpeg and ffprobe on ubuntu through this [guide](https://trac.ffmpeg.org/wiki/CompilationGuide/Ubuntu).
-2. run the command:  
+2. run the command:
 `npm install --save replay-ffmpeg-service`
 
 ###Methods
@@ -23,7 +23,7 @@ record video and extract his data/extract data from ts file in the file system.
   * `duration` | `<Number>` **required** time limit for the extracting data.
   * `file` | `<String>` **required** name of the file that will be create.
   * `dir` | `<String>` **required** path for the file to be create.
-  * `inputs` | `<Array>` **required** String Array of the inputs, cand be path to video from file system or stream brodcast host *(note: if the input is stream brodcast host make sure it in this pattern: 'udp://[ip]:[port]')*. 
+  * `inputs` | `<Array>` **required** String Array of the inputs, cand be path to video from file system or stream brodcast host *(note: if the input is stream brodcast host make sure it in this pattern: 'udp://[ip]:[port]')*.
 
 * Return `command` | `<Object>` command object.
 
@@ -37,7 +37,7 @@ record video/copy video in the file system.
   * `duration` | `<Number>` **required** time limit for the extracting data.
   * `file` | `<String>` **required** name of the file that will be create.
   * `dir` | `<String>` **required** path for the file to be create.
-  * `inputs` | `<Array>` **required** String Array of the inputs, cand be path to video from file system or stream brodcast host *(note: if the input is stream brodcast host make sure it in this pattern: 'udp://[ip]:[port]')*. 
+  * `inputs` | `<Array>` **required** String Array of the inputs, cand be path to video from file system or stream brodcast host *(note: if the input is stream brodcast host make sure it in this pattern: 'udp://[ip]:[port]')*.
 
 * Return `command` | `<Object>` command object.
 
@@ -51,7 +51,7 @@ record data/extract data from ts file in the file system.
   * `duration` | `<Number>` **required** time limit for the extracting data.
   * `file` | `<String>` **required** name of the file that will be create.
   * `dir` | `<String>` **required** path for the file to be create.
-  * `inputs` | `<Array>` **required** String Array of the inputs, cand be path to video from file system or stream brodcast host *(note: if the input is stream brodcast host make sure it in this pattern: 'udp://[ip]:[port]')*. 
+  * `inputs` | `<Array>` **required** String Array of the inputs, cand be path to video from file system or stream brodcast host *(note: if the input is stream brodcast host make sure it in this pattern: 'udp://[ip]:[port]')*.
 
 * Return `command` | `<Object>` command object.
 
@@ -79,14 +79,17 @@ It take the file with the suffix '.ts' and create new file at the same path and 
 
 ___
 
-#####ffmpeg.getDurationOfVideo(params)
+#####ffmpeg.duration(params[,callBack])
 
 get the duration of video.
 
 * `params` | `<Object>`
   * `filePath` | `<String>` the path of the file with the file name.
+* `callBack (optional)` | `<Function>` The callback gets two arguments `(err, duration)`.
 
-* Return `duration` | `<Number>` the duration of the video.
+* Return `Promise` | `<BlueBird Promise>` `.then(durtion)` | `.catch(err)`
+
+you can see that the function work both with promise or callback, that means it Asynchronous.
 
 ___
 
