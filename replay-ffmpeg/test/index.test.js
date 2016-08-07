@@ -24,7 +24,7 @@ function testPublicMethods() {
 				file: 'now'
 			};
 		});
-		describe('Inputs tests', function() {
+		describe('\nInputs tests', function() {
 			it('should reject on no duration suplied', function(done) {
 				params.duration = undefined;
 				ffmpeg.captureMuxedVideoTelemetry(params).then(
@@ -86,8 +86,8 @@ function testPublicMethods() {
 					});
 			});
 		});
-		describe('Normal behavior tests', function() {
-			describe('Test capturing with basic params', function() {
+		describe('\nNormal behavior tests', function() {
+			describe('\nTest capturing with basic params', function() {
 				var spy;
 				beforeEach(function() {
 					spy = sinon.spy();
@@ -102,8 +102,8 @@ function testPublicMethods() {
 				});
 			});
 		});
-		describe('Error handling tests', function() {
-			describe('Testing non muxed media', function() {
+		describe('\nError handling tests', function() {
+			describe('\nTesting non muxed media', function() {
 				var spy;
 				beforeEach(function() {
 					spy = sinon.spy();
@@ -118,7 +118,7 @@ function testPublicMethods() {
 					}, 2000);
 				});
 			});
-			describe('Testing unreal input file source', function() {
+			describe('\nTesting unreal input file source', function() {
 				var spy;
 				beforeEach(function() {
 					spy = sinon.spy();
@@ -152,7 +152,7 @@ function testPublicMethods() {
 			});
 		});
 	});
-	describe('Method: captureVideoWithoutTelemetry Testing', function() {
+	describe('\nMethod: captureVideoWithoutTelemetry Testing', function() {
 		this.timeout(5000);
 		var params;
 		beforeEach(function() {
@@ -163,7 +163,7 @@ function testPublicMethods() {
 				file: 'now'
 			};
 		});
-		describe('Inputs tests', function() {
+		describe('\nInputs tests', function() {
 			it('should reject on no duration suplied', function(done) {
 				params.duration = undefined;
 				ffmpeg.captureVideoWithoutTelemetry(params).then(
@@ -225,7 +225,7 @@ function testPublicMethods() {
 					});
 			});
 		});
-		describe('Normal behavior tests', function() {
+		describe('\nNormal behavior tests', function() {
 			describe('Test capturing with basic params', function() {
 				var spy;
 				beforeEach(function() {
@@ -242,7 +242,7 @@ function testPublicMethods() {
 				});
 			});
 		});
-		describe('Error handling tests', function() {
+		describe('\nError handling tests', function() {
 			describe('Testing unreal input file source', function() {
 				var spy;
 				beforeEach(function() {
@@ -259,7 +259,7 @@ function testPublicMethods() {
 				});
 			});
 		});
-		describe('Edge cases tests', function() {
+		describe('\nEdge cases tests', function() {
 			describe('Test handling 2 inputs', function() {
 				var spy;
 				beforeEach(function() {
@@ -277,7 +277,7 @@ function testPublicMethods() {
 			});
 		});
 	});
-	describe('Method: captureTelemetryWithoutVideo Testing', function() {
+	describe('\nMethod: captureTelemetryWithoutVideo Testing', function() {
 		this.timeout(5000);
 		var params;
 		beforeEach(function() {
@@ -288,7 +288,7 @@ function testPublicMethods() {
 				file: 'now'
 			};
 		});
-		describe('Inputs tests', function() {
+		describe('\nInputs tests', function() {
 			it('should reject on no duration suplied', function(done) {
 				params.duration = undefined;
 				ffmpeg.captureTelemetryWithoutVideo(params).then(
@@ -350,7 +350,7 @@ function testPublicMethods() {
 					});
 			});
 		});
-		describe('Normal behavior tests', function() {
+		describe('\nNormal behavior tests', function() {
 			describe('Test capturing with basic params', function() {
 				var spy;
 				beforeEach(function() {
@@ -404,7 +404,7 @@ function testPublicMethods() {
 
 	/* din Tests */
 
-	describe('Method: convertMpegTsFormatToMp4', function() {
+	describe('\nMethod: convertMpegTsFormatToMp4', function() {
 		it('should emit finish event + checking there is new file the convert', function(done) {
 			this.timeout(11000);
 			var spyOnSuccess = sinon.spy();
@@ -441,9 +441,133 @@ function testPublicMethods() {
 		});
 	});
 
-	describe('Method: getDurationOfVideo', function() {
+	describe('\nMethod: duration', function() {
+		it('should return error in callback when params is null', function(done) {
+			this.timeout(4000);
+			ffmpeg.duration(null, function(err, data) {
+				if (err) {
+					done();
+				} else {
+					done('fail');
+				}
+			});
+		});
+
+		it('should should reject when the params is null', function(done) {
+			this.timeout(3000);
+			ffmpeg.duration(null)
+				.then(function(data) {
+					done('fail');
+				})
+				.catch(function() {
+					done();
+				});
+		});
+
+		it('should return error in callback when params is empty object', function(done) {
+			this.timeout(4000);
+			ffmpeg.duration({}, function(err, data) {
+				if (err) {
+					done();
+				} else {
+					done('fail');
+				}
+			});
+		});
+
+		it('should should reject when the params is empty object', function(done) {
+			this.timeout(3000);
+			ffmpeg.duration({})
+				.then(function(data) {
+					done('fail');
+				})
+				.catch(function() {
+					done();
+				});
+		});
+
+		it('should return error in callback when filePath is null', function(done) {
+			this.timeout(4000);
+			ffmpeg.duration({ filePath: null }, function(err, data) {
+				if (err) {
+					done();
+				} else {
+					done('fail');
+				}
+			});
+		});
+
+		it('should should reject when filePath is null', function(done) {
+			this.timeout(3000);
+			ffmpeg.duration({ filePath: null })
+				.then(function(data) {
+					done('fail');
+				})
+				.catch(function() {
+					done();
+				});
+		});
+
+		it('should return error in callback when filePath is not string', function(done) {
+			this.timeout(4000);
+			ffmpeg.duration({ filePath: 3 }, function(err, data) {
+				if (err) {
+					done();
+				} else {
+					done('fail');
+				}
+			});
+		});
+
+		it('should should reject when filePath is not string', function(done) {
+			this.timeout(3000);
+			ffmpeg.duration({ filePath: 3 })
+				.then(function(data) {
+					done('fail');
+				})
+				.catch(function() {
+					done();
+				});
+		});
+
+		it('should return error in callback when filePath is not exist', function(done) {
+			this.timeout(4000);
+			ffmpeg.duration({ filePath: 'bla.ts' }, function(err, data) {
+				if (err) {
+					done();
+				} else {
+					done('fail');
+				}
+			});
+		});
+
+		it('should should reject when filePath is not exist', function(done) {
+			this.timeout(3000);
+			ffmpeg.duration({ filePath: '/bla.ts' })
+				.then(function(data) {
+					done('fail');
+				})
+				.catch(function() {
+					done();
+				});
+		});
+
+		it('should return the duration of the file in the callback', function(done) {
+			this.timeout(4000);
+			ffmpeg.duration({ filePath: path.join(__dirname, '/../test/assets/Sample_Ts_File_For_Testing.ts') },
+				function(err, duration) {
+					if (err) {
+						done('fail');
+					} else if (duration) {
+						done();
+					} else {
+						done('fail');
+					}
+				});
+		});
+
 		it('should return the duration of the file given', function(done) {
-			ffmpeg.getDurationOfVideo({ filePath: path.join(__dirname, '/../test/assets/Sample_Ts_File_For_Testing.ts') })
+			ffmpeg.duration({ filePath: path.join(__dirname, '/../test/assets/Sample_Ts_File_For_Testing.ts') })
 				.then(function(duration) {
 					if (duration) {
 						done();
@@ -454,7 +578,7 @@ function testPublicMethods() {
 		});
 	});
 
-	describe('Method: record', function() {
+	describe('\nMethod: record', function() {
 		it('should reject when send null as parameter', function(done) {
 			ffmpeg.record()
 				.then(function() {
