@@ -15,7 +15,7 @@ var Schema = mongoose.Schema;
 var JobStatusSchema = new Schema({
 	statuses: {
 		type: [String],
-		enum: ['started', 'video-object-saved', 'uploaded-to-kaltura', 'fetched-from-kaltura', 'parsed-metadata', 'saved-metadata-to-mongo', 'saved-metadata-to-elastic', 'created-captions-from-metadata'],
+		enum: ['started', 'video-object-saved', 'uploaded-to-kaltura', 'fetched-from-kaltura', 'parsed-metadata', 'saved-metadata-to-mongo', 'saved-metadata-to-elastic', 'created-captions-from-metadata', 'saved-metadata-to-mongo', 'added-video-bounding-polygon-to-mongo'],
 		default: ['started']
 	}
 }, {

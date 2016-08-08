@@ -1,8 +1,8 @@
-var mongoose = require('mongoose');
+var GeoJson = require('mongoose-geojson-schema'),
+	mongoose = require('mongoose');
 
 var Schema = mongoose.Schema,
-	ReceivingMethod = require('./common-nested-schemas/ReceivingMethod'),
-	GeoJson = require('./common-nested-schemas/GeoJson');
+	ReceivingMethod = require('./common-nested-schemas/ReceivingMethod');
 
 // create a schema
 var VideoMetadataSchema = new Schema({
@@ -21,7 +21,7 @@ var VideoMetadataSchema = new Schema({
 		lat: { type: Number },
 		lon: { type: Number }
 	},
-	sensorTrace: GeoJson,
+	sensorTrace: mongoose.Schema.Types.Polygon,
 	data: {
 		type: Schema.Types.Mixed
 	}

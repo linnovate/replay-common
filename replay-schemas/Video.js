@@ -1,4 +1,5 @@
-var mongoose = require('mongoose');
+var GeoJSON = require('mongoose-geojson-schema'),
+	mongoose = require('mongoose');
 
 var Schema = mongoose.Schema,
 	ReceivingMethod = require('./common-nested-schemas/ReceivingMethod');
@@ -33,6 +34,7 @@ var VideoSchema = new Schema({
 		enum: ['processing', 'ready'],
 		default: 'processing'
 	},
+	boundingPolygon: mongoose.Schema.Types.GeoJSON,
 	jobStatusId: {
 		type: String,
 		required: true
