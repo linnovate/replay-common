@@ -1,6 +1,6 @@
 {
 	"name": "replay-db-initialization",
-	"version": "1.0.2",
+	"version": "1.0.4",
 	"description": "DB initialization scripts for Replay project",
 	"scripts": {
 		"test": "echo \"Error: no test specified\" && exit 1"
@@ -11,7 +11,7 @@
 	},
 	"bin": {
 		"mongo-init": "./bin/mongo-init.js",
-		"elastic-init": "./bin/elastic-init"
+		"elastic-init": "./bin/elastic-init.js"
 	},
 	"author": "motyros",
 	"license": "ISC",

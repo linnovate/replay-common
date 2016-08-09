@@ -15,6 +15,11 @@
 		"queue": "MetadataToElasticQueue"
 	},
 	{
+		"type": "VideoBoundingPolygon",
+		"service": "video-boundries-service",
+		"queue": "VideoBoundingPolygonQueue"
+	},
+	{
 		"type": "SaveVideo",
 		"service": "save-video-service",
 		"queue": "NewVideosQueue"
