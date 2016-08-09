@@ -33,5 +33,10 @@
 		"type": "MetadataToCaptions",
 		"service": "metadata-to-captions-service",
 		"queue": "MetadataToCaptionsQueue"
+	},
+	{
+		"type": "AttachVideoToMetadata",
+		"service": "attach-video-to-metadata-service",
+		"queue": "AttachVideoToMetadataQueue"
 	}
 ]
