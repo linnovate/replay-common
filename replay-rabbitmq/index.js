@@ -83,6 +83,14 @@ module.exports.produce = function(queueName, message) {
 		});
 };
 
+module.exports.deleteQueue = function(queueName) {
+	return channel.deleteQueue(queueName)
+		.catch(function(err) {
+			console.log('Error in deleting queue %s', queueName);
+			throw err;
+		})
+};
+
 function createChannel(conn) {
 	connection = conn;
 	return connection.createChannel()
