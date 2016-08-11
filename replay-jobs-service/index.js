@@ -66,5 +66,11 @@ module.exports.findJobStatus = function(transactionId) {
 
 module.exports.updateJobStatus = function(transactionId, jobStatusTag) {
 	// addToSet: add to array list as set (e.g. no duplicates);
-	return JobStatus.findOneAndUpdate({ _id: transactionId }, { $addToSet: { statuses: jobStatusTag } });
+	return JobStatus.findOneAndUpdate({ _id: transactionId }, { $addToSet: { statuses: jobStatusTag } })
+		.then(function(jobStatus) {
+			if (jobStatus) {
+				console.log('Updated job status successfuly.');
+			}
+			Promise.resolve(jobStatus);
+		});
 };
