@@ -25,6 +25,11 @@ module.exports.consume = function(queueName, maxUnackedMessagesAmount, callback)
 			channel.prefetch(maxUnackedMessagesAmount, false);
 
 			return channel.consume(queueName, function(msg) {
+				// null msg is sent by RabbitMQ when consumer is canceller (e.g. queue deleted)
+				if (msg === null) {
+					return;
+				}
+
 				// convert to object
 				var messageContent = JSON.parse(msg.content.toString());
 
@@ -88,7 +93,7 @@ module.exports.deleteQueue = function(queueName) {
 		.catch(function(err) {
 			console.log('Error in deleting queue %s', queueName);
 			throw err;
-		})
+		});
 };
 
 function createChannel(conn) {
