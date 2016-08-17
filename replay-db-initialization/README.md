@@ -29,6 +29,12 @@ For example, to initialize the _video-recorder_ run the following command:
 MONGO_HOST=localhost MONGO_PORT=27017 MONGO_DATABASE=replay_dev REPLAY_SCHEMA=StreamingSource DATA_FILE=streaming-source mongo-init
 ```
 
+Another example, to initialize the video db run the following command:
+
+```sh
+MONGO_HOST=localhost MONGO_PORT=27017 MONGO_DATABASE=replay_dev REPLAY_SCHEMA=Video DATA_FILE=video mongo-init
+```
+
 #### Environment variables:
 
 | Name           | Explanation |
