@@ -21,7 +21,7 @@ Usage
 
 ### 1. Mongo-init
 
-Mongo-init script use the _replay-schemas_ to initialize a schema object model from a given Json data file.
+** Mongo-init script use the _replay-schemas_ to initialize a schema object model from a given Json data file. **
 
 #### Environment variables:
 
@@ -49,7 +49,7 @@ MONGO_HOST=localhost MONGO_PORT=27017 MONGO_DATABASE=replay_dev REPLAY_SCHEMA=Vi
 
 ### 2. Elastic-init
 
-Elastic-init script is just for initialization the mapping settings of _videometadatas_ index in the Elasticsearch database.
+** Elastic-init script is just for initialization the mapping settings of _videometadatas_ index in the Elasticsearch database. **
 
 #### Environment variables:
 
@@ -60,7 +60,7 @@ Elastic-init script is just for initialization the mapping settings of _videomet
 
 #### Command line optional arguments:
 
-`-D, --delete` if set, the xript will first delete all elastic indices.
+`-D, --delete` if set, the script will first delete all elastic indices.
 
 #### Running:
 
