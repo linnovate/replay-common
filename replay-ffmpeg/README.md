@@ -7,7 +7,7 @@ It uses Behind the Scenes the fluent-ffmpeg module.
 
 1. Install ffmpeg and ffprobe on ubuntu through this [guide](https://trac.ffmpeg.org/wiki/CompilationGuide/Ubuntu).
 2. run the command:
-`npm install --save replay-ffmpeg-service`
+`npm install --save replay-ffmpeg`
 
 ###Methods
 
