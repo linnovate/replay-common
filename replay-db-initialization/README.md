@@ -49,4 +49,24 @@ MONGO_HOST=localhost MONGO_PORT=27017 MONGO_DATABASE=replay_dev REPLAY_SCHEMA=Vi
 
 ### 2. Elastic-init
 
-#### _Will be implemented in the future releases..._
+Elastic-init script is just for initialization the mapping settings of _videometadatas_ index in the Elasticsearch database.
+
+#### Environment variables:
+
+| Name           | Explanation                    | Default Value |
+|:---------------|:-------------------------------|:--------------|
+| `ELASTIC_HOST` | Elasticsearch server host name | localhost     |
+| `ELASTIC_PORT` | Elasticsearch server port      | 9200          |
+
+#### Command line optional arguments:
+
+`-D, --delete` if set, the xript will first delete all elastic indices.
+
+#### Running:
+
+To run just initialize the environment variables and run `elastic-init`.
+
+For example:
+```sh
+ELASTIC_HOST=localhost ELASTIC_PORT=9200 elastic-init
+```
