@@ -5,9 +5,9 @@ var path = require('path');
 var Promise = require('bluebird'),
 	connectMongo = require('replay-schemas/connectMongo');
 
-const MONGO_HOST = process.env.MONGO_HOST,
-	MONGO_PORT = process.env.MONGO_PORT,
-	MONGO_DATABASE = process.env.MONGO_DATABASE,
+const MONGO_HOST = process.env.MONGO_HOST || 'localhost',
+	MONGO_PORT = process.env.MONGO_PORT || 27017,
+	MONGO_DATABASE = process.env.MONGO_DATABASE || 'replay_dev',
 	REPLAY_SCHEMA = process.env.REPLAY_SCHEMA,
 	DATA_FILE = process.env.DATA_FILE;
 
@@ -30,9 +30,8 @@ function checkInput() {
 	console.log('Replay schema: ', REPLAY_SCHEMA);
 	console.log('Data file: ', DATA_FILE);
 
-	if (!MONGO_HOST || !MONGO_PORT || !MONGO_DATABASE || !REPLAY_SCHEMA || !DATA_FILE) {
-		// throw new Error('Mongo-init - ERROR! Bad conection params provided!');
-		return Promise.reject('Bad conection params provided!');
+	if (!REPLAY_SCHEMA || !DATA_FILE) {
+		return Promise.reject('Some vital parameters are missing!');
 	}
 	return Promise.resolve();
 }
