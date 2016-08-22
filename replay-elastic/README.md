@@ -24,12 +24,19 @@ PUT videometadatas
 }
 ```
 
+You can also use the [replay-db-initialization](https://github.com/linnovate/replay-common/tree/develop/replay-db-initialization) helper module instead.
+
+Or at last, you can call the direct initialization method:
+```
+node -e 'require("./index").createVideoMetadataIndex()'
+```
 
 ## Environment variables
-
 ```
-ELASTIC_VIDEO_METADATA_INDEX
-ELASTIC_VIDEO_METADATA_TYPE
+| Name                          | Description                                  | Default        |
+|-------------------------------|----------------------------------------------|----------------|
+| ELASTIC_VIDEO_METADATA_INDEX  | The index of the VideoMetadata in Elastic    | videometadatas |
+| ELASTIC_VIDEO_METADATA_TYPE   | The type of the VideoMetadata in Elastic     | videometadata  |
 ```
 
-Host & Port are explicitly not here, because they depend on the activating process.
+Host & Port are intentionally not here, because they are receieved from the activating process.

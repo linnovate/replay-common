@@ -2,12 +2,14 @@
 A wrapper module for kaltura client.
 
 ## Environment variables
-```
-KALTURA_PARTNER_ID
-KALTURA_ADMIN_SECRET
-KALTURA_URL
-```
+
+| Name                          | Description                                  | Default        |
+|-------------------------------|----------------------------------------------|----------------|
+| KALTURA_PARTNER_ID            | The partner ID in kaltura                    |                |
+| KALTURA_ADMIN_SECRET          | Kaltura's admin secret                       |                |
+| KALTURA_URL                   | Kaltura URI                                  |                |
 
 # Usage
-First call the initialize function which returns promise;
+First call the initialize function which returns promise.
+
 Then, you can call the other functions.
