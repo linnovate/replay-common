@@ -32,11 +32,10 @@ node -e 'require("./index").createVideoMetadataIndex()'
 ```
 
 ## Environment variables
-```
+
 | Name                          | Description                                  | Default        |
 |-------------------------------|----------------------------------------------|----------------|
 | ELASTIC_VIDEO_METADATA_INDEX  | The index of the VideoMetadata in Elastic    | videometadatas |
 | ELASTIC_VIDEO_METADATA_TYPE   | The type of the VideoMetadata in Elastic     | videometadata  |
-```
 
 Host & Port are intentionally not here, because they are receieved from the activating process.
