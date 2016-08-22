@@ -36,12 +36,12 @@
 	},
 	{
 		"type": "MetadataToCaptions",
-		"service": "captions-service/metadata-to-captions-service",
+		"service": "captions-services/metadata-to-captions-service",
 		"queue": "MetadataToCaptionsQueue"
 	},
 	{
 		"type": "CaptionsToDestination",
-		"service": "captions-service/captions-to-destination-service",
+		"service": "captions-services/captions-to-destination-service",
 		"queue": "CaptionsToDestinationQueue"
 	},
 	{
