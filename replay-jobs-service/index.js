@@ -38,7 +38,7 @@ module.exports.isKnownJobType = function(jobType) {
 
 module.exports.getAllJobConfigs = function() {
 	return loadJobTypesJson();
-}
+};
 
 // get service name from the jobTypes array
 module.exports.getServiceName = function(jobType) {
