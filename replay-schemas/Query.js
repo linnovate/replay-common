@@ -1,7 +1,8 @@
+// populated mongoose types with geo json schemas
+require('mongoose-geojson-schema');
 var mongoose = require('mongoose');
 
-var Schema = mongoose.Schema,
-	GeoJson = require('./common-nested-schemas/GeoJson');
+var Schema = mongoose.Schema;
 
 // create a schema
 var QuerySchema = new Schema({
@@ -35,7 +36,7 @@ var QuerySchema = new Schema({
 	tagsIds: {
 		type: [String]
 	},
-	boundingShape: GeoJson
+	boundingShape: mongoose.Schema.Types.GeoJSON
 }, {
 	timestamps: true
 });
