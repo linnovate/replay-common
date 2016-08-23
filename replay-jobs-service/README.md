@@ -13,7 +13,6 @@ New jobs can be easily added by expanding the config file in /queues_config.
 | SaveVideo              | Saves a Video object to Mongo, if we receieved one.                                                                                |
 | MetadataParser         | Parses the received metadatas to VideoMetadata objects with a special parser per video standard & version.                         |
 | MetadataToMongo        | Bulk inserts VideoMetadata objects to Mongo.                                                                                       |
-| MetadataToElastic      | Bulk inserts VideoMetadata objects to Elastic.                                                                                     |
 | VideoBoundingPolygon   | Creates a convex hull bounding polygon from all the video's metadatas sensor trace polygons and update the Video.                  |
 | MetadataToCaptions     | Create caption files from the metadatas.                                                                                           |
 | CaptionsToDestination  | Copy caption files to their destination (e.g. certain folder).                                                                     |
