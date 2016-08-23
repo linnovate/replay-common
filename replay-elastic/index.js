@@ -27,7 +27,6 @@ module.exports.connect = function(_host, _port) {
 };
 
 module.exports.searchVideoMetadata = function(polygon, videoIds, returnFields) {
-
 	var body = {
 		query: {
 			bool: {
@@ -52,14 +51,14 @@ module.exports.searchVideoMetadata = function(polygon, videoIds, returnFields) {
 		};
 	} else {
 		body.query.bool.must = {
-			match_all: {}
+			'match_all': {}
 		};
 	}
 
 	// if polygon was inserted, filter with polygon geo_shape
 	if (polygon) {
 		body.query.bool.filter = {
-			geo_shape: {
+			'geo_shape': {
 				sensorTrace: {
 					relation: 'intersects',
 					shape: {
@@ -138,7 +137,7 @@ module.exports.getDataByAll = function(index, type, termsArray, startTime, endTi
 
 	if (polygon !== null) {
 		var squery = {
-			geo_shape: {
+			'geo_shape': {
 				sensorTrace: {
 					relation: relation,
 					shape: {
