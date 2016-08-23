@@ -22,7 +22,6 @@ var JobStatusSchema = new Schema({
 			'fetched-from-kaltura',
 			'parsed-metadata',
 			'saved-metadata-to-mongo',
-			'saved-metadata-to-elastic',
 			'created-captions-from-metadata',
 			'captions-copied-to-destination',
 			'added-video-bounding-polygon-to-mongo'

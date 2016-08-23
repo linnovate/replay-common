@@ -10,11 +10,6 @@
 		"queue": "MetadataToMongoQueue"
 	},
 	{
-		"type": "MetadataToElastic",
-		"service": "metadata-to-elastic-service",
-		"queue": "MetadataToElasticQueue"
-	},
-	{
 		"type": "VideoBoundingPolygon",
 		"service": "video-boundries-service",
 		"queue": "VideoBoundingPolygonQueue"
