@@ -1,8 +1,8 @@
-var GeoJSON = require('mongoose-geojson-schema'),
-	mongoose = require('mongoose');
-
-var Schema = mongoose.Schema,
-	ReceivingMethod = require('./common-nested-schemas/ReceivingMethod');
+// populated mongoose types with geo json schemas
+require('mongoose-geojson-schema');
+var mongoose = require('mongoose');
+var ReceivingMethod = require('./common-nested-schemas/ReceivingMethod');
+var Schema = mongoose.Schema;
 
 // create a schema
 var VideoSchema = new Schema({

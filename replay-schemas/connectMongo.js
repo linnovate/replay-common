@@ -7,10 +7,10 @@ var keepAliveInSeconds = 60 * 60 * 24 * 30; // 30 days
 // initialize options
 var _options = {
 	server: {
-		socketOptions: {
+		'socketOptions': {
 			keepAlive: keepAliveInSeconds
 		},
-		auto_reconnect: true
+		'auto_reconnect': true
 	},
 	replset: {
 		socketOptions: {
@@ -75,7 +75,7 @@ function setConnectionListeners(uri, database, host, port) {
 		// retry to connect with exponential backoff in order to off-load mongo
 		exponentialBackoff(function() {
 			mongoose.connect(uri, _options, function(err) {
-				if(err) {
+				if (err) {
 					console.log(err);
 				}
 			});
