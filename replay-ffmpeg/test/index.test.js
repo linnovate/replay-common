@@ -10,6 +10,9 @@ function test() {
 
 function testMethods() {
 	testPublicMethods();
+	testconvertAndExtractMethod();
+	testconvertToMp4Method();
+	testextractDataMethod();
 }
 
 function testPublicMethods() {
@@ -404,14 +407,14 @@ function testPublicMethods() {
 
 	/* din Tests */
 
-	describe('\nMethod: convertMpegTsFormatToMp4', function() {
+	describe('\nMethod: convertToMp4', function() {
 		it('should emit finish event + checking there is new file the convert', function(done) {
 			this.timeout(11000);
 			var spyOnSuccess = sinon.spy();
 			var spyOnFailure = sinon.spy();
 
-			ffmpeg.on('FFmpegWrapper_errorOnConverting', spyOnFailure);
-			ffmpeg.on('FFmpegWrapper_finishConverting', spyOnSuccess);
+			ffmpeg.on('FFmpeg_errorOnConverting', spyOnFailure);
+			ffmpeg.on('FFmpeg_finishConverting', spyOnSuccess);
 
 			var handleConverting = function(command) {
 				setTimeout(function() {
@@ -433,7 +436,7 @@ function testPublicMethods() {
 				}, 10000);
 			};
 
-			ffmpeg.convertMpegTsFormatToMp4({ filePath: './test/assets/Sample_Ts_File_For_Testing.ts' })
+			ffmpeg.convertToMp4({ inputPath: './test/assets/Sample_Ts_File_For_Testing.ts' })
 				.then(handleConverting)
 				.catch(function(err) {
 					done(err);
@@ -740,6 +743,390 @@ function testPublicMethods() {
 				.catch(function(err) {
 					done(err);
 				});
+		});
+	});
+}
+
+function testconvertAndExtractMethod() {
+	describe('\nmethod : convertAndExtract', function() {
+		describe('\ntest inputs:', function() {
+			it('should reject when there is no input path', function(done) {
+				ffmpeg.convertAndExtract()
+					.then(function() {
+						done(new Error('fail'));
+					})
+					.catch(function() {
+						done();
+					});
+			});
+			it('should reject when there is no input path', function(done) {
+				ffmpeg.convertAndExtract({})
+					.then(function() {
+						done(new Error('fail'));
+					})
+					.catch(function() {
+						done();
+					});
+			});
+			it('should reject when there is no input path', function(done) {
+				ffmpeg.convertAndExtract({ inputPath: null })
+					.then(function() {
+						done(new Error('fail'));
+					})
+					.catch(function() {
+						done();
+					});
+			});
+			it('should reject when there is no input path', function(done) {
+				ffmpeg.convertAndExtract({ inputPath: undefined })
+					.then(function() {
+						done(new Error('fail'));
+					})
+					.catch(function() {
+						done();
+					});
+			});
+			it('should reject when the input path is number', function(done) {
+				ffmpeg.convertAndExtract({ inputPath: 3 })
+					.then(function() {
+						done(new Error('fail'));
+					})
+					.catch(function() {
+						done();
+					});
+			});
+			it('should emit error event when the input path is not exist/not valid', function(done) {
+				this.timeout(4000);
+				var spy = sinon.spy();
+				ffmpeg.on('FFmpeg_errorOnConvertAndExtract', spy);
+				ffmpeg.convertAndExtract({ inputPath: '/bla.ts' })
+					.then(function() {
+						setTimeout(function() {
+							if (spy.called) {
+								done();
+							} else {
+								done(new Error('the event didnt emited'));
+							}
+						}, 3500);
+					})
+					.catch(function(err) {
+						done(err);
+					});
+			});
+			it('should emit error event when the input path is not exist/not valid', function(done) {
+				this.timeout(4000);
+				var spy = sinon.spy();
+				ffmpeg.on('FFmpeg_errorOnConvertAndExtract', spy);
+				ffmpeg.convertAndExtract({ inputPath: '/////bla.ts' })
+					.then(function() {
+						setTimeout(function() {
+							if (spy.called) {
+								done();
+							} else {
+								done(new Error('the event didnt emited'));
+							}
+						}, 3500);
+					})
+					.catch(function(err) {
+						done(err);
+					});
+			});
+			it('should emit error event when the input have missing streams like video or data', function(done) {
+				this.timeout(4000);
+				var spy = sinon.spy();
+				ffmpeg.on('FFmpeg_errorOnConvertAndExtract', spy);
+				ffmpeg.convertAndExtract({ inputPath: './assets/Sample_Ts_File_For_Testing.ts' })
+					.then(function() {
+						setTimeout(function() {
+							if (spy.called) {
+								done();
+							} else {
+								done(new Error('the event didnt emited'));
+							}
+						}, 3500);
+					})
+					.catch(function(err) {
+						done(err);
+					});
+			});
+			it('should work', function(done) {
+				this.timeout(10000);
+				var spy = sinon.spy();
+				ffmpeg.on('FFmpeg_finishConvertAndExtract', spy);
+				ffmpeg.on('FFmpeg_errorOnConvertAndExtract', function(err) {
+					console.log(err);
+				});
+				ffmpeg.convertAndExtract({ inputPath: path.join(__dirname, './assets/MuxedVideo.ts'), outputPath: path.join(__dirname, './testOutput/ConvertAndExtract') })
+					.then(function() {
+						setTimeout(function() {
+							if (spy.called) {
+								done();
+							} else {
+								done(new Error('the event didnt emited'));
+							}
+						}, 8000);
+					})
+					.catch(function(err) {
+						done(err);
+					});
+			});
+
+		});
+	});
+}
+
+function testconvertToMp4Method() {
+	describe('\nmethod : convertToMp4', function() {
+		describe('\ntest inputs:', function() {
+			it('should reject when there is no input path', function(done) {
+				ffmpeg.convertToMp4()
+					.then(function() {
+						done(new Error('fail'));
+					})
+					.catch(function() {
+						done();
+					});
+			});
+			it('should reject when there is no input path', function(done) {
+				ffmpeg.convertToMp4({})
+					.then(function() {
+						done(new Error('fail'));
+					})
+					.catch(function() {
+						done();
+					});
+			});
+			it('should reject when there is no input path', function(done) {
+				ffmpeg.convertToMp4({ inputPath: null })
+					.then(function() {
+						done(new Error('fail'));
+					})
+					.catch(function() {
+						done();
+					});
+			});
+			it('should reject when there is no input path', function(done) {
+				ffmpeg.convertToMp4({ inputPath: undefined })
+					.then(function() {
+						done(new Error('fail'));
+					})
+					.catch(function() {
+						done();
+					});
+			});
+			it('should reject when the input path is number', function(done) {
+				ffmpeg.convertToMp4({ inputPath: 3 })
+					.then(function() {
+						done(new Error('fail'));
+					})
+					.catch(function() {
+						done();
+					});
+			});
+			it('should emit error event when the input path is not exist/not valid', function(done) {
+				this.timeout(4000);
+				var spy = sinon.spy();
+				ffmpeg.on('FFmpeg_errorOnConverting', spy);
+				ffmpeg.convertToMp4({ inputPath: '/bla.ts' })
+					.then(function() {
+						setTimeout(function() {
+							if (spy.called) {
+								done();
+							} else {
+								done(new Error('the event didnt emited'));
+							}
+						}, 3500);
+					})
+					.catch(function(err) {
+						done(err);
+					});
+			});
+			it('should emit error event when the input path is not exist/not valid', function(done) {
+				this.timeout(4000);
+				var spy = sinon.spy();
+				ffmpeg.on('FFmpeg_errorOnConverting', spy);
+				ffmpeg.convertToMp4({ inputPath: '/////bla.ts' })
+					.then(function() {
+						setTimeout(function() {
+							if (spy.called) {
+								done();
+							} else {
+								done(new Error('the event didnt emited'));
+							}
+						}, 3500);
+					})
+					.catch(function(err) {
+						done(err);
+					});
+			});
+			it('should emit error event when the input have missing streams like video or data', function(done) {
+				this.timeout(4000);
+				var spy = sinon.spy();
+				ffmpeg.on('FFmpeg_errorOnConverting', spy);
+				ffmpeg.convertToMp4({ inputPath: './assets/Sample_Ts_File_For_Testing.ts' })
+					.then(function() {
+						setTimeout(function() {
+							if (spy.called) {
+								done();
+							} else {
+								done(new Error('the event didnt emited'));
+							}
+						}, 3500);
+					})
+					.catch(function(err) {
+						done(err);
+					});
+			});
+			it('should work', function(done) {
+				this.timeout(10000);
+				var spy = sinon.spy();
+				ffmpeg.on('FFmpeg_finishConverting', spy);
+				ffmpeg.on('FFmpeg_errorOnConverting', function(err) {
+					console.log(err);
+				});
+				ffmpeg.convertToMp4({ inputPath: path.join(__dirname, './assets/MuxedVideo.ts'), outputPath: path.join(__dirname, './testOutput/ConvertToMp4') })
+					.then(function() {
+						setTimeout(function() {
+							if (spy.called) {
+								done();
+							} else {
+								done(new Error('the event didnt emited'));
+							}
+						}, 8000);
+					})
+					.catch(function(err) {
+						done(err);
+					});
+			});
+
+		});
+	});
+}
+
+function testextractDataMethod() {
+	describe('\nmethod : extractData', function() {
+		describe('\ntest inputs:', function() {
+			it('should reject when there is no input path', function(done) {
+				ffmpeg.extractData()
+					.then(function() {
+						done(new Error('fail'));
+					})
+					.catch(function() {
+						done();
+					});
+			});
+			it('should reject when there is no input path', function(done) {
+				ffmpeg.extractData({})
+					.then(function() {
+						done(new Error('fail'));
+					})
+					.catch(function() {
+						done();
+					});
+			});
+			it('should reject when there is no input path', function(done) {
+				ffmpeg.extractData({ inputPath: null })
+					.then(function() {
+						done(new Error('fail'));
+					})
+					.catch(function() {
+						done();
+					});
+			});
+			it('should reject when there is no input path', function(done) {
+				ffmpeg.extractData({ inputPath: undefined })
+					.then(function() {
+						done(new Error('fail'));
+					})
+					.catch(function() {
+						done();
+					});
+			});
+			it('should reject when the input path is number', function(done) {
+				ffmpeg.extractData({ inputPath: 3 })
+					.then(function() {
+						done(new Error('fail'));
+					})
+					.catch(function() {
+						done();
+					});
+			});
+			it('should emit error event when the input path is not exist/not valid', function(done) {
+				this.timeout(4000);
+				var spy = sinon.spy();
+				ffmpeg.on('FFmpeg_errorOnExtractData', spy);
+				ffmpeg.extractData({ inputPath: '/bla.ts' })
+					.then(function() {
+						setTimeout(function() {
+							if (spy.called) {
+								done();
+							} else {
+								done(new Error('the event didnt emited'));
+							}
+						}, 3500);
+					})
+					.catch(function(err) {
+						done(err);
+					});
+			});
+			it('should emit error event when the input path is not exist/not valid', function(done) {
+				this.timeout(4000);
+				var spy = sinon.spy();
+				ffmpeg.on('FFmpeg_errorOnExtractData', spy);
+				ffmpeg.extractData({ inputPath: '/////bla.ts' })
+					.then(function() {
+						setTimeout(function() {
+							if (spy.called) {
+								done();
+							} else {
+								done(new Error('the event didnt emited'));
+							}
+						}, 3500);
+					})
+					.catch(function(err) {
+						done(err);
+					});
+			});
+			it('should emit error event when the input have missing streams like video or data', function(done) {
+				this.timeout(4000);
+				var spy = sinon.spy();
+				ffmpeg.on('FFmpeg_errorOnExtractData', spy);
+				ffmpeg.extractData({ inputPath: './assets/Sample_Ts_File_For_Testing.ts' })
+					.then(function() {
+						setTimeout(function() {
+							if (spy.called) {
+								done();
+							} else {
+								done(new Error('the event didnt emited'));
+							}
+						}, 3500);
+					})
+					.catch(function(err) {
+						done(err);
+					});
+			});
+			it('should work', function(done) {
+				this.timeout(10000);
+				var spy = sinon.spy();
+				ffmpeg.on('FFmpeg_finishExtractData', spy);
+				ffmpeg.on('FFmpeg_errorOnExtractData', function(err) {
+					console.log(err);
+				});
+				ffmpeg.extractData({ inputPath: path.join(__dirname, './assets/MuxedVideo.ts'), outputPath: path.join(__dirname, './testOutput/ExtractData') })
+					.then(function() {
+						setTimeout(function() {
+							if (spy.called) {
+								done();
+							} else {
+								done(new Error('the event didnt emited'));
+							}
+						}, 8000);
+					})
+					.catch(function(err) {
+						done(err);
+					});
+			});
+
 		});
 	});
 }
