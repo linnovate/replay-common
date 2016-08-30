@@ -19,4 +19,4 @@ New jobs can be easily added by expanding the config file in /queues_config.
 | AttachVideoToMetadata  | Find the Video ID for VideoMetadata objects without a Video ID (in demuxed standard where video and it's meatdatas are separated). |
 | UploadVideoToProvider  | Handling the upload process to the video provider.                                                                                 |
 | FetchVideoFromProvider | Handling the fetch process to the video provider, after an upload is completed.                                                    |
-
+| TransportStreamProcess | Process the mpegts files after the video-recorder record them from the source.
