@@ -1,10 +1,13 @@
 // Requires
 var ffmpeg = require('fluent-ffmpeg'),
-	BluebirdPromise = require('bluebird');
+	Promise = require('bluebird');
 var event = require('events').EventEmitter,
-	util = require('util');
+	util = require('util'),
+	path = require('path');
 
 const SERVICE_NAME = '#FFmpegWrapper#';
+const DATA_POSTFIX = '.data';
+const VIDEO_POSTFIX = '.mp4';
 
 var Ffmpeg = function() {
 	var self = this;
@@ -13,11 +16,11 @@ var Ffmpeg = function() {
 		// setting the boolean requests to check params
 		var checkBadParams = (!params.duration || !params.file || !params.dir || !params.inputs || params.inputs.length === 0);
 		if (checkBadParams) {
-			return BluebirdPromise.reject('bad params suplied');
+			return Promise.reject('bad params suplied');
 		}
 		console.log(SERVICE_NAME, 'capturing muxed!!!!!');
 		// Building the FFmpeg command
-		var builder = new BluebirdPromise(function(resolve, reject) {
+		var builder = new Promise(function(resolve, reject) {
 			// FFmpeg command initialization
 			var command = ffmpeg();
 			// Resolving the command forward
@@ -52,10 +55,10 @@ var Ffmpeg = function() {
 		// setting the boolean requests to check params
 		var checkBadParams = (!params.duration || !params.file || !params.dir || !params.inputs || params.inputs.length === 0);
 		if (checkBadParams) {
-			return BluebirdPromise.reject('bad params suplied');
+			return Promise.reject('bad params suplied');
 		}
 		// Building the FFmpeg command
-		var builder = new BluebirdPromise(function(resolve, reject) {
+		var builder = new Promise(function(resolve, reject) {
 			// FFmpeg command initialization
 			var command = ffmpeg();
 			// Resolving the command forward
@@ -87,10 +90,10 @@ var Ffmpeg = function() {
 		// setting the boolean requests to check params
 		var checkBadParams = (!params.duration || !params.file || !params.dir || !params.inputs || params.inputs.length === 0);
 		if (checkBadParams) {
-			return BluebirdPromise.reject('bad params suplied');
+			return Promise.reject('bad params suplied');
 		}
 		// Building the FFmpeg command
-		var builder = new BluebirdPromise(function(resolve, reject) {
+		var builder = new Promise(function(resolve, reject) {
 			// FFmpeg command initialization
 			var command = ffmpeg();
 			// Resolving the command forward
@@ -122,52 +125,195 @@ var Ffmpeg = function() {
 	 *
 	 *	@author din
 	 *
-	 *	Convert the mpegts format video to mp4 format video
-	 *	@params {object} contain the file path[filePath].
+	 *	Convert the mpegts format video to mp4 format video and extract data from it,
+	 *	assumeing that the file contain video and data in it.
+	 *
+	 *	@params {object} contain the file path[inputPath] and optional [outputPath] to put the product files,
+	 *	else will put them in the same diractory as the input file.
+	 *
 	 *	@return Promise when finished the preparing/unexcepted error eccured while preparing the converting.
 	 *
-	 *	@emit 'FFmpegWrapper_errorOnConverting' when error eccured on converting.
-	 *	@emit 'FFmpegWrapper_finishConverting' when finish the converting.
+	 *	@emit 'FFmpeg_errorOnConvertAndExtract' when error eccured on the proccesing.
+	 *	@emit 'FFmpeg_finishConvertAndExtract' when finish the proccesing.
 	 *
 	 *********************************************************************************************************/
-	self.convertMpegTsFormatToMp4 = function(params) {
-		var builder = new BluebirdPromise(function(resolve, reject) {
+	self.convertAndExtract = function(params) {
+		if (!_validateInputPath(params)) {
+			return Promise.reject(new Error('missing requires parameters'));
+		}
+		var inputPath = params.inputPath,
+			outputPath = params.outputPath || path.join(path.dirname(inputPath), path.basename(inputPath, path.extname(inputPath)));
+		var builder = new Promise(function(resolve, reject) {
 			var command = ffmpeg();
 			resolve(command);
 		});
 
 		builder
 			.then(function(command) {
-				// Get the file path and change the suffix of the path e.g /my/path/file.ts --> /my/path/file.mp4
-				var newFilePath = params.filePath.replace('.ts', '.mp4');
-
-				console.log(SERVICE_NAME, 'converting the file:', params.filePath, 'to:', newFilePath);
-
+				// set the input.
+				return _inputHelper(command, inputPath);
+			})
+			.then(function(command) {
+				// set convert settings.
+				return _converterHelper(command, outputPath);
+			})
+			.then(function(command) {
+				// set extract data settings.
+				return _extractHelper(command, outputPath);
+			})
+			.then(function(command) {
+				// set the start event.
+				return _onStartEvent(command);
+			})
+			.then(function(command) {
+				// set the rest of the events.
 				command
-				// define the input.
-					.input(params.filePath)
-					// define the output.
-					.output(newFilePath)
-					// force the ffmpeg to override file with the same name.
-					.outputOptions(['-y'])
-					// force the ffmpeg to convert the video to mp4 format.
-					.format('mp4')
-					.on('start', function(commandLine) {
-						console.log(SERVICE_NAME, 'convert the file with the command:\n', commandLine);
-					})
-					// when any error happen when the ffmpeg process run.
 					.on('error', function(err) {
-						self.emit('FFmpegWrapper_errorOnConverting', err);
+						self.emit('FFmpeg_errorOnConvertAndExtract', err);
 					})
-					// when ffmpeg process done his job.
 					.on('end', function() {
-						self.emit('FFmpegWrapper_finishConverting', newFilePath, params.filePath, params.startTime);
-					})
-					.run();
-				return BluebirdPromise.resolve(command);
+						self.emit('FFmpeg_finishConvertAndExtract', {
+							videoPath: outputPath + VIDEO_POSTFIX,
+							dataPath: outputPath + DATA_POSTFIX
+						});
+					});
+
+				return command;
+			})
+			.then(function(command) {
+				// run the command
+				return _runHelper(command);
 			})
 			.catch(function(err) {
-				return BluebirdPromise.reject(err);
+				return Promise.reject(err);
+			});
+
+		return builder;
+	};
+
+	/*********************************************************************************************************
+	 *
+	 *	@author din
+	 *
+	 *	Convert the mpegts format video to mp4 format video
+	 *	@params {object} contain the file path[inputPath] and optional [outputPath] to put the product files,
+	 *	else will put them in the same diractory as the input file..
+	 *
+	 *	@return Promise when finished the preparing/unexcepted error eccured while preparing the converting.
+	 *
+	 *	@emit 'FFmpeg_errorOnConverting' when error eccured on converting.
+	 *	@emit 'FFmpeg_finishConverting' when finish the converting.
+	 *
+	 *********************************************************************************************************/
+	self.convertToMp4 = function(params) {
+		if (!_validateInputPath(params)) {
+			return Promise.reject(new Error('missing requires parameters'));
+		}
+
+		var inputPath = params.inputPath,
+			outputPath = params.outputPath || path.join(path.dirname(inputPath), path.basename(inputPath, path.extname(inputPath)));
+		var builder = new Promise(function(resolve, reject) {
+			var command = ffmpeg();
+			resolve(command);
+		});
+
+		builder
+			.then(function(command) {
+				// set the input.
+				return _inputHelper(command, inputPath);
+			})
+			.then(function(command) {
+				// set convert settings.
+				return _converterHelper(command, outputPath);
+			})
+			.then(function(command) {
+				// set the start event.
+				return _onStartEvent(command);
+			})
+			.then(function(command) {
+				// set the rest of the events.
+				command
+					.on('error', function(err) {
+						self.emit('FFmpeg_errorOnConverting', err);
+					})
+					.on('end', function() {
+						self.emit('FFmpeg_finishConverting', {
+							videoPath: outputPath + VIDEO_POSTFIX
+						});
+					});
+
+				return command;
+			})
+			.then(function(command) {
+				// run the command
+				return _runHelper(command);
+			})
+			.catch(function(err) {
+				return Promise.reject(err);
+			});
+
+		return builder;
+	};
+
+	/*********************************************************************************************************
+	 *
+	 *	@author din
+	 *
+	 *	Convert the mpegts format video to mp4 format video
+	 *	@params {object} contain the file path[inputPath] and optional [outputPath] to put the product files,
+	 *	else will put them in the same diractory as the input file..
+	 *
+	 *	@return Promise when finished the preparing/unexcepted error eccured while preparing the converting.
+	 *
+	 *	@emit 'FFmpeg_finishExtractData' when error eccured on converting.
+	 *	@emit 'FFmpeg_errorOnExtractData' when finish the converting.
+	 *
+	 *********************************************************************************************************/
+	self.extractData = function(params) {
+		if (!_validateInputPath(params)) {
+			return Promise.reject(new Error('missing requires parameters'));
+		}
+
+		var inputPath = params.inputPath,
+			outputPath = params.outputPath || path.join(path.dirname(inputPath), path.basename(inputPath, path.extname(inputPath)));
+		var builder = new Promise(function(resolve, reject) {
+			var command = ffmpeg();
+			resolve(command);
+		});
+
+		builder
+			.then(function(command) {
+				// set the input.
+				return _inputHelper(command, inputPath);
+			})
+			.then(function(command) {
+				// set convert settings.
+				return _extractHelper(command, outputPath);
+			})
+			.then(function(command) {
+				// set the start event.
+				return _onStartEvent(command);
+			})
+			.then(function(command) {
+				// set the rest of the events.
+				command
+					.on('error', function(err) {
+						self.emit('FFmpeg_errorOnExtractData', err);
+					})
+					.on('end', function() {
+						self.emit('FFmpeg_finishExtractData', {
+							videoPath: outputPath + DATA_POSTFIX
+						});
+					});
+
+				return command;
+			})
+			.then(function(command) {
+				// run the command
+				return _runHelper(command);
+			})
+			.catch(function(err) {
+				return Promise.reject(err);
 			});
 
 		return builder;
@@ -277,6 +423,10 @@ var Ffmpeg = function() {
 
 	******************************************************************************************************************/
 
+	function _validateInputPath(params) {
+		return (params && params.inputPath && typeof params.inputPath === 'string');
+	}
+
 	function _validateDurationParameters(params) {
 		return (params && params.filePath && typeof params.filePath === 'string');
 	}
@@ -284,6 +434,38 @@ var Ffmpeg = function() {
 	// validate the necessary prameters.
 	function _validateRecordParameters(params) {
 		return (params && params.input && params.output);
+	}
+
+	function _inputHelper(command, input) {
+		command
+			.input(input);
+		return command;
+	}
+
+	function _converterHelper(command, output) {
+		command
+			.output(output + VIDEO_POSTFIX)
+			.outputOptions(['-c:v copy', '-copyts', '-movflags faststart']);
+		return command;
+	}
+
+	function _onStartEvent(command) {
+		command.on('start', function(commandLine) {
+			console.log('FFmpeg was activated with the command:\n' + commandLine);
+		});
+		return command;
+	}
+
+	function _extractHelper(command, output) {
+		command
+			.output(output + DATA_POSTFIX)
+			.outputOptions(['-map data-re', '-codec copy', '-f data']);
+		return command;
+	}
+
+	function _runHelper(command) {
+		command.run();
+		return command;
 	}
 
 	// Set events
