@@ -8,6 +8,7 @@ var event = require('events').EventEmitter,
 const SERVICE_NAME = '#FFmpegWrapper#';
 const DATA_POSTFIX = '.data';
 const VIDEO_POSTFIX = '.mp4';
+const MPEGTS_POSTFIX = '.ts';
 
 var Ffmpeg = function() {
 	var self = this;
@@ -377,7 +378,7 @@ var Ffmpeg = function() {
 				return reject('parameters are missing');
 			}
 			input = params.input;
-			output = params.output + '.tmp';
+			output = params.output + MPEGTS_POSTFIX;
 			duration = (params.duration && typeof params.duration !== 'string' && params.duration > 0) ? params.duration : 1800;
 			return resolve(command);
 		});
