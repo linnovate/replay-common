@@ -12,7 +12,8 @@ var VideoSchema = new Schema({
 	},
 	provider: {
 		type: String,
-		enum: ['kaltura']
+		enum: ['kaltura', 'none'],
+		defalut:'none'
 	},
 	providerId: {
 		type: String
@@ -24,8 +25,20 @@ var VideoSchema = new Schema({
 	providerData: {
 		type: Schema.Types.Mixed
 	},
-	name: {
+	videoMainFileName: {
 		type: String,
+		validate: {
+			validator: videoMainFileNameValidator
+		},
+		required: true
+	},
+	flavors: {
+		type: [String],
+		required: true
+	},
+	format: {
+		type: String,
+		enum: ['mp4', 'smil'],
 		required: true
 	},
 	receivingMethod: ReceivingMethod,
@@ -82,4 +95,10 @@ function validateGreaterThanStartTime(obj) {
 	}
 
 	return true;
+}
+
+function videoMainFileNameValidator(fileName) {
+	if(fileName.endsWith('.mp4') || fileName.endsWith('.smil'))
+		return true;
+	return false;
 }
