@@ -391,8 +391,8 @@ var Ffmpeg = function() {
 				command
 					.input(input)
 					.output(output)
-					.duration(duration)
-					.format('mpegts');
+					.outputOptions(['-map 0', '-c copy'])
+					.duration(duration);
 				return Promise.resolve(command);
 			})
 			.then(function(command) {
