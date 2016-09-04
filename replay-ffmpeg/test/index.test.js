@@ -8,6 +8,7 @@ function test() {
 }
 
 function testMethods() {
+	consolesStatic();
 	testrecordMethod();
 	testconvertAndExtractMethod();
 	testconvertToMp4Method();
@@ -216,7 +217,7 @@ function successTestsForconvertAndExtract() {
 				done(err);
 			});
 	});
-	it('should work with resolutions', function(done) {
+	/* it('should work with resolutions', function(done) {
 		this.timeout(50000);
 		var spy = sinon.spy();
 		ffmpeg.on('FFmpeg_finishConvertAndExtract', spy);
@@ -229,7 +230,7 @@ function successTestsForconvertAndExtract() {
 				outputPath: path.join(__dirname, './testOutput/convertAndExtract'),
 				divideToResolutions: true
 			})
-			.then(function(paths) {
+			.then(function() {
 				setTimeout(function() {
 					if (spy.called) {
 						done();
@@ -241,7 +242,7 @@ function successTestsForconvertAndExtract() {
 			.catch(function(err) {
 				done(err);
 			});
-	});
+	});*/
 }
 
 function inputTestsForconvertToMp4Method() {
@@ -359,7 +360,7 @@ function successTestsForconvertToMp4Method() {
 		});
 		ffmpeg
 			.convertToMp4({
-				inputPath: path.join(__dirname, './assets/MuxedVideo.ts'),
+				inputPath: path.join(__dirname, './assets/Sample_Ts_File_For_Testing.ts'),
 				outputPath: path.join(__dirname, './testOutput/ConvertToMp4')
 			})
 			.then(function() {
@@ -885,6 +886,33 @@ function successTestsForrecordMethod() {
 			.catch(function(err) {
 				done(err);
 			});
+	});
+}
+
+function consolesStatic() {
+	ffmpeg.on('FFmpeg_errorOnConverting', function(err) {
+		console.log(err);
+	});
+	ffmpeg.on('FFmpeg_errorOnExtractData', function(err) {
+		console.log(err);
+	});
+	ffmpeg.on('FFmpeg_errorOnConvertAndExtract', function(err) {
+		console.log(err);
+	});
+	ffmpeg.on('ffmpegWrapper_error_while_recording', function(err) {
+		console.log(err);
+	});
+	ffmpeg.on('ffmpegWrapper_finish_recording', function(path) {
+		console.log('the output path of the record Method:\n', path);
+	});
+	ffmpeg.on('FFmpeg_finishConverting', function(paths) {
+		console.log('the paths of the convertToMp4 Method:\n', paths);
+	});
+	ffmpeg.on('FFmpeg_finishExtractData', function(paths) {
+		console.log('the paths of the extractData Method:\n', paths);
+	});
+	ffmpeg.on('FFmpeg_finishConvertAndExtract', function(paths) {
+		console.log('the paths of the convertAndExtract Method:\n', paths);
 	});
 }
 
