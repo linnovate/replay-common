@@ -378,7 +378,6 @@ var Ffmpeg = function() {
 	// Define a 360p video output
 	function divide360P(command, output) {
 		command.output(output + R_360P + VIDEO_POSTFIX)
-			.outputOptions(['-c:v copy', '-copyts', '-movflags faststart'])
 			.size('480x360');
 		return command;
 	}
@@ -386,7 +385,6 @@ var Ffmpeg = function() {
 	// Define a 480p video output
 	function divide480P(command, output) {
 		command.output(output + R_480P + VIDEO_POSTFIX)
-			.outputOptions(['-c:v copy', '-copyts', '-movflags faststart'])
 			.size('640x480');
 		return command;
 	}
