@@ -1,5 +1,4 @@
-var assert = require('chai').assert,
-	sinon = require('sinon');
+var sinon = require('sinon');
 var ffmpeg = require('../index.js');
 var fs = require('fs'),
 	path = require('path');
@@ -16,432 +15,10 @@ function testMethods() {
 }
 
 function testPublicMethods() {
-	describe('Method: captureMuxedVideoTelemetry Testing', function() {
-		this.timeout(5000);
-		var params;
-		beforeEach(function() {
-			params = {
-				inputs: ['./test/assets/Sample_Ts_File_For_Testing.ts'],
-				duration: 10,
-				dir: '/opt/239',
-				file: 'now'
-			};
-		});
-		describe('\nInputs tests', function() {
-			it('should reject on no duration suplied', function(done) {
-				params.duration = undefined;
-				ffmpeg.captureMuxedVideoTelemetry(params).then(
-					function(command) {
-						assert.isTrue(false);
-						done();
-					},
-					function(error) {
-						assert.equal(error, 'bad params suplied', 'got bad params..');
-						done();
-					});
-			});
-			it('should reject on no file suplied', function(done) {
-				params.file = undefined;
-				ffmpeg.captureMuxedVideoTelemetry(params).then(
-					function(command) {
-						assert.isTrue(false);
-						done();
-					},
-					function(error) {
-						assert.equal(error, 'bad params suplied', 'got bad params..');
-						done();
-					});
-			});
-			it('should reject on no directory suplied', function(done) {
-				params.dir = undefined;
-				ffmpeg.captureMuxedVideoTelemetry(params).then(
-					function(command) {
-						assert.isTrue(false);
-						done();
-					},
-					function(error) {
-						assert.equal(error, 'bad params suplied', 'got bad params..');
-						done();
-					});
-			});
-			it('should reject on no inputs suplied', function(done) {
-				params.inputs = undefined;
-				ffmpeg.captureMuxedVideoTelemetry(params).then(
-					function(command) {
-						assert.isTrue(false);
-						done();
-					},
-					function(error) {
-						assert.equal(error, 'bad params suplied', 'got bad params..');
-						done();
-					});
-			});
-			it('should reject on empty inputs suplied', function(done) {
-				params.inputs = [];
-				ffmpeg.captureMuxedVideoTelemetry(params).then(
-					function(command) {
-						assert.isTrue(false);
-						done();
-					},
-					function(error) {
-						assert.equal(error, 'bad params suplied', 'got bad params..');
-						done();
-					});
-			});
-		});
-		describe('\nNormal behavior tests', function() {
-			describe('\nTest capturing with basic params', function() {
-				var spy;
-				beforeEach(function() {
-					spy = sinon.spy();
-					ffmpeg.on('FFmpegBegin', spy);
-					ffmpeg.captureMuxedVideoTelemetry(params);
-				});
-				it('should emit FFmpegBegin event', function(done) {
-					setTimeout(function() {
-						assert.isTrue(spy.calledOnce);
-						done();
-					}, 2000);
-				});
-			});
-		});
-		describe('\nError handling tests', function() {
-			describe('\nTesting non muxed media', function() {
-				var spy;
-				beforeEach(function() {
-					spy = sinon.spy();
-					ffmpeg.on('FFmpegError', spy);
-					params.inputs = ['./test/assets/NoMuxedVideo.mp4'];
-					ffmpeg.captureMuxedVideoTelemetry(params);
-				});
-				it('should emit FFmpegError event on no muxed media', function(done) {
-					setTimeout(function() {
-						assert.isTrue(spy.calledOnce);
-						done();
-					}, 2000);
-				});
-			});
-			describe('\nTesting unreal input file source', function() {
-				var spy;
-				beforeEach(function() {
-					spy = sinon.spy();
-					ffmpeg.on('FFmpegError', spy);
-					params.inputs = ['/not/real/input.ts'];
-					ffmpeg.captureMuxedVideoTelemetry(params);
-				});
-				it('should emit FFmpegError event', function(done) {
-					setTimeout(function() {
-						assert.isTrue(spy.calledOnce);
-						done();
-					}, 2000);
-				});
-			});
-		});
-		describe('Edge cases tests', function() {
-			describe('Test handling 2 inputs', function() {
-				var spy;
-				beforeEach(function() {
-					spy = sinon.spy();
-					ffmpeg.on('FFmpegBegin', spy);
-					params.inputs = ['./test/assets/Sample_Ts_File_For_Testing.ts', './test/assets/NoMuxedVideo.mp4'];
-					ffmpeg.captureMuxedVideoTelemetry(params);
-				});
-				it('should emit FFmpegBegin event', function(done) {
-					setTimeout(function() {
-						assert.isTrue(spy.calledOnce);
-						done();
-					}, 2000);
-				});
-			});
-		});
-	});
-	describe('\nMethod: captureVideoWithoutTelemetry Testing', function() {
-		this.timeout(5000);
-		var params;
-		beforeEach(function() {
-			params = {
-				inputs: ['./test/assets/Sample_Ts_File_For_Testing.ts'],
-				duration: 10,
-				dir: '/opt/239',
-				file: 'now'
-			};
-		});
-		describe('\nInputs tests', function() {
-			it('should reject on no duration suplied', function(done) {
-				params.duration = undefined;
-				ffmpeg.captureVideoWithoutTelemetry(params).then(
-					function(command) {
-						assert.isTrue(false);
-						done();
-					},
-					function(error) {
-						assert.equal(error, 'bad params suplied', 'got bad params..');
-						done();
-					});
-			});
-			it('should reject on no file suplied', function(done) {
-				params.file = undefined;
-				ffmpeg.captureVideoWithoutTelemetry(params).then(
-					function(command) {
-						assert.isTrue(false);
-						done();
-					},
-					function(error) {
-						assert.equal(error, 'bad params suplied', 'got bad params..');
-						done();
-					});
-			});
-			it('should reject on no directory suplied', function(done) {
-				params.dir = undefined;
-				ffmpeg.captureVideoWithoutTelemetry(params).then(
-					function(command) {
-						assert.isTrue(false);
-						done();
-					},
-					function(error) {
-						assert.equal(error, 'bad params suplied', 'got bad params..');
-						done();
-					});
-			});
-			it('should reject on no inputs suplied', function(done) {
-				params.inputs = undefined;
-				ffmpeg.captureVideoWithoutTelemetry(params).then(
-					function(command) {
-						assert.isTrue(false);
-						done();
-					},
-					function(error) {
-						assert.equal(error, 'bad params suplied', 'got bad params..');
-						done();
-					});
-			});
-			it('should reject on empty inputs suplied', function(done) {
-				params.inputs = [];
-				ffmpeg.captureVideoWithoutTelemetry(params).then(
-					function(command) {
-						assert.isTrue(false);
-						done();
-					},
-					function(error) {
-						assert.equal(error, 'bad params suplied', 'got bad params..');
-						done();
-					});
-			});
-		});
-		describe('\nNormal behavior tests', function() {
-			describe('Test capturing with basic params', function() {
-				var spy;
-				beforeEach(function() {
-					spy = sinon.spy();
-					ffmpeg.on('FFmpegBegin', spy);
-				});
-				it('should emit FFmpegBegin event', function(done) {
-					this.timeout(3000);
-					ffmpeg.captureVideoWithoutTelemetry(params);
-					setTimeout(function() {
-						assert.isTrue(spy.called);
-						done();
-					}, 2500);
-				});
-			});
-		});
-		describe('\nError handling tests', function() {
-			describe('Testing unreal input file source', function() {
-				var spy;
-				beforeEach(function() {
-					spy = sinon.spy();
-					ffmpeg.on('FFmpegError', spy);
-					params.inputs = ['/not/real/input.ts'];
-					ffmpeg.captureVideoWithoutTelemetry(params);
-				});
-				it('should emit FFmpegError event', function(done) {
-					setTimeout(function() {
-						assert.isTrue(spy.calledOnce);
-						done();
-					}, 2000);
-				});
-			});
-		});
-		describe('\nEdge cases tests', function() {
-			describe('Test handling 2 inputs', function() {
-				var spy;
-				beforeEach(function() {
-					spy = sinon.spy();
-					ffmpeg.on('FFmpegBegin', spy);
-					params.inputs = ['./test/assets/Sample_Ts_File_For_Testing.ts', './test/assets/NoMuxedVideo.mp4'];
-					ffmpeg.captureVideoWithoutTelemetry(params);
-				});
-				it('should emit FFmpegBegin event', function(done) {
-					setTimeout(function() {
-						assert.isTrue(spy.calledOnce);
-						done();
-					}, 2000);
-				});
-			});
-		});
-	});
-	describe('\nMethod: captureTelemetryWithoutVideo Testing', function() {
-		this.timeout(5000);
-		var params;
-		beforeEach(function() {
-			params = {
-				inputs: ['./test/assets/Sample_Ts_File_For_Testing.ts'],
-				duration: 10,
-				dir: '/opt/239',
-				file: 'now'
-			};
-		});
-		describe('\nInputs tests', function() {
-			it('should reject on no duration suplied', function(done) {
-				params.duration = undefined;
-				ffmpeg.captureTelemetryWithoutVideo(params).then(
-					function(command) {
-						assert.isTrue(false);
-						done();
-					},
-					function(error) {
-						assert.equal(error, 'bad params suplied', 'got bad params..');
-						done();
-					});
-			});
-			it('should reject on no file suplied', function(done) {
-				params.file = undefined;
-				ffmpeg.captureTelemetryWithoutVideo(params).then(
-					function(command) {
-						assert.isTrue(false);
-						done();
-					},
-					function(error) {
-						assert.equal(error, 'bad params suplied', 'got bad params..');
-						done();
-					});
-			});
-			it('should reject on no directory suplied', function(done) {
-				params.dir = undefined;
-				ffmpeg.captureTelemetryWithoutVideo(params).then(
-					function(command) {
-						assert.isTrue(false);
-						done();
-					},
-					function(error) {
-						assert.equal(error, 'bad params suplied', 'got bad params..');
-						done();
-					});
-			});
-			it('should reject on no inputs suplied', function(done) {
-				params.inputs = undefined;
-				ffmpeg.captureTelemetryWithoutVideo(params).then(
-					function(command) {
-						assert.isTrue(false);
-						done();
-					},
-					function(error) {
-						assert.equal(error, 'bad params suplied', 'got bad params..');
-						done();
-					});
-			});
-			it('should reject on empty inputs suplied', function(done) {
-				params.inputs = [];
-				ffmpeg.captureTelemetryWithoutVideo(params).then(
-					function(command) {
-						assert.isTrue(false);
-						done();
-					},
-					function(error) {
-						assert.equal(error, 'bad params suplied', 'got bad params..');
-						done();
-					});
-			});
-		});
-		describe('\nNormal behavior tests', function() {
-			describe('Test capturing with basic params', function() {
-				var spy;
-				beforeEach(function() {
-					spy = sinon.spy();
-					ffmpeg.on('FFmpegBegin', spy);
-					ffmpeg.captureTelemetryWithoutVideo(params);
-				});
-				it('should emit FFmpegBegin event', function(done) {
-					setTimeout(function() {
-						assert.isTrue(spy.calledOnce);
-						done();
-					}, 2000);
-				});
-			});
-		});
-		describe('Error handling tests', function() {
-			describe('Testing unreal input file source', function() {
-				var spy;
-				beforeEach(function() {
-					spy = sinon.spy();
-					ffmpeg.on('FFmpegError', spy);
-					params.inputs = ['/not/real/input.ts'];
-					ffmpeg.captureTelemetryWithoutVideo(params);
-				});
-				it('should emit FFmpegError event', function(done) {
-					setTimeout(function() {
-						assert.isTrue(spy.calledOnce);
-						done();
-					}, 2000);
-				});
-			});
-		});
-		describe('Edge cases tests', function() {
-			describe('Test handling 2 inputs', function() {
-				var spy;
-				beforeEach(function() {
-					spy = sinon.spy();
-					ffmpeg.on('FFmpegBegin', spy);
-					params.inputs = ['./test/assets/Sample_Ts_File_For_Testing.ts', './test/assets/NoMuxedVideo.mp4'];
-					ffmpeg.captureTelemetryWithoutVideo(params);
-				});
-				it('should emit FFmpegBegin event', function(done) {
-					setTimeout(function() {
-						assert.isTrue(spy.calledOnce);
-						done();
-					}, 2000);
-				});
-			});
-		});
-	});
-
 	/* din Tests */
 
 	describe('\nMethod: convertToMp4', function() {
-		it('should emit finish event + checking there is new file the convert', function(done) {
-			this.timeout(11000);
-			var spyOnSuccess = sinon.spy();
-			var spyOnFailure = sinon.spy();
 
-			ffmpeg.on('FFmpeg_errorOnConverting', spyOnFailure);
-			ffmpeg.on('FFmpeg_finishConverting', spyOnSuccess);
-
-			var handleConverting = function(command) {
-				setTimeout(function() {
-					if (spyOnFailure.called) {
-						return done('FFmpegWrapper_errorOnConverting event was called');
-					} else
-					if (spyOnSuccess.called) {
-						fs.stat('./test/assets/Sample_Ts_File_For_Testing.mp4', function(err, stat) {
-							if (err) {
-								return done(err);
-							} else
-							if (stat.size > 0) {
-								return done();
-							}
-						});
-					} else {
-						done('no events was called');
-					}
-				}, 10000);
-			};
-
-			ffmpeg.convertToMp4({ inputPath: './test/assets/Sample_Ts_File_For_Testing.ts' })
-				.then(handleConverting)
-				.catch(function(err) {
-					done(err);
-				});
-		});
 	});
 
 	describe('\nMethod: duration', function() {
@@ -870,7 +447,31 @@ function testconvertAndExtractMethod() {
 						done(err);
 					});
 			});
-
+			it('should work with resolutions', function(done) {
+				this.timeout(50000);
+				var spy = sinon.spy();
+				ffmpeg.on('FFmpeg_finishConvertAndExtract', spy);
+				ffmpeg.on('FFmpeg_errorOnConvertAndExtract', function(err) {
+					console.log(err);
+				});
+				ffmpeg.convertAndExtract({
+					inputPath: './test/assets/MuxedVideo.ts',
+					outputPath: path.join(__dirname, './testOutput/convertAndExtract'),
+					divideToResolutions: true
+				})
+					.then(function(paths) {
+						setTimeout(function() {
+							if (spy.called) {
+								done();
+							} else {
+								done('fail');
+							}
+						}, 49950);
+					})
+					.catch(function(err) {
+						done(err);
+					});
+			});
 		});
 	});
 }
@@ -998,7 +599,65 @@ function testconvertToMp4Method() {
 						done(err);
 					});
 			});
+			it('should emit finish event + checking there is new file the convert', function(done) {
+				this.timeout(11000);
+				var spyOnSuccess = sinon.spy();
+				var spyOnFailure = sinon.spy();
 
+				ffmpeg.on('FFmpeg_errorOnConverting', spyOnFailure);
+				ffmpeg.on('FFmpeg_finishConverting', spyOnSuccess);
+
+				var handleConverting = function(command) {
+					setTimeout(function() {
+						if (spyOnFailure.called) {
+							return done('FFmpegWrapper_errorOnConverting event was called');
+						} else
+						if (spyOnSuccess.called) {
+							fs.stat('./test/assets/Sample_Ts_File_For_Testing.mp4', function(err, stat) {
+								if (err) {
+									return done(err);
+								} else
+								if (stat.size > 0) {
+									return done();
+								}
+							});
+						} else {
+							done('no events was called');
+						}
+					}, 10000);
+				};
+
+				ffmpeg.convertToMp4({
+					inputPath: './test/assets/Sample_Ts_File_For_Testing.ts',
+					outputPath: path.join(__dirname, './testOutput/ConvertToMp4')
+				})
+					.then(handleConverting)
+					.catch(function(err) {
+						done(err);
+					});
+			});
+			it('should work with resolutions', function(done) {
+				this.timeout(15000);
+				var spy = sinon.spy();
+				ffmpeg.on('FFmpeg_finishConverting', spy);
+				ffmpeg.convertToMp4({
+					inputPath: './test/assets/Sample_Ts_File_For_Testing.ts',
+					outputPath: path.join(__dirname, './testOutput/ConvertToMp4'),
+					divideToResolutions: true
+				})
+					.then(function(paths) {
+						setTimeout(function() {
+							if (spy.called) {
+								done();
+							} else {
+								done('fail');
+							}
+						}, 14500);
+					})
+					.catch(function(err) {
+						done(err);
+					});
+			});
 		});
 	});
 }
@@ -1126,7 +785,6 @@ function testextractDataMethod() {
 						done(err);
 					});
 			});
-
 		});
 	});
 }
