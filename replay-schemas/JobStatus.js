@@ -18,8 +18,6 @@ var JobStatusSchema = new Schema({
 		enum: [
 			'started',
 			'video-object-saved',
-			'uploaded-to-kaltura',
-			'fetched-from-kaltura',
 			'parsed-metadata',
 			'saved-metadata-to-mongo',
 			'created-captions-from-metadata',

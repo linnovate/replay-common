@@ -20,16 +20,6 @@
 		"queue": "NewVideosQueue"
 	},
 	{
-		"type": "UploadVideoToProvider",
-		"service": "provider-services/upload",
-		"queue": "UploadProviderQueue"
-	},
-	{
-		"type": "FetchVideoFromProvider",
-		"service": "provider-services/fetch",
-		"queue": "FetchProviderQueue"
-	},
-	{
 		"type": "MetadataToCaptions",
 		"service": "captions-services/metadata-to-captions-service",
 		"queue": "MetadataToCaptionsQueue"
