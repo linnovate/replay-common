@@ -9,118 +9,11 @@ const SERVICE_NAME = '#FFmpegWrapper#';
 const DATA_POSTFIX = '.data';
 const VIDEO_POSTFIX = '.mp4';
 const MPEGTS_POSTFIX = '.ts';
+const R_360P = '_360P';
+const R_480P = '_480P';
 
 var Ffmpeg = function() {
 	var self = this;
-	// Params object (e.g{inputs:<[inputs]>,Directory:<dir/dir2>,file:<filename>,duration:<sec/hh:mm:ss.xxx>})
-	self.captureMuxedVideoTelemetry = function(params) {
-		// setting the boolean requests to check params
-		var checkBadParams = (!params.duration || !params.file || !params.dir || !params.inputs || params.inputs.length === 0);
-		if (checkBadParams) {
-			return Promise.reject('bad params suplied');
-		}
-		console.log(SERVICE_NAME, 'capturing muxed!!!!!');
-		// Building the FFmpeg command
-		var builder = new Promise(function(resolve, reject) {
-			// FFmpeg command initialization
-			var command = ffmpeg();
-			// Resolving the command forward
-			resolve(command);
-		});
-
-		// Start building command
-		builder
-			.then(function(command) {
-				return initializeInputs(command, params);
-			})
-			.then(function(command) {
-				return videoOutput(command, params);
-			})
-			.then(function(command) {
-				return extractData(command, params);
-			})
-			.then(function(command) {
-				return setEvents(command, params);
-			})
-			.then(function(command) {
-				return runCommand(command);
-			})
-			.catch(function(err) {
-				self.emit('FFmpegError', err);
-			});
-
-		return builder;
-	};
-
-	self.captureVideoWithoutTelemetry = function(params) {
-		// setting the boolean requests to check params
-		var checkBadParams = (!params.duration || !params.file || !params.dir || !params.inputs || params.inputs.length === 0);
-		if (checkBadParams) {
-			return Promise.reject('bad params suplied');
-		}
-		// Building the FFmpeg command
-		var builder = new Promise(function(resolve, reject) {
-			// FFmpeg command initialization
-			var command = ffmpeg();
-			// Resolving the command forward
-			resolve(command);
-		});
-
-		// Start building command
-		builder
-			.then(function(command) {
-				return initializeInputs(command, params);
-			})
-			.then(function(command) {
-				return videoOutput(command, params);
-			})
-			.then(function(command) {
-				return setEvents(command, params);
-			})
-			.then(function(command) {
-				return runCommand(command);
-			})
-			.catch(function(err) {
-				self.emit('FFmpegError', err);
-			});
-
-		return builder;
-	};
-
-	self.captureTelemetryWithoutVideo = function(params) {
-		// setting the boolean requests to check params
-		var checkBadParams = (!params.duration || !params.file || !params.dir || !params.inputs || params.inputs.length === 0);
-		if (checkBadParams) {
-			return Promise.reject('bad params suplied');
-		}
-		// Building the FFmpeg command
-		var builder = new Promise(function(resolve, reject) {
-			// FFmpeg command initialization
-			var command = ffmpeg();
-			// Resolving the command forward
-			resolve(command);
-		});
-
-		// Start building command
-		builder
-			.then(function(command) {
-				return initializeInputs(command, params);
-			})
-			.then(function(command) {
-				return extractData(command, params);
-			})
-			.then(function(command) {
-				return setEvents(command, params);
-			})
-			.then(function(command) {
-				return runCommand(command);
-			})
-			.catch(function(err) {
-				self.emit('FFmpegError', err);
-			});
-
-		return builder;
-	};
 
 	/*********************************************************************************************************
 	 *
@@ -131,6 +24,7 @@ var Ffmpeg = function() {
 	 *
 	 *	@params {object} contain the file path[inputPath] and optional [outputPath] to put the product files,
 	 *	else will put them in the same diractory as the input file.
+	 *	[divideToResolutions] optional if you want to divide the video to different resolutions.
 	 *
 	 *	@return Promise when finished the preparing/unexcepted error eccured while preparing the converting.
 	 *
@@ -143,7 +37,8 @@ var Ffmpeg = function() {
 			return Promise.reject(new Error('missing requires parameters'));
 		}
 		var inputPath = params.inputPath,
-			outputPath = params.outputPath || path.join(path.dirname(inputPath), path.basename(inputPath, path.extname(inputPath)));
+			outputPath = params.outputPath || path.join(path.dirname(inputPath), path.basename(inputPath, path.extname(inputPath))),
+			divideResolutions = _checkresolution(params.divideToResolutions);
 		var builder = new Promise(function(resolve, reject) {
 			var command = ffmpeg();
 			resolve(command);
@@ -156,7 +51,7 @@ var Ffmpeg = function() {
 			})
 			.then(function(command) {
 				// set convert settings.
-				return _converterHelper(command, outputPath);
+				return _converterHelper(command, outputPath, divideResolutions);
 			})
 			.then(function(command) {
 				// set extract data settings.
@@ -198,7 +93,8 @@ var Ffmpeg = function() {
 	 *
 	 *	Convert the mpegts format video to mp4 format video
 	 *	@params {object} contain the file path[inputPath] and optional [outputPath] to put the product files,
-	 *	else will put them in the same diractory as the input file..
+	 *	else will put them in the same diractory as the input file.
+	 *	[divideToResolutions] optional if you want to divide the video to different resolutions.
 	 *
 	 *	@return Promise when finished the preparing/unexcepted error eccured while preparing the converting.
 	 *
@@ -212,7 +108,8 @@ var Ffmpeg = function() {
 		}
 
 		var inputPath = params.inputPath,
-			outputPath = params.outputPath || path.join(path.dirname(inputPath), path.basename(inputPath, path.extname(inputPath)));
+			outputPath = params.outputPath || path.join(path.dirname(inputPath), path.basename(inputPath, path.extname(inputPath))),
+			divideResolutions = _checkresolution(params.divideToResolutions);
 		var builder = new Promise(function(resolve, reject) {
 			var command = ffmpeg();
 			resolve(command);
@@ -225,7 +122,7 @@ var Ffmpeg = function() {
 			})
 			.then(function(command) {
 				// set convert settings.
-				return _converterHelper(command, outputPath);
+				return _converterHelper(command, outputPath, divideResolutions);
 			})
 			.then(function(command) {
 				// set the start event.
@@ -443,10 +340,14 @@ var Ffmpeg = function() {
 		return command;
 	}
 
-	function _converterHelper(command, output) {
+	function _converterHelper(command, output, divideResolutions) {
 		command
 			.output(output + VIDEO_POSTFIX)
 			.outputOptions(['-c:v copy', '-copyts', '-movflags faststart']);
+		if (divideResolutions) {
+			command = divide360P(command, output);
+			command = divide480P(command, output);
+		}
 		return command;
 	}
 
@@ -469,95 +370,26 @@ var Ffmpeg = function() {
 		return command;
 	}
 
-	// Set events
-	function setEvents(command, params) {
-		var videoPath = params.dir + '/' + params.file + '.ts';
-		var telemetryPath = params.dir + '/' + params.file + '.data';
-		command
-			.on('start', function(commandLine) {
-				console.log(SERVICE_NAME, 'Spawned FFmpeg with command: ' + commandLine);
-				// Initialize indicator for data started flowing
-				self.emit('FFmpegBegin', { telemetryPath: telemetryPath, videoPath: videoPath });
-				command.bytesCaptureBegan = false;
-			})
-			.on('progress', function(progress) {
-				// Check if should notify for first bytes captured
-				if (command.bytesCaptureBegan === false) {
-					command.bytesCaptureBegan = true;
-					self.emit('FFmpegFirstProgress', { telemetryPath: telemetryPath, videoPath: videoPath });
-				}
-			})
-			.on('end', function() {
-				console.log(SERVICE_NAME, 'Processing finished !');
-				self.emit('FFmpegDone', { telemetryPath: telemetryPath, videoPath: videoPath });
-			})
-			.on('error', function(err) {
-				self.emit('FFmpegError', 'Error on FFmpegWrapper : ' + err);
-			});
-		return command;
+	// check if there is resolution option.
+	function _checkresolution(divide) {
+		return (typeof divide === 'boolean' && divide);
 	}
-	// Start the ffmpeg process
-	function runCommand(command) {
-		command.run();
-		return command;
-	}
-
-	// Initialize inputs
-	function initializeInputs(command, params) {
-		params.inputs.forEach(function(value) {
-			command.input(value);
-		});
-		return command;
-	}
-
-	// Define a origin video output
-	function videoOutput(command, params) {
-		command.output(params.dir + '/' + params.file + '.ts')
-			.outputOptions(['-y'])
-			.duration(params.duration)
-			.format('mpegts');
-		return command;
-	}
-
-	// Extracting binary data from stream
-	function extractData(command, params) {
-		command.output(params.dir + '/' + params.file + '.data')
-			.duration(params.duration)
-			.outputOptions(['-map data-re', '-codec copy', '-f data', '-y']);
-		return command;
-	}
-
-	/*****************************************************************************************************************/
-
-	/*********************************************************************************
-
-									functions for resolutions
-
-	**********************************************************************************/
 
 	// Define a 360p video output
-
-	/* function videoOutput360p(command, params) {
-		command.output(params.dir + '/' + params.file + '_320p.mp4')
-			.duration(params.duration)
-			.outputOptions(['-y'])
-			.format('mp4')
+	function divide360P(command, output) {
+		command.output(output + R_360P + VIDEO_POSTFIX)
 			.size('480x360');
 		return command;
-	}*/
+	}
 
 	// Define a 480p video output
-
-	/* function videoOutput480p(command, params) {
-		command.output(params.dir + '/' + params.file + '_480p.mp4')
-			.duration(params.duration)
-			.outputOptions(['-y'])
-			.format('mp4')
+	function divide480P(command, output) {
+		command.output(output + R_480P + VIDEO_POSTFIX)
 			.size('640x480');
 		return command;
-	}*/
+	}
 
-	/*********************************************************************************/
+	/******************************************************************************************************************/
 };
 
 // Inhertis from the eventEmitter object
