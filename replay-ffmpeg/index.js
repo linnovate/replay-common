@@ -36,6 +36,11 @@ var Ffmpeg = function() {
 		if (!_validateInputPath(params)) {
 			return Promise.reject(new Error('missing requires parameters'));
 		}
+		var pathsToReturn = {
+			videoPath: undefined,
+			dataPath: undefined,
+			additionalPaths: []
+		};
 		var inputPath = params.inputPath,
 			outputPath = params.outputPath || path.join(path.dirname(inputPath), path.basename(inputPath, path.extname(inputPath))),
 			divideResolutions = _checkresolution(params.divideToResolutions);
@@ -51,11 +56,11 @@ var Ffmpeg = function() {
 			})
 			.then(function(command) {
 				// set convert settings.
-				return _converterHelper(command, outputPath, divideResolutions);
+				return _converterHelper(command, outputPath, divideResolutions, pathsToReturn);
 			})
 			.then(function(command) {
 				// set extract data settings.
-				return _extractHelper(command, outputPath);
+				return _extractHelper(command, outputPath, pathsToReturn);
 			})
 			.then(function(command) {
 				// set the start event.
@@ -68,10 +73,7 @@ var Ffmpeg = function() {
 						self.emit('FFmpeg_errorOnConvertAndExtract', err);
 					})
 					.on('end', function() {
-						self.emit('FFmpeg_finishConvertAndExtract', {
-							videoPath: outputPath + VIDEO_POSTFIX,
-							dataPath: outputPath + DATA_POSTFIX
-						});
+						self.emit('FFmpeg_finishConvertAndExtract', pathsToReturn);
 					});
 
 				return command;
@@ -106,7 +108,11 @@ var Ffmpeg = function() {
 		if (!_validateInputPath(params)) {
 			return Promise.reject(new Error('missing requires parameters'));
 		}
-
+		var pathsToReturn = {
+			videoPath: undefined,
+			dataPath: undefined,
+			additionalPaths: []
+		};
 		var inputPath = params.inputPath,
 			outputPath = params.outputPath || path.join(path.dirname(inputPath), path.basename(inputPath, path.extname(inputPath))),
 			divideResolutions = _checkresolution(params.divideToResolutions);
@@ -122,7 +128,7 @@ var Ffmpeg = function() {
 			})
 			.then(function(command) {
 				// set convert settings.
-				return _converterHelper(command, outputPath, divideResolutions);
+				return _converterHelper(command, outputPath, divideResolutions, pathsToReturn);
 			})
 			.then(function(command) {
 				// set the start event.
@@ -135,9 +141,7 @@ var Ffmpeg = function() {
 						self.emit('FFmpeg_errorOnConverting', err);
 					})
 					.on('end', function() {
-						self.emit('FFmpeg_finishConverting', {
-							videoPath: outputPath + VIDEO_POSTFIX
-						});
+						self.emit('FFmpeg_finishConverting', pathsToReturn);
 					});
 
 				return command;
@@ -171,7 +175,11 @@ var Ffmpeg = function() {
 		if (!_validateInputPath(params)) {
 			return Promise.reject(new Error('missing requires parameters'));
 		}
-
+		var pathsToReturn = {
+			videoPath: undefined,
+			dataPath: undefined,
+			additionalPaths: []
+		};
 		var inputPath = params.inputPath,
 			outputPath = params.outputPath || path.join(path.dirname(inputPath), path.basename(inputPath, path.extname(inputPath)));
 		var builder = new Promise(function(resolve, reject) {
@@ -186,7 +194,7 @@ var Ffmpeg = function() {
 			})
 			.then(function(command) {
 				// set convert settings.
-				return _extractHelper(command, outputPath);
+				return _extractHelper(command, outputPath, pathsToReturn);
 			})
 			.then(function(command) {
 				// set the start event.
@@ -199,9 +207,7 @@ var Ffmpeg = function() {
 						self.emit('FFmpeg_errorOnExtractData', err);
 					})
 					.on('end', function() {
-						self.emit('FFmpeg_finishExtractData', {
-							videoPath: outputPath + DATA_POSTFIX
-						});
+						self.emit('FFmpeg_finishExtractData', pathsToReturn);
 					});
 
 				return command;
@@ -340,14 +346,15 @@ var Ffmpeg = function() {
 		return command;
 	}
 
-	function _converterHelper(command, output, divideResolutions) {
+	function _converterHelper(command, output, divideResolutions, paths) {
 		command
 			.output(output + VIDEO_POSTFIX)
 			.outputOptions(['-c:v copy', '-copyts', '-movflags faststart']);
 		if (divideResolutions) {
-			command = divide360P(command, output);
-			command = divide480P(command, output);
+			command = divide360P(command, output, paths);
+			command = divide480P(command, output, paths);
 		}
+		paths.videoPath = output + VIDEO_POSTFIX;
 		return command;
 	}
 
@@ -358,10 +365,11 @@ var Ffmpeg = function() {
 		return command;
 	}
 
-	function _extractHelper(command, output) {
+	function _extractHelper(command, output, paths) {
 		command
 			.output(output + DATA_POSTFIX)
 			.outputOptions(['-map data-re', '-codec copy', '-f data']);
+		paths.dataPath = output + DATA_POSTFIX;
 		return command;
 	}
 
@@ -376,16 +384,18 @@ var Ffmpeg = function() {
 	}
 
 	// Define a 360p video output
-	function divide360P(command, output) {
+	function divide360P(command, output, paths) {
 		command.output(output + R_360P + VIDEO_POSTFIX)
 			.size('480x360');
+		paths.additionalPaths.push(output + R_360P + VIDEO_POSTFIX);
 		return command;
 	}
 
 	// Define a 480p video output
-	function divide480P(command, output) {
+	function divide480P(command, output, paths) {
 		command.output(output + R_480P + VIDEO_POSTFIX)
 			.size('640x480');
+		paths.additionalPaths.push(output + R_480P + VIDEO_POSTFIX);
 		return command;
 	}
 
