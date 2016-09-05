@@ -82,4 +82,22 @@ you can see that the function work both with promise or callback, that means it 
 
 ___
 
+#####ffmpeg.record(params)
+
+convert ts file from file system to mp4 format.
+It take the file and create new file with the suffix '.mp4'
+
+* `params` | `<Object>`
+  * `input` | `<String>` the input of the record, it can be path of file or it can be brodcast streaming host.  
+    **note:** if the input is brodcast streaming host it should be in the next format: `udp://[ip]:[port]`
+  * `outout` | `<String>` the path of the output **without** extension,the method will add `.ts` extension.
+  * `duration (optiona)` | `<Number>` duration of the record in seconds, default to 1800 seconds(3 minutes).
+
+* emit 'ffmpegWrapper_error_while_recording' when error eccured on recording with the error.
+* emit 'ffmpegWrapper_finish_recording' when finish the record with the path of the output file.
+
+* Return `promise` | `<BlueBird Promise>` just for the building of the command, not of the processing.
+
+___
+
 *note: this package will be change*
