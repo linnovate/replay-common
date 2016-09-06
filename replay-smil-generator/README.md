@@ -14,7 +14,7 @@ var SmilGenerator = require('replay-smil-generator');
 var mySmilGen = new SmilGenerator();
 ```
 
-## API Reference
+## API Reference With Code Examples
 
 generating a new smil file
 ```js
@@ -26,7 +26,7 @@ SmilGenerator.generateSmil(
 	video: ['array','of','file','names','with','extension',] // under specified folderPath
 });
 ```
-append more videos
+append more videos to existing smil // not implemented yet
 ```js
 SmilGenerator.addVideos({
 	folderPath: 'folder path of smil file and new video content',  // smil file will be generated under this path.
@@ -34,9 +34,7 @@ SmilGenerator.addVideos({
 	video: ['array','of','file','names','with','extension',] // under specified folderPath
 })
 ```
-
-## Code Example
-
+(e.g)
 ```js
 var smilGen = new SmilGenerator();  
 smilGen.generateSmil({  
