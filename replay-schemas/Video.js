@@ -27,8 +27,7 @@ var VideoSchema = new Schema({
 	},
 	// flavors files name - WITH EXTENSION
 	flavors: {
-		type: [String],
-		required: true
+		type: [String]
 	},
 	// request format for the stream url (smil file should be in same content directory with the same name as videoName with extension of '.smil')
 	requestFormat: {
