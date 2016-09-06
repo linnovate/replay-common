@@ -1,0 +1,17 @@
+{
+  "name": "replay-smil-generator",
+  "version": "1.0.0",
+  "description": "smil generator for adaptive streams",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "AHMAD",
+  "license": "ISC",
+  "dependencies": {
+    "bluebird": "^3.4.6",
+    "fluent-ffmpeg": "^2.1.0",
+    "mkdirp": "^0.5.1",
+    "xml2js": "^0.4.17"
+  }
+}
