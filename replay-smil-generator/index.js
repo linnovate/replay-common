@@ -11,7 +11,7 @@ var smilElements = require('./smil-elements-objects');
 // Instantiate new xml builder
 var xmlBuilder = new xml2js.Builder();
 // Smil generator object constractor
-function SmilGenerator() {
+module.exports = function SmilGenerator() {
 	// function that generates smil xml and writes it to file
 	this.generateSmil = function(params) {
 		validateParams(params)
@@ -46,7 +46,7 @@ function SmilGenerator() {
 	this.addSubtitles = function(mediaArray) {
 		return Promise.resolve('to be impelmented...');
 	};
-}
+};
 
 // make usre all relevant params exists
 function validateParams(params) {
@@ -147,11 +147,3 @@ function getVideoMetadata(folderPath, video) {
 		});
 	});
 }
-
-var smilGen = new SmilGenerator();
-smilGen.generateSmil({
-	folderPath: '/home/linnovate3/Downloads/BigBuckBunny',
-	smilFileName: 'BigBuckBunny.smil',
-	title: 'BigBuckBunny adaptive stream',
-	video: ['BigBuckBunny_480p.mp4', 'BigBuckBunny_720p.mp4', 'BigBuckBunny_1080p.mp4']
-});
