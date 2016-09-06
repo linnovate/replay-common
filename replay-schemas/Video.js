@@ -10,55 +10,59 @@ var VideoSchema = new Schema({
 		type: String,
 		required: true
 	},
-	provider: {
-		type: String,
-		enum: ['kaltura', 'none'],
-		defalut:'none'
-	},
-	providerId: {
-		type: String
-	},
-	relativePath: {
+	// relative path of the content directory in format of: 'sourceId/date/name' (e.g. 102/05-09-2016/102_05-09-2016_12-34-59)
+	contentDirectory: {
 		type: String,
 		required: true
 	},
-	providerData: {
-		type: Schema.Types.Mixed
-	},
-	videoMainFileName: {
+	// video file name - WITHOUT EXTENSION
+	videoName: {
 		type: String,
-		validate: {
-			validator: videoMainFileNameValidator
-		},
 		required: true
 	},
+	// flavors files name - WITH EXTENSION
 	flavors: {
 		type: [String],
 		required: true
 	},
-	format: {
+	// request format for the stream url (smil file should be in same content directory with the same name as videoName with extension of '.smil')
+	requestFormat: {
 		type: String,
 		enum: ['mp4', 'smil'],
 		required: true
 	},
 	receivingMethod: ReceivingMethod,
+	boundingPolygon: mongoose.Schema.Types.GeoJSON,
+	// status fields:
+	jobStatusId: {
+		type: String,
+		required: true
+	},
 	status: {
 		type: String,
 		enum: ['processing', 'ready'],
 		default: 'processing'
 	},
-	boundingPolygon: mongoose.Schema.Types.GeoJSON,
-	jobStatusId: {
+	// provider fields:
+	provider: {
 		type: String,
-		required: true
+		enum: ['none', 'kaltura'],
+		default: 'none'
 	},
+	providerId: {
+		type: String
+	},
+	providerData: {
+		type: Schema.Types.Mixed
+	},
+	// extra fields:
 	startTime: {
 		type: Date,
 		required: true
 	},
 	endTime: {
 		type: Date,
-		validate: validateGreaterThanStartTime,
+		validate: endTimeValidator,
 		required: true
 	},
 	durationInSeconds: {
@@ -82,6 +86,8 @@ var Video = mongoose.model('Video', VideoSchema);
 
 module.exports = Video;
 
+// help functions:
+
 function calculateDuration(next) {
 	var self = this;
 	var differenceInMillis = self.endTime - self.startTime;
@@ -89,16 +95,11 @@ function calculateDuration(next) {
 	next();
 }
 
-function validateGreaterThanStartTime(obj) {
+// validators functions:
+
+function endTimeValidator(obj) {
 	if (obj.startTime <= obj.endTime) {
 		return false;
 	}
-
 	return true;
-}
-
-function videoMainFileNameValidator(fileName) {
-	if(fileName.endsWith('.mp4') || fileName.endsWith('.smil'))
-		return true;
-	return false;
 }
