@@ -13,7 +13,10 @@ module.exports.connect = function(rabbitHost) {
 
 // connecting to channel, attaching to appropriate queue and perform
 // user callback upon incoming messages.
-// prefetch is the maximum number of messages sent over the consumer that can be awaiting ack
+// maxUnackedMessagesAmount is the maximum number of messages sent over the consumer that can be awaiting ack
+// callback should accept 3 parameters: params (the message itself), error, done.
+// error should be called whenever we want to signal that we've failed and we want to re-try process the message later
+// done should be called whenever we want to signal that we've finished and the message should be erased from queue
 module.exports.consume = function(queueName, maxUnackedMessagesAmount, callback) {
 	// create queue if not exists
 	return assertQueue(queueName)

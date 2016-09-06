@@ -48,3 +48,14 @@ First call to the connect method (which returns a Promise) to connect to rabbit.
 
 Then, you can call the rest of the exported methods, such as consume, produce, etc.
 
+## Tests
+
+We use mocha as our tests framework, therefore install mocha globally:
+```
+sudo npm install mocha -g
+```
+
+Now simply run the tests with npm:
+```
+npm test
+```
