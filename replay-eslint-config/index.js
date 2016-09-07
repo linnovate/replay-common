@@ -17,7 +17,6 @@ module.exports = {
 		'mongo': true,
 		'mocha': true
 	},
-
 	'rules': {
 		//////////  Felix Geisendörfer //////////
 		'array-bracket-spacing': [2, 'never'],
@@ -54,6 +53,7 @@ module.exports = {
 		'no-unused-vars': 'error',
 		'quote-props': ['error', 'consistent'],
 		'indent': ['error', 'tab', { 'SwitchCase': 1 }],
+		'handle-callback-err': ['error', '^(.*(e|E)rr|.*(e|E)rror)$'],
 		// 'brace-style': ['error', 'stroustrup', { 'allowSingleLine': true }],
 		'func-names': 'off',
 		'no-console': 'off',
