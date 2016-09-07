@@ -14,7 +14,7 @@ var xmlBuilder = new xml2js.Builder();
 module.exports = function SmilGenerator() {
 	// function that generates smil xml and writes it to file
 	this.generateSmil = function(params) {
-		validateParams(params)
+		return validateParams(params)
 			.then(function() {
 				// make sure there is no smil file already.
 				try {
