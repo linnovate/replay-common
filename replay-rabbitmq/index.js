@@ -2,8 +2,9 @@ var amqp = require('amqplib');
 
 var connection, channel;
 var maxResendAttempts = process.env.RABBITMQ_MAX_RESEND_ATTEMPS || 3;
+var failedJobsQueue = process.env.FAILED_JOBS_QUEUE_NAME || 'FailedJobsQueue';
 
-module.exports.connect = function(rabbitHost) {
+module.exports.connect = function (rabbitHost) {
 	var rabbitUri = 'amqp://' + rabbitHost;
 
 	// connect rabbitmq, then connect/create channel.
@@ -17,18 +18,18 @@ module.exports.connect = function(rabbitHost) {
 // callback should accept 3 parameters: params (the message itself), error, done.
 // error should be called whenever we want to signal that we've failed and we want to re-try process the message later
 // done should be called whenever we want to signal that we've finished and the message should be erased from queue
-module.exports.consume = function(queueName, maxUnackedMessagesAmount, callback) {
+module.exports.consume = function (queueName, maxUnackedMessagesAmount, callback) {
 	// create queue if not exists
 	return assertQueue(queueName)
-		.then(function(ok) {
+		.then(function (ok) {
 			console.log('Attached to queue:', queueName);
 
 			// define maximum num of messages to be processed without receiving ack
 			// false flag means to apply this to every new consumer
 			channel.prefetch(maxUnackedMessagesAmount, false);
 
-			return channel.consume(queueName, function(msg) {
-				// null msg is sent by RabbitMQ when consumer is canceller (e.g. queue deleted)
+			return channel.consume(queueName, function (msg) {
+				// null msg is sent by RabbitMQ when consumer is cancelled (e.g. queue deleted)
 				if (msg === null) {
 					return;
 				}
@@ -44,16 +45,20 @@ module.exports.consume = function(queueName, maxUnackedMessagesAmount, callback)
 					currentTransmissionNum = msg.properties.headers['x-death'][0].count;
 				}
 
-				// if message passed maximum of re-send attempts, ack and discard it
+				// if message passed maximum of re-send attempts, pass it to failed jobs queue
 				if (currentTransmissionNum > maxResendAttempts) {
-					console.log('Message exceeded resend attempts amount, throwing away...');
-					// ack and discard message
-					channel.ack(msg);
+					console.log('Message exceeded resend attempts amount, passing to failed jobs queue...');
+					// produce to failed jobs queue asynchrously then ack message from old queue
+					produce(failedJobsQueue, messageContent)
+						.then(function() {
+							channel.ack(msg);
+							return Promise.resolve();
+						});
 				} else {
 					// else, just send the message.
 					// exponential backoff: calculate total sleep time in millis
 					var totalSleepMillis = Math.pow(2, currentTransmissionNum) * 1000;
-					setTimeout(function() {
+					setTimeout(function () {
 						// invoke callback and pass an err & done method which acks the message
 						callback(messageContent,
 							function err() {
@@ -68,7 +73,7 @@ module.exports.consume = function(queueName, maxUnackedMessagesAmount, callback)
 				}
 			}, { noAck: false });
 		})
-		.catch(function(err) {
+		.catch(function (err) {
 			console.log('Error in consuming from %s: %s', queueName, err);
 			throw err;
 		});
@@ -78,22 +83,23 @@ module.exports.consume = function(queueName, maxUnackedMessagesAmount, callback)
 // this method does not return anything no purpose;
 // the client has nothing to do with such failures, the message jus't won't be sent
 // and a log will be emitted.
-module.exports.produce = function(queueName, message) {
+function produce(queueName, message) {
 	// create queue if not exists
 	return assertQueue(queueName)
-		.then(function(ok) {
-			console.log('Sending message to queue:', message);
+		.then(function (ok) {
+			console.log('Sending message to queue %s: %s', queueName, JSON.stringify(message));
 			return channel.sendToQueue(queueName, new Buffer(JSON.stringify(message)), { persistent: true });
 		})
-		.catch(function(err) {
+		.catch(function (err) {
 			console.log('Error in producing to %s: %s', queueName, err);
 			throw err;
 		});
-};
+}
+module.exports.produce = produce;
 
-module.exports.deleteQueue = function(queueName) {
+module.exports.deleteQueue = function (queueName) {
 	return channel.deleteQueue(queueName)
-		.catch(function(err) {
+		.catch(function (err) {
 			console.log('Error in deleting queue %s', queueName);
 			throw err;
 		});
@@ -102,7 +108,7 @@ module.exports.deleteQueue = function(queueName) {
 function createChannel(conn) {
 	connection = conn;
 	return connection.createChannel()
-		.then(function(ch) {
+		.then(function (ch) {
 			channel = ch;
 			channel.on('close', onChannelClose);
 			channel.on('error', onChannelError);

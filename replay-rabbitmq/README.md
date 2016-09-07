@@ -38,15 +38,18 @@ sudo rabbitmqctl start_app
 
 ## Environment variables
 
-| Name                          | Description                                  | Default        |
-|-------------------------------|----------------------------------------------|----------------|
-| RABBITMQ_MAX_RESEND_ATTEMPS   | Max attempts to resend messages              | 3              |
+| Name                             | Description                         | Default         |
+|----------------------------------|-------------------------------------|-----------------|
+| RABBITMQ_MAX_RESEND_ATTEMPS      | Max attempts to resend messages     | 3               |
+| RABBITMQ_FAILED_JOBS_QUEUE_NAME  | Name of the queue for failed jobs   | FailedJobsQueue |
 
 ## Usage
 
 First call to the connect method (which returns a Promise) to connect to rabbit.
 
 Then, you can call the rest of the exported methods, such as consume, produce, etc.
+
+Jobs that failed more than the allowed amount (RABBITMQ_MAX_RESEND_ATTEMPS) are sent to failed jobs queue.
 
 ## Tests
 
