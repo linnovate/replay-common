@@ -13,5 +13,6 @@ function resetEnvironment() {
 	// set env variables
 	process.env.RABBITMQ_HOST = 'localhost';
 	process.env.RABBITMQ_MAX_RESEND_ATTEMPS = 2;
+	process.env.FAILED_JOBS_QUEUE_NAME = 'FailedJobsQueue';
 }
 module.exports.resetEnvironment = resetEnvironment;
