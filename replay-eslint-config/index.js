@@ -1,3 +1,5 @@
+/* eslint-disable spaced-comment */
+
 module.exports = {
 	'extends': 'google',
 
