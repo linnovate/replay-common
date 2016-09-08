@@ -1,5 +1,15 @@
 [
 	{
+		"type": "TransportStreamProcessing",
+		"service": "transport-stream-processing-service",
+		"queue": "TransportStreamProcessingQueue"
+	},
+	{
+		"type": "SaveVideo",
+		"service": "save-video-service",
+		"queue": "NewVideosQueue"
+	},
+	{
 		"type": "MetadataParser",
 		"service": "metadata-parser-service",
 		"queue": "MetadataParserQueue"
@@ -15,28 +25,13 @@
 		"queue": "VideoBoundingPolygonQueue"
 	},
 	{
-		"type": "SaveVideo",
-		"service": "save-video-service",
-		"queue": "NewVideosQueue"
-	},
-	{
 		"type": "MetadataToCaptions",
-		"service": "captions-services/metadata-to-captions-service",
+		"service": "metadata-to-captions-service",
 		"queue": "MetadataToCaptionsQueue"
-	},
-	{
-		"type": "CaptionsToDestination",
-		"service": "captions-services/captions-to-destination-service",
-		"queue": "CaptionsToDestinationQueue"
 	},
 	{
 		"type": "AttachVideoToMetadata",
 		"service": "attach-video-to-metadata-service",
 		"queue": "AttachVideoToMetadataQueue"
-	},
-	{
-		"type": "TransportStreamProcessing",
-		"service": "transport-stream-processing-service",
-		"queue": "TransportStreamProcessingQueue"
 	}
 ]
