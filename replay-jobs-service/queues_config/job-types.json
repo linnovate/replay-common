@@ -21,13 +21,8 @@
 	},
 	{
 		"type": "MetadataToCaptions",
-		"service": "captions-services/metadata-to-captions-service",
+		"service": "metadata-to-captions-service",
 		"queue": "MetadataToCaptionsQueue"
-	},
-	{
-		"type": "CaptionsToDestination",
-		"service": "captions-services/captions-to-destination-service",
-		"queue": "CaptionsToDestinationQueue"
 	},
 	{
 		"type": "AttachVideoToMetadata",
