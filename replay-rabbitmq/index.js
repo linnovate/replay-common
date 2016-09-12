@@ -1,7 +1,7 @@
 var amqp = require('amqplib');
 
 var connection, channel;
-var maxResendAttempts = process.env.RABBITMQ_MAX_RESEND_ATTEMPS || 3;
+var maxResendAttempts = process.env.RABBITMQ_MAX_RESEND_ATTEMPTS || 3;
 var failedJobsQueue = process.env.FAILED_JOBS_QUEUE_NAME || 'FailedJobsQueue';
 
 module.exports.connect = function (rabbitHost) {
