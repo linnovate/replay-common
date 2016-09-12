@@ -1,6 +1,6 @@
 {
   "name": "replay-rabbitmq",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "description": "RabbitMQ wrapper for Replay project",
   "main": "index.js",
   "scripts": {
@@ -20,9 +20,7 @@
     "rabbitmq"
   ],
   "devDependencies": {
-    "bluebird": "^3.4.6",
-    "chai": "^3.5.0",
-    "lodash": "^4.15.0",
-    "mocha": "^3.0.2"
+    "mocha": "^3.0.2",
+    "chai": "^3.5.0"
   }
 }
