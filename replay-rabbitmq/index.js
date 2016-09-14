@@ -1,8 +1,8 @@
 var amqp = require('amqplib');
 
 var connection, channel;
-var maxResendAttempts = process.env.RABBITMQ_MAX_RESEND_ATTEMPS || 3;
-var failedJobsQueue = process.env.FAILED_JOBS_QUEUE_NAME || 'FailedJobsQueue';
+var MAX_RESEND_ATTEMPTS = process.env.RABBITMQ_MAX_RESEND_ATTEMPTS || 3;
+var FAILED_JOBS_QUEUE = process.env.FAILED_JOBS_QUEUE_NAME || 'FailedJobsQueue';
 
 module.exports.connect = function (rabbitHost) {
 	var rabbitUri = 'amqp://' + rabbitHost;
@@ -46,10 +46,10 @@ module.exports.consume = function (queueName, maxUnackedMessagesAmount, callback
 				}
 
 				// if message passed maximum of re-send attempts, pass it to failed jobs queue
-				if (currentTransmissionNum > maxResendAttempts) {
+				if (currentTransmissionNum > MAX_RESEND_ATTEMPTS) {
 					console.log('Message exceeded resend attempts amount, passing to failed jobs queue...');
 					// produce to failed jobs queue asynchrously then ack message from old queue
-					produce(failedJobsQueue, messageContent)
+					produce(FAILED_JOBS_QUEUE, messageContent)
 						.then(function() {
 							channel.ack(msg);
 							return Promise.resolve();
