@@ -1,4 +1,5 @@
-var util = require('util');
+var path = require('path'),
+	util = require('util');
 
 var chalk = require('chalk'),
 	moment = require('moment'),
@@ -7,6 +8,10 @@ var chalk = require('chalk'),
 var streamFactory = require('./stream-factory');
 
 // chalk.enabled = true;
+
+const LOG_PATH = process.env.LOG_PATH || path.join(process.env.HOME, 'replay-logs');
+const LOGSTASH_HOST = process.env.LOGSTASH_HOST || '127.0.0.1';
+const LOGSTASH_PORT = parseInt(process.env.LOGSTASH_PORT, 10) || 9998;
 
 function replayLoggerError(err) {
 	var ctx = new chalk.constructor({ enabled: true });
@@ -20,8 +25,9 @@ function replayLoggerError(err) {
 
 var Logger = function(serviceName) {
 	var _devStreams = [
+		streamFactory.bunyanLogstashTcpStream(serviceName, 'trace', LOGSTASH_HOST, LOGSTASH_PORT),
+		streamFactory.rotatingFileStream(serviceName, 'trace', LOG_PATH),
 		streamFactory.formatRawStream('devFormatRawStream', 'trace')
-		//,	streamFactory.bunyanLogstashTcpStream(process.env.LOGSTASH_HOST, process.env.LOGSTASH_PORT, serviceName)
 	];
 
 	var _testStreams = [
@@ -49,13 +55,12 @@ var Logger = function(serviceName) {
 			case 'production':
 				return _prodStreams;
 			default:
-				// by default return dev streams
 				replayLoggerError(new Error(util.format('Unknown node environment, NODE_ENV = %s. (Using default env: %s)', nodeEnv, 'dev')));
-				return _devStreams;
+				return _devStreams; // by default return dev streams
 		}
 	}
 
-	var _bunyanLogger = bunyan.createLogger({
+	var bunyanLogger = bunyan.createLogger({
 		name: serviceName,
 		src: true,
 		streams: getStreams(process.env.NODE_ENV),
@@ -66,11 +71,11 @@ var Logger = function(serviceName) {
 		}
 	});
 
-	_bunyanLogger.on('error', function(err, stream) {
+	bunyanLogger.on('error', function(err, stream) {
 		replayLoggerError(err);
 	});
 
-	return _bunyanLogger;
+	return bunyanLogger;
 };
 
 module.exports = Logger;
