@@ -11,7 +11,7 @@ function VideoNode(params) {
 		}, {
 			$: {
 				name: 'audioBitrate',
-				value: params.audioBitrate,
+				value: params.audioBitrate || 0,
 				valuetype: 'data'
 			}
 		}];
