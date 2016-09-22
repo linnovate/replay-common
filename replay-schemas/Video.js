@@ -12,8 +12,7 @@ var VideoSchema = new Schema({
 	},
 	// relative path of the content directory in format of: 'sourceId/date/name' (e.g. 102/05-09-2016/102_05-09-2016_12-34-59)
 	contentDirectoryPath: {
-		type: String,
-		required: true
+		type: String
 	},
 	// base name = the directory name, in format of: 'sourceId_date_name' (e.g. 102_05-09-2016_12-34-59)
 	baseName: {
