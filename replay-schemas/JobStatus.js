@@ -21,7 +21,6 @@ var JobStatusSchema = new Schema({
 			'parsed-metadata',
 			'saved-metadata-to-mongo',
 			'created-captions-from-metadata',
-			'captions-copied-to-destination',
 			'added-video-bounding-polygon-to-mongo',
 			'transportStream-processing-done'
 		],
