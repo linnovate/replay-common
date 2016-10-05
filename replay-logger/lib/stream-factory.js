@@ -48,7 +48,7 @@ exports.rotatingFileStream = function(serviceName, level, logPath) {
 	mkdirp.sync(path.join(logPath, serviceName));
 	return {
 		type: 'raw',
-		name: 'bunyanLogstashTcpStream',
+		name: 'rotatingFileStream',
 		level: level,
 		stream: new RotatingFileStream({
 			path: path.join(logPath, serviceName, 'replay.%d-%b-%y.%N.log'),
