@@ -5,7 +5,6 @@ var clone = require('clone'),
 	moment = require('moment'),
 	mkdirp = require('mkdirp'),
 	bunyan = require('bunyan'),
-	bunyanLogstashTcp = require('bunyan-logstash-tcp'),
 	RotatingFileStream = require('bunyan-rotating-file-stream');
 
 var EventEmitter = require('events').EventEmitter;
@@ -15,10 +14,8 @@ util.inherits(MyFormatRawStream, EventEmitter);
 
 MyFormatRawStream.prototype.write = function(rec) {
 	if (typeof rec === 'object' && rec !== null) {
-		// console.log('##########');
 		// customize record fields:
 		var newRec = clone(rec);
-
 		newRec.name = rec.name;
 		newRec.hostname = rec.hostname;
 		newRec.pid = rec.pid;
@@ -47,30 +44,8 @@ exports.formatRawStream = function(streamName, level) {
 	};
 };
 
-exports.bunyanLogstashTcpStream = function(serviceName, level, host, port) {
-	return {
-		type: 'raw',
-		name: 'bunyanLogstashTcpStream',
-		level: level,
-		stream: bunyanLogstashTcp
-			.createStream({
-				host: host,
-				port: port,
-				level: level,
-				appName: 'Replay',
-				tags: ['Replay', 'VOD', serviceName]
-			})
-			.on('connect', function() {
-				console.log('Connect to tcp');
-			}).on('close', function() {
-				console.log('Closed connection to tcp');
-			}).on('error', console.log)
-	};
-};
-
 exports.rotatingFileStream = function(serviceName, level, logPath) {
 	mkdirp.sync(path.join(logPath, serviceName));
-
 	return {
 		type: 'raw',
 		name: 'bunyanLogstashTcpStream',
@@ -78,13 +53,13 @@ exports.rotatingFileStream = function(serviceName, level, logPath) {
 		stream: new RotatingFileStream({
 			path: path.join(logPath, serviceName, 'replay.%d-%b-%y.%N.log'),
 			period: '1d', // daily rotation
-			threshold: '10m', // Rotate log files larger than 10 megabytes
-			totalSize: '20m', // Don't keep more than 20mb of archived log files
+			threshold: '10m', // rotate log files larger than 10 megabytes
+			totalSize: '20m', // don't keep more than 20mb of archived log files
 			totalFiles: 10, // keep 10 back copies
-			// fieldOrder: ['time'], // Write 'time' field first (on the left of each row) for each log entry in the file
-			startNewFile: true, // Force the stream to create a new file on startup
-			rotateExisting: true, // Give ourselves a clean file when we start up, based on period
-			gzip: true // Compress the archive log files to save space
+			// fieldOrder: ['time'], // write 'time' field first (on the left of each row) for each log entry in the file
+			startNewFile: true, // force the stream to create a new file on startup
+			rotateExisting: true, // give ourselves a clean file when we start up, based on period
+			gzip: true // compress the archive log files to save space
 		})
 	};
 };
