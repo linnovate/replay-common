@@ -10,8 +10,6 @@ var streamFactory = require('./stream-factory');
 // chalk.enabled = true;
 
 const LOG_PATH = process.env.LOG_PATH || path.join(process.env.HOME, 'replay-logs');
-const LOGSTASH_HOST = process.env.LOGSTASH_HOST || '127.0.0.1';
-const LOGSTASH_PORT = parseInt(process.env.LOGSTASH_PORT, 10) || 9998;
 
 function replayLoggerError(err) {
 	var ctx = new chalk.constructor({ enabled: true });
@@ -24,19 +22,24 @@ function replayLoggerError(err) {
 }
 
 var Logger = function(serviceName) {
-	var _devStreams = [
-		streamFactory.bunyanLogstashTcpStream(serviceName, 'trace', LOGSTASH_HOST, LOGSTASH_PORT),
-		streamFactory.rotatingFileStream(serviceName, 'trace', LOG_PATH),
-		streamFactory.formatRawStream('devFormatRawStream', 'trace')
-	];
+	function getDevStreams() {
+		return [
+			streamFactory.rotatingFileStream(serviceName, 'trace', LOG_PATH),
+			streamFactory.formatRawStream('devFormatRawStream', 'trace')
+		];
+	}
 
-	var _testStreams = [
-		streamFactory.formatRawStream('testFormatRawStream', 'error')
-	];
+	function getTestStreams() {
+		return [
+			streamFactory.formatRawStream('testFormatRawStream', 'error')
+		];
+	}
 
-	var _prodStreams = [
-		streamFactory.formatRawStream('prodFormatRawStream', 'info')
-	];
+	function getProdStreams() {
+		return [
+			streamFactory.rotatingFileStream(serviceName, 'trace', LOG_PATH)
+		];
+	}
 
 	function getStreams(nodeEnv) {
 		switch (nodeEnv) {
@@ -44,19 +47,19 @@ var Logger = function(serviceName) {
 			case 'development':
 			case 'debug':
 			case 'debugging':
-				return _devStreams;
+				return getDevStreams();
 			case 'test':
 			case 'testing':
-				return _testStreams;
+				return getTestStreams();
 			case 'stage':
 			case 'staging':
-				return _prodStreams;
+				return getProdStreams();
 			case 'prod':
 			case 'production':
-				return _prodStreams;
+				return getProdStreams();
 			default:
 				replayLoggerError(new Error(util.format('Unknown node environment, NODE_ENV = %s. (Using default env: %s)', nodeEnv, 'dev')));
-				return _devStreams; // by default return dev streams
+				return getDevStreams(); // by default return dev streams
 		}
 	}
 
