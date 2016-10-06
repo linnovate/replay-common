@@ -1,27 +1,14 @@
 var path = require('path'),
 	util = require('util');
 
-var chalk = require('chalk'),
-	moment = require('moment'),
-	bunyan = require('bunyan');
+var bunyan = require('bunyan');
 
-var streamFactory = require('./stream-factory');
-
-// chalk.enabled = true;
-
-const LOG_PATH = process.env.LOG_PATH || path.join(process.env.HOME, 'replay-logs');
-
-function replayLoggerError(err) {
-	var ctx = new chalk.constructor({ enabled: true });
-
-	console.error('[%s] %s: %s \n%s',
-		moment().format('dddd, MMMM Do YYYY, HH:mm:ss.SSS'),
-		ctx.red('REPLAY-LOGGER ERROR'),
-		ctx.cyan(err.message),
-		err.stack);
-}
+var streamFactory = require('./stream-factory'),
+	errorHandler = require('./error-handler.js');
 
 var Logger = function(serviceName) {
+	const LOG_PATH = process.env.LOG_PATH || path.join(process.env.HOME, 'replay-logs');
+
 	function getDevStreams() {
 		return [
 			streamFactory.rotatingFileStream(serviceName, 'trace', LOG_PATH),
@@ -58,24 +45,47 @@ var Logger = function(serviceName) {
 			case 'production':
 				return getProdStreams();
 			default:
-				replayLoggerError(new Error(util.format('Unknown node environment, NODE_ENV = %s. (Using default env: %s)', nodeEnv, 'dev')));
+				errorHandler(new Error(util.format('Unknown node environment, NODE_ENV = %s. (Using default env: %s)', nodeEnv, 'dev')));
 				return getDevStreams(); // by default return dev streams
 		}
 	}
 
-	var bunyanLogger = bunyan.createLogger({
-		name: serviceName,
-		src: true,
-		streams: getStreams(process.env.NODE_ENV),
-		serializers: {
+	function needSrc(nodeEnv) {
+		switch (nodeEnv) {
+			case 'dev':
+			case 'development':
+			case 'debug':
+			case 'debugging':
+			case 'test':
+			case 'testing':
+				return true;
+			case 'stage':
+			case 'staging':
+			case 'prod':
+			case 'production':
+				return false;
+			default:
+				return true;
+		}
+	}
+
+	function getSerializers(nodeEnv) {
+		return {
 			req: bunyan.stdSerializers.req,
 			res: bunyan.stdSerializers.res,
 			err: bunyan.stdSerializers.err
-		}
+		};
+	}
+
+	var bunyanLogger = bunyan.createLogger({
+		name: serviceName,
+		src: needSrc(process.env.NODE_ENV),
+		streams: getStreams(process.env.NODE_ENV),
+		serializers: getSerializers(process.env.NODE_ENV)
 	});
 
 	bunyanLogger.on('error', function(err, stream) {
-		replayLoggerError(err);
+		errorHandler(err);
 	});
 
 	return bunyanLogger;
