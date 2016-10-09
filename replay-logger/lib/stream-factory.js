@@ -5,6 +5,7 @@ var clone = require('clone'),
 	moment = require('moment'),
 	mkdirp = require('mkdirp'),
 	bunyan = require('bunyan'),
+	bunyanFormat = require('bunyan-format'),
 	RotatingFileStream = require('bunyan-rotating-file-stream');
 
 var EventEmitter = require('events').EventEmitter;
@@ -28,7 +29,21 @@ MyFormatRawStream.prototype.write = function(rec) {
 			func: rec.src.func
 		} : rec.src;
 
-		process.stdout.write(JSON.stringify(newRec, bunyan.safeCycles()) + '\n');
+		var bunyanFormatStream = bunyanFormat({
+			outputMode: 'long',
+			// levelInString: true
+			colorFromLevel: {
+				10: 'white',
+				20: 'yellow',
+				30: 'cyan',
+				40: 'magenta',
+				50: 'red',
+				60: 'inverse'
+			}
+		});
+
+		bunyanFormatStream.write(JSON.stringify(newRec, bunyan.safeCycles()));
+		// process.stdout.write(JSON.stringify(newRec, bunyan.safeCycles()) + '\n');
 	} else {
 		this.emit('error', new Error(util.format('Logger raw stream got a non-object record: %j', rec)));
 	}
