@@ -20,7 +20,13 @@ function tests() {
 
 	it('Some test...', function(done) {
 		try {
+			Logger.trace('Some trace log message...');
+			Logger.debug('Some debug log message...');
 			Logger.info('Some info log message...');
+			Logger.warn('Some warn log message...');
+			Logger.error('Some error log message...');
+			Logger.fatal('Some fatal log message...');
+
 			done();
 		} catch (err) {
 			done(new Error('captions file not found'));
