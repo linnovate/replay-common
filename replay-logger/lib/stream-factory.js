@@ -49,22 +49,23 @@ MyFormatRawStream.prototype.write = function(rec) {
 	}
 };
 
-exports.formatRawStream = function(streamName, level) {
+exports.formatRawStream = function(level) {
 	return {
 		type: 'raw',
-		stream: new MyFormatRawStream(),
-		name: streamName,
+		name: 'formatRawStream',
 		level: level,
-		reemitErrorEvents: true
+		reemitErrorEvents: true,
+		stream: new MyFormatRawStream()
 	};
 };
 
-exports.rotatingFileStream = function(serviceName, level, logPath) {
+exports.rotatingFileStream = function(level, serviceName, logPath) {
 	mkdirp.sync(path.join(logPath, serviceName));
 	return {
 		type: 'raw',
 		name: 'rotatingFileStream',
 		level: level,
+		reemitErrorEvents: true,
 		stream: new RotatingFileStream({
 			path: path.join(logPath, serviceName, 'replay.%d-%b-%y.%N.log'),
 			period: '1d', // daily rotation
