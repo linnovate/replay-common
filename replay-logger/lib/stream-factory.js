@@ -5,6 +5,7 @@ var clone = require('clone'),
 	moment = require('moment'),
 	mkdirp = require('mkdirp'),
 	bunyan = require('bunyan'),
+	bunyanSyslog = require('bunyan-syslog'),
 	bunyanFormat = require('bunyan-format'),
 	RotatingFileStream = require('bunyan-rotating-file-stream');
 
@@ -76,6 +77,21 @@ exports.rotatingFileStream = function(level, serviceName, logPath) {
 			startNewFile: true, // force the stream to create a new file on startup
 			rotateExisting: true, // give ourselves a clean file when we start up, based on period
 			gzip: true // compress the archive log files to save space
+		})
+	};
+};
+
+exports.syslogStream = function(level) {
+	return {
+		type: 'raw',
+		name: 'syslogStream',
+		level: level,
+		reemitErrorEvents: true,
+		stream: bunyanSyslog.createBunyanStream({
+			type: 'sys',
+			facility: bunyanSyslog.local0
+			// host: '192.168.0.1',
+			// port: 514
 		})
 	};
 };
