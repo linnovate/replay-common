@@ -5,6 +5,7 @@ var clone = require('clone'),
 	moment = require('moment'),
 	mkdirp = require('mkdirp'),
 	bunyan = require('bunyan'),
+	stripAnsi = require('strip-ansi'),
 	bunyanSyslog = require('bunyan-syslog'),
 	bunyanFormat = require('bunyan-format'),
 	RotatingFileStream = require('bunyan-rotating-file-stream');
@@ -25,6 +26,13 @@ function bunyanFormatStream(outStream) {
 			60: 'inverse'
 		}
 	}, outStream);
+}
+
+function MyStripColorsStream(outStream) {
+	this.outStream = outStream;
+	this.write = function(rec) {
+		this.outStream.write(stripAnsi(rec));
+	};
 }
 
 function MyRawStream(outStream) {
@@ -78,27 +86,29 @@ exports.rotatingFileStream = function(level, serviceName, logPath) {
 		rotateExisting: true, // give ourselves a clean file when we start up, based on period
 		gzip: true // compress the archive log files to save space
 	});
-
+	var outStream = bunyanFormatStream(new MyStripColorsStream(rotatingFileStream));
 	return {
 		type: 'raw',
 		name: 'rotatingFileStream',
 		level: level,
 		reemitErrorEvents: true,
-		stream: rotatingFileStream
+		stream: new MyRawStream(outStream)
 	};
 };
 
 exports.syslogStream = function(level) {
+	var bunyanSyslogStream = bunyanSyslog.createBunyanStream({
+		type: 'sys',
+		facility: bunyanSyslog.local0
+		// host: '192.168.0.1',
+		// port: 514
+	});
+	var outStream = bunyanFormatStream(new MyStripColorsStream(bunyanSyslogStream));
 	return {
 		type: 'raw',
 		name: 'syslogStream',
 		level: level,
 		reemitErrorEvents: true,
-		stream: bunyanSyslog.createBunyanStream({
-			type: 'sys',
-			facility: bunyanSyslog.local0
-			// host: '192.168.0.1',
-			// port: 514
-		})
+		stream: new MyRawStream(outStream)
 	};
 };
