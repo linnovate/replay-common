@@ -82,17 +82,17 @@ exports.rotatingFileStream = function(level, serviceName, logPath) {
 		totalSize: '20m', // don't keep more than 20mb of archived log files
 		totalFiles: 10, // keep 10 back copies
 		// fieldOrder: ['time'], // write 'time' field first (on the left of each row) for each log entry in the file
-		startNewFile: true, // force the stream to create a new file on startup
+		// startNewFile: true, // force the stream to create a new file on startup
 		rotateExisting: true, // give ourselves a clean file when we start up, based on period
 		gzip: true // compress the archive log files to save space
 	});
-	var outStream = bunyanFormatStream(new MyStripColorsStream(rotatingFileStream));
+	// var outStream = bunyanFormatStream(new MyStripColorsStream(rotatingFileStream));
 	return {
 		type: 'raw',
 		name: 'rotatingFileStream',
 		level: level,
 		reemitErrorEvents: true,
-		stream: new MyRawStream(outStream)
+		stream: rotatingFileStream
 	};
 };
 
