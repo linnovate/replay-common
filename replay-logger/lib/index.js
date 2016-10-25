@@ -11,20 +11,23 @@ var Logger = function(serviceName) {
 
 	function getDevStreams() {
 		return [
-			streamFactory.rotatingFileStream(serviceName, 'trace', LOG_PATH),
-			streamFactory.formatRawStream('devFormatRawStream', 'trace')
+			streamFactory.formatRawStream('trace'),
+			// streamFactory.syslogStream('trace'),
+			streamFactory.rotatingFileStream('trace', serviceName, LOG_PATH)
 		];
 	}
 
 	function getTestStreams() {
 		return [
-			streamFactory.formatRawStream('testFormatRawStream', 'error')
+			streamFactory.formatRawStream('error')
 		];
 	}
 
 	function getProdStreams() {
 		return [
-			streamFactory.rotatingFileStream(serviceName, 'trace', LOG_PATH)
+			streamFactory.formatRawStream('trace'),
+			// streamFactory.syslogStream('trace'),
+			streamFactory.rotatingFileStream('trace', serviceName, LOG_PATH)
 		];
 	}
 
