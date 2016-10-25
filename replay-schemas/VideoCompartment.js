@@ -48,9 +48,7 @@ var VideoCompartmentSchema = new Schema({
 
 var VideoCompartment = mongoose.model('VideoCompartment', VideoCompartmentSchema);
 
-module.exports = {
-	VideoCompartment: VideoCompartment
-};
+module.exports = VideoCompartment;
 
 function validateGreaterThanStartTime(obj) {
 	if (obj.startTime <= obj.endTime) {
@@ -59,3 +57,22 @@ function validateGreaterThanStartTime(obj) {
 
 	return true;
 }
+
+VideoCompartment.buildQueryCondition = function(permissions) {
+	console.log('Building mongo query compartment condition with given permissions...');
+	try {
+		var query = { $or: [] };
+		for (var i = 0; i < permissions.length; i++) {
+			query.$or.push({
+				destination: permissions[i].id[0]
+			});
+			if (i === permissions.length - 1) {
+				return query;
+			}
+		}
+	} catch (err) {
+		console.log('Error in building mongo query compartment condition');
+		console.log(err);
+		throw err;
+	}
+};
