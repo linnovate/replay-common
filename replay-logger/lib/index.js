@@ -12,7 +12,7 @@ var Logger = function(serviceName) {
 	function getDevStreams() {
 		return [
 			streamFactory.formatRawStream('trace'),
-			streamFactory.syslogStream('trace'),
+			// streamFactory.syslogStream('trace'),
 			streamFactory.rotatingFileStream('trace', serviceName, LOG_PATH)
 		];
 	}
@@ -26,7 +26,7 @@ var Logger = function(serviceName) {
 	function getProdStreams() {
 		return [
 			streamFactory.formatRawStream('trace'),
-			streamFactory.syslogStream('trace'),
+			// streamFactory.syslogStream('trace'),
 			streamFactory.rotatingFileStream('trace', serviceName, LOG_PATH)
 		];
 	}
