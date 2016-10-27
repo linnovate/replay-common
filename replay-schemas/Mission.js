@@ -1,8 +1,9 @@
+require('mongoose-geojson-schema');
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
 // create a schema
-var ClassificationSchema = new Schema({
+var MissionSchema = new Schema({
 	missionName: {
 		type: String,
 		required: true
@@ -11,10 +12,11 @@ var ClassificationSchema = new Schema({
 		type: String,
 		required: true
 	},
-	source: {
+	sourceId: { // changed from source to sourceId
 		type: String,
 		required: true
 	},
+	boundingPolygon: mongoose.Schema.Types.GeoJSON,
 	startTime: {
 		type: Date,
 		required: true
@@ -24,12 +26,14 @@ var ClassificationSchema = new Schema({
 		validate: validateGreaterThanStartTime,
 		required: true
 	},
-
 	destination: {
 		type: String,
 		required: true
 	},
-
+	tags: [{
+		type: Schema.Types.ObjectId,
+		ref: 'Tag'
+	}],
 	videoStatus: {
 		type: String,
 		enum: ['new', 'updated', 'deleted', 'error', 'handled', 'handledDeleted'],
@@ -43,21 +47,21 @@ var ClassificationSchema = new Schema({
 //VideoSchema.pre('save', setNewStatus);
 //VideoSchema.pre('update', setUpdatedStatus);
 
-var Classification = mongoose.model('Classification', ClassificationSchema);
+var Mission = mongoose.model('Mission', MissionSchema);
 
-module.exports = Classification;
+module.exports = Mission;
 
-function setNewStatus(next) {
-	var self = this;
-	self.videoStatus = 'new';
-	next();
-}
+// function setNewStatus(next) {
+// 	var self = this;
+// 	self.videoStatus = 'new';
+// 	next();
+// }
 
-function setUpdatedStatus(next) {
-	var self = this;
-	self.videoStatus = 'updated';
-	next();
-}
+// function setUpdatedStatus(next) {
+// 	var self = this;
+// 	self.videoStatus = 'updated';
+// 	next();
+// }
 
 function validateGreaterThanStartTime(obj) {
 	if (obj.startTime <= obj.endTime) {

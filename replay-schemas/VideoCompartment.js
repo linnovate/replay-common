@@ -8,13 +8,9 @@ var VideoCompartmentSchema = new Schema({
 		type: Schema.Types.ObjectId,
 		ref: 'Video'
 	},
-	sourceId: {
-		type: String,
-		required: true
-	},
 	classificationId: {
 		type: Schema.Types.ObjectId,
-		ref: 'Classification'
+		ref: 'Mission'
 	},
 	boundingPolygon: mongoose.Schema.Types.GeoJSON,
 	startTime: {
@@ -34,10 +30,6 @@ var VideoCompartmentSchema = new Schema({
 		type: Number,
 		required: true
 	},
-	tags: [{
-		type: Schema.Types.ObjectId,
-		ref: 'Tag'
-	}],
 	destination: {
 		type: String,
 		required: true
