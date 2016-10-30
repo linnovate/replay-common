@@ -26,6 +26,10 @@ var MissionSchema = new Schema({
 		validate: validateGreaterThanStartTime,
 		required: true
 	},
+	duration: {
+		type: Number,
+		required: true
+	},
 	destination: {
 		type: String,
 		required: true
@@ -46,6 +50,8 @@ var MissionSchema = new Schema({
 
 //VideoSchema.pre('save', setNewStatus);
 //VideoSchema.pre('update', setUpdatedStatus);
+MissionSchema.pre('save', calculateDuration);
+MissionSchema.pre('update', calculateDuration);
 
 var Mission = mongoose.model('Mission', MissionSchema);
 
@@ -69,4 +75,11 @@ function validateGreaterThanStartTime(obj) {
 	}
 
 	return true;
+}
+
+function calculateDuration(next) {
+	var self = this;
+	var differenceInMillis = self.endTime - self.startTime;
+	self.durationInSeconds = differenceInMillis / 1000;
+	next();
 }
