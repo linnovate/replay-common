@@ -6,29 +6,20 @@ var Schema = mongoose.Schema;
 
 // create a schema
 var QuerySchema = new Schema({
-	fromVideoTime: {
+	fromMissionTime: {
 		type: Date
 	},
-	toVideoTime: {
+	toMissionTime: {
 		type: Date
 	},
-	minVideoDuration: {
+	minMissionDuration: {
 		type: Number
 	},
-	maxVideoDuration: {
+	maxMissionDuration: {
 		type: Number
 	},
-	copyright: {
+	missionName: {
 		type: String
-	},
-	minTraceHeight: {
-		type: Number
-	},
-	minTraceWidth: {
-		type: Number
-	},
-	minMinutesInsideShape: {
-		type: Number
 	},
 	sourceId: {
 		type: String
