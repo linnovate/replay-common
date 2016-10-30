@@ -8,11 +8,7 @@ var MissionSchema = new Schema({
 		type: String,
 		required: true
 	},
-	karonName: {
-		type: String,
-		required: true
-	},
-	sourceId: { // changed from source to sourceId
+	sourceId: {
 		type: String,
 		required: true
 	},
@@ -26,9 +22,8 @@ var MissionSchema = new Schema({
 		validate: validateGreaterThanStartTime,
 		required: true
 	},
-	duration: {
-		type: Number,
-		required: true
+	durationInSeconds: {
+		type: Number
 	},
 	destination: {
 		type: String,
