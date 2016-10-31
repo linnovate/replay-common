@@ -18,6 +18,10 @@ module.exports.createUser = function () {
 		});
 };
 
+module.exports.getUser = function() {
+	return _user;
+};
+
 // a stub that fills req.userId when testing
 module.exports.jwtMiddlewareStub = function (req, res, next) {
 	if (!_user) {
@@ -45,3 +49,4 @@ module.exports.mockAuthorizationService = function (authorizationServiceUrl) {
 module.exports.wipeUserCollection = function () {
 	return User.remove({});
 };
+
