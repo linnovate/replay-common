@@ -1,6 +1,6 @@
 require('mongoose-geojson-schema');
 var mongoose = require('mongoose');
-var RelativeVideo = require('./common-nested-schemas/RelativeVideo');
+var VideoSegment = require('./common-nested-schemas/VideoSegment');
 var Schema = mongoose.Schema;
 
 // create a schema
@@ -34,7 +34,7 @@ var MissionSchema = new Schema({
 		type: Schema.Types.ObjectId,
 		ref: 'Tag'
 	}],
-	ContainedVideos: [RelativeVideo],
+	ContainedVideos: [VideoSegment],
 	videoStatus: {
 		type: String,
 		enum: ['new', 'updated', 'deleted', 'error', 'handled', 'handledDeleted'],

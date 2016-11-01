@@ -1,7 +1,7 @@
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
-var RelativeVideoSchema = new Schema({
+var VideoSegmentSchema = new Schema({
 	videoId: {
 		type: Schema.Types.ObjectId,
 		ref: 'Video',
@@ -19,6 +19,4 @@ var RelativeVideoSchema = new Schema({
 	}
 });
 
-var RelativeVideo = mongoose.model('RelativeVideo', RelativeVideoSchema);
-
-module.exports = RelativeVideo;
+module.exports = VideoSegmentSchema;
