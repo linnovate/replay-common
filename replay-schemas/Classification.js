@@ -1,5 +1,11 @@
+require('mongoose-geojson-schema');
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
+mongoose.Promise = require('bluebird');
+var VideoCompartmentSchema = require('./common-nested-schemas/VideoCompartment');
+
+mongoose.createConnection('mongodb://localhost:27017/replay_dev');
+
 
 // create a schema
 var ClassificationSchema = new Schema({
@@ -7,7 +13,7 @@ var ClassificationSchema = new Schema({
 		type: String,
 		required: true
 	},
-	karonName: {
+	triName: {
 		type: String,
 		required: true
 	},
@@ -35,7 +41,10 @@ var ClassificationSchema = new Schema({
 		enum: ['new', 'updated', 'deleted', 'error', 'handled', 'handledDeleted'],
 		default: 'new',
 		required: true
-	}},
+	},
+
+	VideoCompartment: [VideoCompartmentSchema.schema]
+	},
 	{
 		timestamps: true
 	});
