@@ -27,6 +27,10 @@ var QuerySchema = new Schema({
 	tagsIds: {
 		type: [String]
 	},
+	userId: {
+		type: String,
+		required: true
+	},
 	boundingShape: mongoose.Schema.Types.GeoJSON
 }, {
 	timestamps: true
