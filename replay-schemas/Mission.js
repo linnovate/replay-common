@@ -1,7 +1,7 @@
 require('mongoose-geojson-schema');
 var mongoose = require('mongoose');
-var VideoSegment = require('./common-nested-schemas/VideoSegment');
 var Schema = mongoose.Schema;
+var VideoCompartment = require('./VideoCompartment');
 
 // create a schema
 var MissionSchema = new Schema({
@@ -34,7 +34,6 @@ var MissionSchema = new Schema({
 		type: Schema.Types.ObjectId,
 		ref: 'Tag'
 	}],
-	ContainedVideos: [VideoSegment],
 	videoStatus: {
 		type: String,
 		enum: ['new', 'updated', 'deleted', 'error', 'handled', 'handledDeleted'],
@@ -45,14 +44,37 @@ var MissionSchema = new Schema({
 		timestamps: true
 	});
 
-// VideoSchema.pre('save', setNewStatus);
-// VideoSchema.pre('update', setUpdatedStatus);
+//VideoSchema.pre('save', setNewStatus);
+//VideoSchema.pre('update', setUpdatedStatus);
 MissionSchema.pre('save', calculateDuration);
 MissionSchema.pre('update', calculateDuration);
 
 var Mission = mongoose.model('Mission', MissionSchema);
 
 module.exports = Mission;
+
+Mission.validateMissionExists = function (missionId, permissions) {
+	console.log('Validating that mission with id %s exists and user has permissions for it...', missionId);
+
+	return findMissions(missionId, permissions)
+		.then((mission) => {
+			if (mission) {
+				return Promise.resolve(mission);
+			}
+
+			return Promise.reject(new Error(`Mission with id ${missionId} does not exist or user has no permissions for it.`));
+		});
+};
+
+function findMissions(missionId, permissions) {
+	var query = {
+		$and: [
+			{ _id: missionId },
+			VideoCompartment.buildQueryCondition(permissions)
+		]
+	};
+	return Mission.findOne(query);
+}
 
 // function setNewStatus(next) {
 // 	var self = this;
