@@ -1,5 +1,6 @@
 require('mongoose-geojson-schema');
 var mongoose = require('mongoose');
+var RelativeVideo = require('./common-nested-schemas/RelativeVideo');
 var Schema = mongoose.Schema;
 
 // create a schema
@@ -33,6 +34,7 @@ var MissionSchema = new Schema({
 		type: Schema.Types.ObjectId,
 		ref: 'Tag'
 	}],
+	ContainedVideos: [RelativeVideo],
 	videoStatus: {
 		type: String,
 		enum: ['new', 'updated', 'deleted', 'error', 'handled', 'handledDeleted'],
@@ -43,8 +45,8 @@ var MissionSchema = new Schema({
 		timestamps: true
 	});
 
-//VideoSchema.pre('save', setNewStatus);
-//VideoSchema.pre('update', setUpdatedStatus);
+// VideoSchema.pre('save', setNewStatus);
+// VideoSchema.pre('update', setUpdatedStatus);
 MissionSchema.pre('save', calculateDuration);
 MissionSchema.pre('update', calculateDuration);
 
