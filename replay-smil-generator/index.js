@@ -99,12 +99,13 @@ function handleVideosArrayObject(videos, folderPath) {
 	return Promise.map(videos, function(video) {
 		// retrive relevant metadata for video element
 		return getVideoMetadata(folderPath, video)
-			.catch(function(err) {
-				return {};
-			})
 			.then(function(params) {
 				// return a video xml element object
 				return new smilElements.VideoNode(params);
+			})
+			.catch(function(err) {
+				console.log(err);
+				return {};
 			});
 	});
 }

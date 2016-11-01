@@ -6,7 +6,8 @@ var Schema = mongoose.Schema;
 var VideoCompartmentSchema = new Schema({
 	videoId: {
 		type: Schema.Types.ObjectId,
-		ref: 'Video'
+		ref: 'Video',
+		required: true
 	},
 	boundingPolygon: mongoose.Schema.Types.GeoJSON,
 	startTime: {
@@ -18,21 +19,28 @@ var VideoCompartmentSchema = new Schema({
 		validate: validateGreaterThanStartTime,
 		required: true
 	},
+<<<<<<< HEAD
 	startAsset: {
+=======
+	relativeStartTime: {
+>>>>>>> 17f0056c0590db29439fd0311bc15551d54e56f3
 		type: Number,
 		required: true
 	},
 	duration: {
 		type: Number,
 		required: true
+	},
+	destination: {
+		type: String,
+		required: true
 	}
 }, {
 	timestamps: true
 });
 
-var VideoCompartment = mongoose.model('VideoCompartment', VideoCompartmentSchema);
+module.exports = VideoCompartmentSchema;
 
-module.exports = VideoCompartment;
 
 function validateGreaterThanStartTime(obj) {
 	if (obj.startTime <= obj.endTime) {

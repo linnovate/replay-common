@@ -1,5 +1,6 @@
 var mongoose = require('mongoose');
 require('mongoose-type-email');
+require('./Mission');
 
 var Schema = mongoose.Schema;
 
@@ -27,7 +28,11 @@ var UserSchema = new Schema({
 			unique: true,
 			required: true
 		}
-	}
+	},
+	favorites: [{
+		type: Schema.Types.ObjectId,
+		ref: 'Mission'
+	}]
 }, {
 	timestamps: true
 });
