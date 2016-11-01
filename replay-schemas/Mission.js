@@ -1,7 +1,7 @@
 require('mongoose-geojson-schema');
 var mongoose = require('mongoose');
+var VideoCompartmentSchema = require('./common-nested-schemas/VideoCompartment');
 var Schema = mongoose.Schema;
-var VideoCompartment = require('./VideoCompartment');
 
 // create a schema
 var MissionSchema = new Schema({
@@ -34,6 +34,7 @@ var MissionSchema = new Schema({
 		type: Schema.Types.ObjectId,
 		ref: 'Tag'
 	}],
+	videoCompartments: [VideoCompartmentSchema],
 	videoStatus: {
 		type: String,
 		enum: ['new', 'updated', 'deleted', 'error', 'handled', 'handledDeleted'],
@@ -44,14 +45,13 @@ var MissionSchema = new Schema({
 		timestamps: true
 	});
 
-//VideoSchema.pre('save', setNewStatus);
-//VideoSchema.pre('update', setUpdatedStatus);
+var Mission = mongoose.model('Mission', MissionSchema);
+module.exports = Mission;
+
 MissionSchema.pre('save', calculateDuration);
 MissionSchema.pre('update', calculateDuration);
-
-var Mission = mongoose.model('Mission', MissionSchema);
-
-module.exports = Mission;
+VideoCompartmentSchema.pre('save', calculateDuration);
+VideoCompartmentSchema.pre('update', calculateDuration);
 
 Mission.validateMissionExists = function (missionId, permissions) {
 	console.log('Validating that mission with id %s exists and user has permissions for it...', missionId);
@@ -66,27 +66,35 @@ Mission.validateMissionExists = function (missionId, permissions) {
 		});
 };
 
+function buildPermissionsQueryCondition(permissions) {
+	console.log('Building permissions query condition...');
+	try {
+		var query = { $or: [] };
+		for (var i = 0; i < permissions.length; i++) {
+			query.$or.push({
+				destination: permissions[i].id[0]
+			});
+			if (i === permissions.length - 1) {
+				return query;
+			}
+		}
+	} catch (err) {
+		console.log('Error in building mongo query condition for permissions.');
+		console.log(err);
+		throw err;
+	}
+}
+Mission.buildPermissionsQueryCondition = buildPermissionsQueryCondition;
+
 function findMissions(missionId, permissions) {
 	var query = {
 		$and: [
 			{ _id: missionId },
-			VideoCompartment.buildQueryCondition(permissions)
+			buildPermissionsQueryCondition(permissions)
 		]
 	};
 	return Mission.findOne(query);
 }
-
-// function setNewStatus(next) {
-// 	var self = this;
-// 	self.videoStatus = 'new';
-// 	next();
-// }
-
-// function setUpdatedStatus(next) {
-// 	var self = this;
-// 	self.videoStatus = 'updated';
-// 	next();
-// }
 
 function validateGreaterThanStartTime(obj) {
 	if (obj.startTime <= obj.endTime) {
