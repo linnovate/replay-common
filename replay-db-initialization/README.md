@@ -12,7 +12,7 @@ Installation
 Simply install the package as a global npm package by running the command:
 
 ```sh
-npm install -g replay-db-initialization
+sudo npm install -g replay-db-initialization
 ```
 
 
