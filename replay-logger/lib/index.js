@@ -91,6 +91,8 @@ var Logger = function(serviceName) {
 		errorHandler(err);
 	});
 
+	bunyanLogger.log = bunyanLogger.info; // add 'log' function to log by default in info level
+
 	return bunyanLogger;
 };
 
