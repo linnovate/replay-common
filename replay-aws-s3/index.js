@@ -132,17 +132,17 @@ module.exports = new function() {
 			require('http').globalAgent.maxSockets = process.env.MAX_SOCKETS;
 			require('https').globalAgent.maxSockets = process.env.MAX_SOCKETS;
 
-			function getMimeType(file) {
-				return 'video/mp4'; // just an example
-			}
-
 			function getS3Params(localFile, stat, callback) {
-				// call callback like this:
-				var err = new Error('some error info'); // only if there is an error
-				var s3Params = { // if there is no error
-					ContentType: getMimeType(localFile) // just an example
-				};
-				callback(err, s3Params); // pass `null` for `s3Params` if you want to skip uploading this file
+				// // call callback like this:
+				// var err = new Error('some error info'); // only if there is an error
+
+				// var s3Params = { // if there is no error
+				// 	ContentType: getMimeType(localFile) // just an example
+				// };
+
+				// callback(err, s3Params); // pass `null` for `s3Params` if you want to skip uploading this file
+
+				callback(undefined, {});
 			}
 
 			var params = {
@@ -182,12 +182,16 @@ module.exports = new function() {
 				// s3Object is same as one element in the `Contents` array from here:
 				// http://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#listObjects-property
 
-				// call callback like this:
-				var err = new Error('some error info'); // only if there is an error
-				var s3Params = { // if there is no error
-					VersionId: 'abcd' // just an example
-				};
-				callback(err, s3Params); // pass `null` for `s3Params` if you want to skip downloading this object
+				// // call callback like this:
+				// var err = new Error('some error info'); // only if there is an error
+
+				// var s3Params = { // if there is no error
+				// 	VersionId: 'some versionId' // just an example
+				// };
+
+				// callback(err, s3Params); // pass `null` for `s3Params` if you want to skip uploading this file
+
+				callback(undefined, {});
 			}
 
 			var params = {
