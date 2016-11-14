@@ -23,7 +23,7 @@ var VideoCompartmentSchema = new Schema({
 		type: Number,
 		required: true
 	},
-	duration: {
+	durationInSeconds: {
 		type: Number,
 		required: true
 	},
