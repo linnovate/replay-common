@@ -34,6 +34,9 @@ logger.warn('Some warn log message...');
 logger.error('Some error log message...');
 logger.fatal('Some fatal log message...');
 
+// you can also use 'log' function for logging info level
+logger.log('Some info log message...');
+
 // You can also use format for msg formatting.
 logger.info('hi %s', 'bob');
 
@@ -50,3 +53,7 @@ logger.info(err, 'more on this: %s', 'some more info');
 log.info({foo: 'bar', err: err}, 'some msg about this error');
 
 ```
+
+## Extra Info:
+
+[level-suggestions](https://github.com/trentm/node-bunyan#level-suggestions)

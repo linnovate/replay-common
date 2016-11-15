@@ -1,0 +1,27 @@
+{
+	"name": "replay-aws-s3",
+	"version": "1.0.0",
+	"description": "Amazon Web Services (AWS) - Amazon S3 (Amazon Simple Storage Service) wrapper for Replay project",
+	"main": "index.js",
+	"scripts": {
+		"test": "echo \"Error: no test specified\" && exit 1"
+	},
+	"dependencies": {
+		"bluebird": "^3.4.6",
+		"s3": "^4.4.0"
+	},
+	"devDependencies": {},
+	"author": "motyros",
+	"license": "ISC",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/linnovate/replay-common/tree/develop/replay-aws-s3"
+	},
+	"keywords": [
+		"repaly",
+		"object storage",
+		"AWS",
+		"S3",
+		"Amazon S3"
+	]
+}
