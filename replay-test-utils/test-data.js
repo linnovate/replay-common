@@ -1,6 +1,7 @@
 var childProcess = require('child_process');
 var util = require('util');
 var path = require('path');
+Promise = require('bluebird');
 
 var dataPath = path.join(__dirname, './data');
 var metadataPath = path.join(dataPath, '/videometadata.json');
