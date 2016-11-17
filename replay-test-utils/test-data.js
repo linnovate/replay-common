@@ -8,6 +8,7 @@ var videoPath = path.join(dataPath, '/videos.json');
 var missionPath = path.join(dataPath, '/mission.json');
 var newMetadataPath = path.join(dataPath, '/newMetadata.json');
 var newVideoPath = path.join(dataPath, '/newVideo.json');
+var missionWithVideoPath = path.join(dataPath, '/missionWithVideo.json');
 var importCommand = 'mongoimport --host %s --port %s --collection %s --db %s --file %s --username %s --password %s --authenticationDatabase %s';
 var mongoHost = process.env.MONGO_HOST || 'localhost';
 var mongoPort = process.env.MONGO_PORT || 27017;
@@ -35,7 +36,8 @@ module.exports = {
 	videoPath: videoPath,
 	missionPath: missionPath,
 	newMetadataPath: newMetadataPath,
-	newVideoPath: newVideoPath
+	newVideoPath: newVideoPath,
+	missionWithVideoPath: missionWithVideoPath
 }
 
 function executeImport(collection, filePath) {
