@@ -2,7 +2,7 @@ var childProcess = require('child_process');
 var util = require('util');
 var path = require('path');
 
-var dataPath = path.join(__dirname, './MongoData');
+var dataPath = path.join(__dirname, './data');
 var metadataPath = path.join(dataPath, '/videometadata.json');
 var videoPath = path.join(dataPath, '/videos.json');
 var missionPath = path.join(dataPath, '/mission.json');
