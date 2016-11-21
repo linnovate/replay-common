@@ -1,6 +1,6 @@
 {
 	"name": "replay-aws-s3",
-	"version": "1.0.0",
+	"version": "1.0.1",
 	"description": "Amazon Web Services (AWS) - Amazon S3 (Amazon Simple Storage Service) wrapper for Replay project",
 	"main": "index.js",
 	"scripts": {
