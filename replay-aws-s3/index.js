@@ -4,15 +4,18 @@ var Promise = require('bluebird'),
 	s3 = require('s3');
 
 const SERVICE_NAME = 'replay-aws-s3';
-process.env.MAX_SOCKETS = process.env.MAX_SOCKETS || 20;
-process.env.REGION = process.env.REGION || 'eu-west-1';
 
 module.exports = new function() {
 	function validateProcessEnv() {
+		// default values:
+		process.env.MAX_SOCKETS = process.env.MAX_SOCKETS || 20;
+		process.env.AWS_REGION = process.env.AWS_REGION || 'eu-west-1';
+
 		console.log(SERVICE_NAME, '- Storage path:', process.env.STORAGE_PATH);
 		console.log(SERVICE_NAME, '- AWS access key id:', process.env.AWS_ACCESS_KEY_ID);
 		console.log(SERVICE_NAME, '- AWS secret access key:', process.env.AWS_SECRET_ACCESS_KEY);
-		console.log(SERVICE_NAME, '- AWS region:', process.env.REGION);
+		console.log(SERVICE_NAME, '- AWS endpoint:', process.env.AWS_ENDPOINT);
+		console.log(SERVICE_NAME, '- AWS region:', process.env.AWS_REGION);
 		console.log(SERVICE_NAME, '- Max sockets:', process.env.MAX_SOCKETS);
 
 		// validate process environment variables
@@ -33,9 +36,9 @@ module.exports = new function() {
 				// See: http://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Config.html#constructor-property
 				accessKeyId: process.env.AWS_ACCESS_KEY_ID,
 				secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
-				region: process.env.REGION
-					// endpoint: 's3.yourdomain.com',
-					// sslEnabled: false
+				endpoint: process.env.AWS_ENDPOINT,
+				region: process.env.AWS_REGION,
+				sslEnabled: false
 			}
 		});
 	}

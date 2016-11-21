@@ -11,8 +11,9 @@ Using the [S3 npm package](https://www.npmjs.com/package/s3) for high level clie
 | STORAGE_PATH                 | Shared storage path          | **required**                 |
 | AWS_ACCESS_KEY_ID            | AWS access key id            | **required**                 |
 | AWS_SECRET_ACCESS_KEY        | AWS secret access key        | **required**                 |
+| AWS_ENDPOINT                 | AWS endpoint                 | Amazon default: something like `http://s3-{region}.amazonaws.com` |
 | AWS_REGION                   | AWS region                   | eu-west-1                    |
-| MAX_SOCKETS                  | Socket pool size in the http & https global agents <br> (this will improve bandwidth when using uploadDir and downloadDir functions) | 20 |
+| MAX_SOCKETS                  | Socket pool size in the http & https global agents. <br> (This will improve bandwidth when using uploadDir and downloadDir functions.) | 20 |
 
 ## Installation
 
