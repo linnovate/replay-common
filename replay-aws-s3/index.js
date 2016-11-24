@@ -1,13 +1,15 @@
-var path = require('path');
 
 var Promise = require('bluebird'),
+	ReplayLogger = require('replay-logger'),
 	s3 = require('s3');
 
-const SERVICE_NAME = 'replay-aws-s3';
+var path = require('path');
+
+var logger = new ReplayLogger('replay-aws-s3');
 
 module.exports = new function() {
 	function getClient() {
-		return s3.createClient({
+		var options = {
 			maxAsyncS3: 20, // default value
 			s3RetryCount: 3, // default value
 			s3RetryDelay: 1000, // default value
@@ -23,9 +25,10 @@ module.exports = new function() {
 				s3ForcePathStyle: true
 				// s3BucketEndpoint: true,
 				// paramValidation: false,
-				// logger: console
+				// logger: logger
 			}
-		});
+		};
+		return s3.createClient(options);
 	}
 
 	function uploadFile(filePath, bucket, key) {
@@ -41,14 +44,19 @@ module.exports = new function() {
 			var client = getClient();
 			var uploader = client.uploadFile(params);
 			uploader.on('error', function(err) {
-				console.error(SERVICE_NAME, '- unable to upload file:', err.stack);
+				logger.error(err, 'unable to upload file');
 				reject(err);
 			});
 			uploader.on('progress', function() {
-				console.log(SERVICE_NAME, '- upload file progress:', uploader.progressMd5Amount, uploader.progressAmount, uploader.progressTotal);
+				var progress = {
+					progressMd5Amount: uploader.progressMd5Amount,
+					progressAmount: uploader.progressAmount,
+					progressTotal: uploader.progressTotal
+				};
+				logger.info({ progress: progress }, 'upload file progress');
 			});
 			uploader.on('end', function(data) {
-				console.log(SERVICE_NAME, '- done uploading file:', data);
+				logger.info({ data: data }, 'done uploading file');
 				resolve(data);
 			});
 		});
@@ -66,14 +74,18 @@ module.exports = new function() {
 			var client = getClient();
 			var downloader = client.downloadFile(params);
 			downloader.on('error', function(err) {
-				console.error(SERVICE_NAME, '- unable to download file:', err.stack);
+				logger.error(err, 'unable to download file');
 				reject(err);
 			});
 			downloader.on('progress', function() {
-				console.log(SERVICE_NAME, '- download file progress:', downloader.progressAmount, downloader.progressTotal);
+				var progress = {
+					progressAmount: downloader.progressAmount,
+					progressTotal: downloader.progressTotal
+				};
+				logger.info({ progress: progress }, 'download file progress');
 			});
 			downloader.on('end', function() {
-				console.log(SERVICE_NAME, '- done downloading file');
+				logger.info('done downloading file');
 				resolve();
 			});
 		});
@@ -88,14 +100,18 @@ module.exports = new function() {
 			var client = getClient();
 			var downloader = client.downloadBuffer(s3Params);
 			downloader.on('error', function(err) {
-				console.error(SERVICE_NAME, '- unable to download buffer:', err.stack);
+				logger.error(err, 'unable to download buffer');
 				reject(err);
 			});
 			downloader.on('progress', function() {
-				console.log(SERVICE_NAME, '- download buffer progress:', downloader.progressAmount, downloader.progressTotal);
+				var progress = {
+					progressAmount: downloader.progressAmount,
+					progressTotal: downloader.progressTotal
+				};
+				logger.info({ progress: progress }, 'download buffer progress');
 			});
 			downloader.on('end', function(buffer) {
-				console.log(SERVICE_NAME, '- done downloading buffer');
+				logger.info('done downloading buffer');
 				resolve(buffer);
 			});
 		});
@@ -118,17 +134,23 @@ module.exports = new function() {
 			var lister = client.listObjects(params);
 			var result = [];
 			lister.on('error', function(err) {
-				console.error(SERVICE_NAME, '- unable to list objects:', err.stack);
+				logger.error(err, 'unable to list objects');
 				reject(err);
 			});
 			lister.on('progress', function() {
-				console.log(SERVICE_NAME, '- list objects progress:', lister.progressAmount, lister.objectsFound, lister.dirsFound);
+				var progress = {
+					progressAmount: lister.progressAmount,
+					objectsFound: lister.objectsFound,
+					dirsFound: lister.dirsFound
+				};
+				logger.info({ progress: progress }, 'list objects progress');
 			});
 			lister.on('data', function(data) {
+				logger.debug({ data: data }, 'list objects data');
 				result = result.concat(data.Contents);
 			});
 			lister.on('end', function() {
-				console.log(SERVICE_NAME, '- done list objects:', result);
+				logger.info({ result: result }, 'done list objects');
 				resolve(result);
 			});
 		});
@@ -156,17 +178,21 @@ module.exports = new function() {
 			var client = getClient();
 			var deleter = client.deleteObjects(s3Params);
 			deleter.on('error', function(err) {
-				console.error(SERVICE_NAME, '- unable to delete objects:', err.stack);
+				logger.error(err, 'unable to delete objects');
 				reject(err);
 			});
 			deleter.on('progress', function() {
-				console.log(SERVICE_NAME, '- delete objects progress:', deleter.progressAmount, deleter.progressTotal);
+				var progress = {
+					progressAmount: deleter.progressAmount,
+					progressTotal: deleter.progressTotal
+				};
+				logger.info({ progress: progress }, 'delete objects progress');
 			});
 			deleter.on('data', function(data) {
-				console.log(SERVICE_NAME, '- delete objects data:', data);
+				logger.debug({ data: data }, 'delete objects data');
 			});
 			deleter.on('end', function() {
-				console.log(SERVICE_NAME, '- done delete objects');
+				logger.info('done deleting objects');
 				resolve();
 			});
 		});
@@ -204,27 +230,28 @@ module.exports = new function() {
 			var client = getClient();
 			var uploader = client.uploadDir(params);
 			uploader.on('error', function(err) {
-				console.error(SERVICE_NAME, '- unable to upload dir:', err.stack);
+				logger.error(err, 'unable to upload dir');
 				reject(err);
 			});
 			uploader.on('progress', function() {
-				console.log(SERVICE_NAME, '- upload dir progress:',
-					uploader.progressAmount,
-					uploader.progressTotal,
-					uploader.progressMd5Amount,
-					uploader.progressMd5Total,
-					uploader.deleteAmount,
-					uploader.deleteTotal,
-					uploader.filesFound,
-					uploader.objectsFound,
-					uploader.doneFindingFiles,
-					uploader.doneFindingObjects,
-					uploader.doneMd5
-				);
+				var progress = {
+					progressAmount: uploader.progressAmount,
+					progressTotal: uploader.progressTotal,
+					progressMd5Amount: uploader.progressMd5Amount,
+					progressMd5Total: uploader.progressMd5Total,
+					deleteAmount: uploader.deleteAmount,
+					deleteTotal: uploader.deleteTotal,
+					filesFound: uploader.filesFound,
+					objectsFound: uploader.objectsFound,
+					doneFindingFiles: uploader.doneFindingFiles,
+					doneFindingObjects: uploader.doneFindingObjects,
+					doneMd5: uploader.doneMd5
+				};
+				logger.info({ progress: progress }, 'upload dir progress');
 			});
 
 			uploader.on('end', function() {
-				console.log(SERVICE_NAME, '- done uploading dir');
+				logger.info('done uploading dir');
 				resolve();
 			});
 		});
@@ -265,25 +292,27 @@ module.exports = new function() {
 			var client = getClient();
 			var downloader = client.downloadDir(params);
 			downloader.on('error', function(err) {
-				console.error(SERVICE_NAME, '- unable to download dir:', err.stack);
+				logger.error(err, 'unable to download dir');
 				reject(err);
 			});
 			downloader.on('progress', function() {
-				console.log(SERVICE_NAME, '- download dir progress:',
-					downloader.progressAmount,
-					downloader.progressTotal,
-					downloader.progressMd5Amount,
-					downloader.progressMd5Total,
-					downloader.deleteAmount,
-					downloader.deleteTotal,
-					downloader.filesFound,
-					downloader.objectsFound,
-					downloader.doneFindingFiles,
-					downloader.doneFindingObjects,
-					downloader.doneMd5);
+				var progress = {
+					progressAmount: downloader.progressAmount,
+					progressTotal: downloader.progressTotal,
+					progressMd5Amount: downloader.progressMd5Amount,
+					progressMd5Total: downloader.progressMd5Total,
+					deleteAmount: downloader.deleteAmount,
+					deleteTotal: downloader.deleteTotal,
+					filesFound: downloader.filesFound,
+					objectsFound: downloader.objectsFound,
+					doneFindingFiles: downloader.doneFindingFiles,
+					doneFindingObjects: downloader.doneFindingObjects,
+					doneMd5: downloader.doneMd5
+				};
+				logger.info({ progress: progress }, 'download dir progress');
 			});
 			downloader.on('end', function() {
-				console.log(SERVICE_NAME, '- done downloading download');
+				logger.info('done downloading dir');
 				resolve();
 			});
 		});
@@ -299,14 +328,18 @@ module.exports = new function() {
 			var client = getClient();
 			var deleter = client.deleteDir(s3Params);
 			deleter.on('error', function(err) {
-				console.error(SERVICE_NAME, '- unable to delete dir:', err.stack);
+				logger.error(err, 'unable to delete dir');
 				reject(err);
 			});
 			deleter.on('progress', function() {
-				console.log(SERVICE_NAME, '- delete dir progress:', deleter.progressAmount, deleter.progressTotal);
+				var progress = {
+					progressAmount: deleter.progressAmount,
+					progressTotal: deleter.progressTotal
+				};
+				logger.info({ progress: progress }, 'delete dir progress');
 			});
 			deleter.on('end', function() {
-				console.log(SERVICE_NAME, '- done delete dir');
+				logger.info('done deleting dir');
 				resolve();
 			});
 		});
@@ -322,10 +355,10 @@ module.exports = new function() {
 			var client = getClient();
 			client.s3.createBucket(params, function(err, data) {
 				if (err) {
-					console.log(SERVICE_NAME, '- unable to create bucket:', err.stack);
+					logger.error(err, 'unable to create bucket');
 					reject(err);
 				} else {
-					console.log(SERVICE_NAME, '- bucket successfully created:', data);
+					logger.info({ data: data }, 'bucket %s successfully created', bucket);
 					resolve(data);
 				}
 			});
@@ -341,10 +374,10 @@ module.exports = new function() {
 			var client = getClient();
 			client.s3.deleteBucket(params, function(err, data) {
 				if (err) {
-					console.log(SERVICE_NAME, '- unable to delete bucket:', err.stack);
+					logger.error(err, 'unable to delete bucket');
 					reject(err);
 				} else {
-					console.log(SERVICE_NAME, '- bucket successfully deleted:', data);
+					logger.info({ data: data }, 'bucket %s successfully deleted', bucket);
 					resolve(data);
 				}
 			});
@@ -356,10 +389,10 @@ module.exports = new function() {
 			var client = getClient();
 			client.s3.listBuckets(function(err, data) {
 				if (err) {
-					console.log(SERVICE_NAME, '- unable to list buckets:', err.stack);
+					logger.error(err, 'unable to list buckets');
 					reject(err);
 				} else {
-					console.log(SERVICE_NAME, '- buckets list: \n', data);
+					logger.info({ data: data }, 'done buckets list');
 					resolve(data);
 				}
 			});
@@ -367,18 +400,18 @@ module.exports = new function() {
 	}
 
 	function validateProcessEnv() {
-		// default values:
+		// set default values:
 		process.env.MAX_SOCKETS = process.env.MAX_SOCKETS || 20;
 		process.env.AWS_REGION = process.env.AWS_REGION || 'eu-west-1';
 
-		console.log(SERVICE_NAME, '- Storage path:', process.env.STORAGE_PATH);
-		console.log(SERVICE_NAME, '- AWS access key id:', process.env.AWS_ACCESS_KEY_ID);
-		console.log(SERVICE_NAME, '- AWS secret access key:', process.env.AWS_SECRET_ACCESS_KEY);
-		console.log(SERVICE_NAME, '- AWS endpoint:', process.env.AWS_ENDPOINT);
-		console.log(SERVICE_NAME, '- AWS region:', process.env.AWS_REGION);
-		console.log(SERVICE_NAME, '- Max sockets:', process.env.MAX_SOCKETS);
+		logger.info('Storage path: %s', process.env.STORAGE_PATH);
+		logger.info('AWS access key id: %s', process.env.AWS_ACCESS_KEY_ID);
+		logger.info('AWS secret access key: %s', process.env.AWS_SECRET_ACCESS_KEY);
+		logger.info('AWS endpoint: %s', process.env.AWS_ENDPOINT);
+		logger.info('AWS region: %s', process.env.AWS_REGION);
+		logger.info('Max sockets: %s', process.env.MAX_SOCKETS);
 
-		// validate process environment variables
+		// validate required process environment variables
 		if (!process.env.STORAGE_PATH || !process.env.AWS_ACCESS_KEY_ID || !process.env.AWS_SECRET_ACCESS_KEY) {
 			return false;
 		}
