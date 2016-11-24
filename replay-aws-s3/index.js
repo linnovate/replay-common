@@ -250,6 +250,41 @@ module.exports = new function() {
 		});
 	}
 
+	function createBucket(bucket) {
+		return new Promise(function(resolve, reject) {
+			var params = {
+				Bucket: bucket,
+				ACL: 'public-read-write'
+			};
+
+			var client = getClient();
+			client.s3.createBucket(params, function(err, data) {
+				if (err) {
+					console.log(SERVICE_NAME, '- unable to create bucket:', err.stack);
+					reject(err);
+				} else {
+					console.log(SERVICE_NAME, '- bucket successfully created:', data);
+					resolve();
+				}
+			});
+		});
+	}
+
+	function listBuckets() {
+		return new Promise(function(resolve, reject) {
+			var client = getClient();
+			client.s3.listBuckets(function(err, data) {
+				if (err) {
+					console.log(SERVICE_NAME, '- unable to list buckets:', err.stack);
+					reject(err);
+				} else {
+					console.log(SERVICE_NAME, '- buckets list: \n', data);
+					resolve();
+				}
+			});
+		});
+	}
+
 	function resolvePath(filePath) {
 		return path.join(process.env.STORAGE_PATH, filePath);
 	}
@@ -279,6 +314,12 @@ module.exports = new function() {
 			},
 			deleteDir: function(bucket, prefix) {
 				return deleteDir(bucket, prefix);
+			},
+			createBucket: function(bucket) {
+				return createBucket(bucket);
+			},
+			listBuckets: function() {
+				return listBuckets();
 			}
 		};
 	}
