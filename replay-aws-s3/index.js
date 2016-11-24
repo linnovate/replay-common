@@ -6,25 +6,6 @@ var Promise = require('bluebird'),
 const SERVICE_NAME = 'replay-aws-s3';
 
 module.exports = new function() {
-	function validateProcessEnv() {
-		// default values:
-		process.env.MAX_SOCKETS = process.env.MAX_SOCKETS || 20;
-		process.env.AWS_REGION = process.env.AWS_REGION || 'eu-west-1';
-
-		console.log(SERVICE_NAME, '- Storage path:', process.env.STORAGE_PATH);
-		console.log(SERVICE_NAME, '- AWS access key id:', process.env.AWS_ACCESS_KEY_ID);
-		console.log(SERVICE_NAME, '- AWS secret access key:', process.env.AWS_SECRET_ACCESS_KEY);
-		console.log(SERVICE_NAME, '- AWS endpoint:', process.env.AWS_ENDPOINT);
-		console.log(SERVICE_NAME, '- AWS region:', process.env.AWS_REGION);
-		console.log(SERVICE_NAME, '- Max sockets:', process.env.MAX_SOCKETS);
-
-		// validate process environment variables
-		if (!process.env.STORAGE_PATH || !process.env.AWS_ACCESS_KEY_ID || !process.env.AWS_SECRET_ACCESS_KEY) {
-			return false;
-		}
-		return true;
-	}
-
 	function getClient() {
 		return s3.createClient({
 			maxAsyncS3: 20, // default value
@@ -67,8 +48,8 @@ module.exports = new function() {
 				console.log(SERVICE_NAME, '- upload file progress:', uploader.progressMd5Amount, uploader.progressAmount, uploader.progressTotal);
 			});
 			uploader.on('end', function(data) {
-				console.log(SERVICE_NAME, '- done uploading file');
-				resolve();
+				console.log(SERVICE_NAME, '- done uploading file:', data);
+				resolve(data);
 			});
 		});
 	}
@@ -104,7 +85,6 @@ module.exports = new function() {
 				Bucket: bucket,
 				Key: key
 			};
-
 			var client = getClient();
 			var downloader = client.downloadBuffer(s3Params);
 			downloader.on('error', function(err) {
@@ -127,14 +107,13 @@ module.exports = new function() {
 				s3Params: { // See: http://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#listObjects-property
 					Bucket: bucket,
 					Prefix: prefix
-						// Delimiter: 'STRING_VALUE',
-						// EncodingType: 'url',
-						// Marker: 'STRING_VALUE',
-						// MaxKeys: 0,
+					// Delimiter: 'STRING_VALUE',
+					// EncodingType: 'url',
+					// Marker: 'STRING_VALUE',
+					// MaxKeys: 0,
 				},
 				recursive: true
 			};
-
 			var client = getClient();
 			var lister = client.listObjects(params);
 			var result = [];
@@ -150,7 +129,7 @@ module.exports = new function() {
 			});
 			lister.on('end', function() {
 				console.log(SERVICE_NAME, '- done list objects:', result);
-				resolve();
+				resolve(result);
 			});
 		});
 	}
@@ -174,7 +153,6 @@ module.exports = new function() {
 					Quiet: true
 				}
 			};
-
 			var client = getClient();
 			var deleter = client.deleteObjects(s3Params);
 			deleter.on('error', function(err) {
@@ -183,6 +161,9 @@ module.exports = new function() {
 			});
 			deleter.on('progress', function() {
 				console.log(SERVICE_NAME, '- delete objects progress:', deleter.progressAmount, deleter.progressTotal);
+			});
+			deleter.on('data', function(data) {
+				console.log(SERVICE_NAME, '- delete objects data:', data);
 			});
 			deleter.on('end', function() {
 				console.log(SERVICE_NAME, '- done delete objects');
@@ -227,8 +208,21 @@ module.exports = new function() {
 				reject(err);
 			});
 			uploader.on('progress', function() {
-				console.log(SERVICE_NAME, '- upload dir progress:', uploader.progressAmount, uploader.progressTotal);
+				console.log(SERVICE_NAME, '- upload dir progress:',
+					uploader.progressAmount,
+					uploader.progressTotal,
+					uploader.progressMd5Amount,
+					uploader.progressMd5Total,
+					uploader.deleteAmount,
+					uploader.deleteTotal,
+					uploader.filesFound,
+					uploader.objectsFound,
+					uploader.doneFindingFiles,
+					uploader.doneFindingObjects,
+					uploader.doneMd5
+				);
 			});
+
 			uploader.on('end', function() {
 				console.log(SERVICE_NAME, '- done uploading dir');
 				resolve();
@@ -275,7 +269,18 @@ module.exports = new function() {
 				reject(err);
 			});
 			downloader.on('progress', function() {
-				console.log(SERVICE_NAME, '- download dir progress:', downloader.progressAmount, downloader.progressTotal);
+				console.log(SERVICE_NAME, '- download dir progress:',
+					downloader.progressAmount,
+					downloader.progressTotal,
+					downloader.progressMd5Amount,
+					downloader.progressMd5Total,
+					downloader.deleteAmount,
+					downloader.deleteTotal,
+					downloader.filesFound,
+					downloader.objectsFound,
+					downloader.doneFindingFiles,
+					downloader.doneFindingObjects,
+					downloader.doneMd5);
 			});
 			downloader.on('end', function() {
 				console.log(SERVICE_NAME, '- done downloading download');
@@ -321,7 +326,7 @@ module.exports = new function() {
 					reject(err);
 				} else {
 					console.log(SERVICE_NAME, '- bucket successfully created:', data);
-					resolve();
+					resolve(data);
 				}
 			});
 		});
@@ -340,7 +345,7 @@ module.exports = new function() {
 					reject(err);
 				} else {
 					console.log(SERVICE_NAME, '- bucket successfully deleted:', data);
-					resolve();
+					resolve(data);
 				}
 			});
 		});
@@ -355,10 +360,29 @@ module.exports = new function() {
 					reject(err);
 				} else {
 					console.log(SERVICE_NAME, '- buckets list: \n', data);
-					resolve();
+					resolve(data);
 				}
 			});
 		});
+	}
+
+	function validateProcessEnv() {
+		// default values:
+		process.env.MAX_SOCKETS = process.env.MAX_SOCKETS || 20;
+		process.env.AWS_REGION = process.env.AWS_REGION || 'eu-west-1';
+
+		console.log(SERVICE_NAME, '- Storage path:', process.env.STORAGE_PATH);
+		console.log(SERVICE_NAME, '- AWS access key id:', process.env.AWS_ACCESS_KEY_ID);
+		console.log(SERVICE_NAME, '- AWS secret access key:', process.env.AWS_SECRET_ACCESS_KEY);
+		console.log(SERVICE_NAME, '- AWS endpoint:', process.env.AWS_ENDPOINT);
+		console.log(SERVICE_NAME, '- AWS region:', process.env.AWS_REGION);
+		console.log(SERVICE_NAME, '- Max sockets:', process.env.MAX_SOCKETS);
+
+		// validate process environment variables
+		if (!process.env.STORAGE_PATH || !process.env.AWS_ACCESS_KEY_ID || !process.env.AWS_SECRET_ACCESS_KEY) {
+			return false;
+		}
+		return true;
 	}
 
 	function resolvePath(filePath) {
