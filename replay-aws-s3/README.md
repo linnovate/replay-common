@@ -27,21 +27,31 @@ npm install replay-aws-s3 --save
 
 var s3 = require('replay-aws-s3');
 
+// General functions:
+s3.getAWS();
+
+s3.getClient();
+
+// Files functions:
+s3.uploadFile(filePath, bucket, key);
+s3.downloadFile(filePath, bucket, key);
+s3.downloadBuffer(bucket, key);
+
+// Objects functions:
+s3.listObjects(bucket, prefix);
+s3.deleteObjects(bucket, objects);
+
+// Directories functions:
+s3.uploadDir(dirPath, bucket, prefix);
+s3.downloadDir(dirPath, bucket, prefix);
+s3.deleteDir(bucket, prefix);
+
+// Buckets functions:
+s3.listBuckets();
+s3.createBucket(bucket);
+s3.deleteBucket(bucket);
+
 // TODO...
-
-s3.getClient()
-
-s3.uploadFile(filePath, bucket, key)
-
-s3.downloadFile(filePath, bucket, key)
-
-s3.deleteObjects(bucket, objects)
-
-s3.uploadDir(dirPath, bucket, prefix)
-
-s3.deleteDir(bucket, prefix)
-
-s3.downloadDir(dirPath, bucket, prefix)
 
 ```
 
