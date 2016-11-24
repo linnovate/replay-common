@@ -98,6 +98,63 @@ module.exports = new function() {
 		});
 	}
 
+	function downloadBuffer(bucket, key) {
+		return new Promise(function(resolve, reject) {
+			var s3Params = { // See: http://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#getObject-property
+				Bucket: bucket,
+				Key: key
+			};
+
+			var client = getClient();
+			var downloader = client.downloadBuffer(s3Params);
+			downloader.on('error', function(err) {
+				console.error(SERVICE_NAME, '- unable to download buffer:', err.stack);
+				reject(err);
+			});
+			downloader.on('progress', function() {
+				console.log(SERVICE_NAME, '- download buffer progress:', downloader.progressAmount, downloader.progressTotal);
+			});
+			downloader.on('end', function(buffer) {
+				console.log(SERVICE_NAME, '- done downloading buffer');
+				resolve(buffer);
+			});
+		});
+	}
+
+	function listObjects(bucket, prefix) {
+		return new Promise(function(resolve, reject) {
+			var params = {
+				s3Params: { // See: http://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#listObjects-property
+					Bucket: bucket,
+					Prefix: prefix
+						// Delimiter: 'STRING_VALUE',
+						// EncodingType: 'url',
+						// Marker: 'STRING_VALUE',
+						// MaxKeys: 0,
+				},
+				recursive: true
+			};
+
+			var client = getClient();
+			var lister = client.listObjects(params);
+			var result = [];
+			lister.on('error', function(err) {
+				console.error(SERVICE_NAME, '- unable to list objects:', err.stack);
+				reject(err);
+			});
+			lister.on('progress', function() {
+				console.log(SERVICE_NAME, '- list objects progress:', lister.progressAmount, lister.objectsFound, lister.dirsFound);
+			});
+			lister.on('data', function(data) {
+				result = result.concat(data.Contents);
+			});
+			lister.on('end', function() {
+				console.log(SERVICE_NAME, '- done list objects:', result);
+				resolve();
+			});
+		});
+	}
+
 	function deleteObjects(bucket, objects) {
 		// objects example:
 		// var objects = [{
@@ -270,6 +327,25 @@ module.exports = new function() {
 		});
 	}
 
+	function deleteBucket(bucket) {
+		return new Promise(function(resolve, reject) {
+			var params = {
+				Bucket: bucket
+			};
+
+			var client = getClient();
+			client.s3.deleteBucket(params, function(err, data) {
+				if (err) {
+					console.log(SERVICE_NAME, '- unable to delete bucket:', err.stack);
+					reject(err);
+				} else {
+					console.log(SERVICE_NAME, '- bucket successfully deleted:', data);
+					resolve();
+				}
+			});
+		});
+	}
+
 	function listBuckets() {
 		return new Promise(function(resolve, reject) {
 			var client = getClient();
@@ -291,21 +367,31 @@ module.exports = new function() {
 
 	if (validateProcessEnv()) {
 		return {
+			// General functions:
 			getAWS: function() {
 				return s3.AWS;
 			},
 			getClient: function() {
 				return getClient();
 			},
+			// Files functions:
 			uploadFile: function(filePath, bucket, key) {
 				return uploadFile(filePath, bucket, key);
 			},
 			downloadFile: function(filePath, bucket, key) {
 				return downloadFile(filePath, bucket, key);
 			},
+			downloadBuffer: function(bucket, key) {
+				return downloadBuffer(bucket, key);
+			},
+			// Objects functions:
+			listObjects: function(bucket, prefix) {
+				return listObjects(bucket, prefix);
+			},
 			deleteObjects: function(bucket, objects) {
 				return deleteObjects(bucket, objects);
 			},
+			// Directories functions:
 			uploadDir: function(dirPath, bucket, prefix) {
 				return uploadDir(dirPath, bucket, prefix);
 			},
@@ -315,11 +401,15 @@ module.exports = new function() {
 			deleteDir: function(bucket, prefix) {
 				return deleteDir(bucket, prefix);
 			},
+			// Buckets functions:
+			listBuckets: function() {
+				return listBuckets();
+			},
 			createBucket: function(bucket) {
 				return createBucket(bucket);
 			},
-			listBuckets: function() {
-				return listBuckets();
+			deleteBucket: function(bucket) {
+				return deleteBucket(bucket);
 			}
 		};
 	}
