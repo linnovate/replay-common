@@ -38,7 +38,11 @@ module.exports = new function() {
 				secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
 				endpoint: process.env.AWS_ENDPOINT,
 				region: process.env.AWS_REGION,
-				sslEnabled: false
+				sslEnabled: false,
+				s3ForcePathStyle: true
+				// s3BucketEndpoint: true,
+				// paramValidation: false,
+				// logger: console
 			}
 		});
 	}
