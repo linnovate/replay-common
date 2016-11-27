@@ -303,6 +303,7 @@ var Ffmpeg = function() {
 				command
 					.on('start', function(commandLine) {
 						console.log(SERVICE_NAME, 'start record with the command:\n', commandLine);
+						self.emit('FFmpeg_start_recording', output);
 					})
 					.on('error', function(err) {
 						self.emit('ffmpegWrapper_error_while_recording', err);

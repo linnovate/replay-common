@@ -1,6 +1,6 @@
 {
   "name": "replay-ffmpeg",
-  "version": "1.2.1",
+  "version": "1.2.2",
   "description": "service that export useful method for ffmpeg, using the fluent-ffmpeg module.",
   "main": "index.js",
   "scripts": {
