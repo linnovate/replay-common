@@ -1,11 +1,15 @@
 var amqp = require('amqplib');
+var util = require('util');
 
 var connection, channel;
 var MAX_RESEND_ATTEMPTS = process.env.RABBITMQ_MAX_RESEND_ATTEMPTS || 3;
 var FAILED_JOBS_QUEUE = process.env.FAILED_JOBS_QUEUE_NAME || 'FailedJobsQueue';
 
-module.exports.connect = function (rabbitHost) {
-	var rabbitUri = 'amqp://' + rabbitHost;
+// USERNAME:PASSWORD@HOST:PORT
+var RABBIT_URI_FORMAT = 'amqp://%s:%s@%s:%s';
+
+module.exports.connect = function (host, port, username, password) {
+	var rabbitUri = util.format(RABBIT_URI_FORMAT, username, password, host, port);
 
 	// connect rabbitmq, then connect/create channel.
 	return amqp.connect(rabbitUri)

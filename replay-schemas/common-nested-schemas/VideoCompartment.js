@@ -19,11 +19,15 @@ var VideoCompartmentSchema = new Schema({
 		validate: validateGreaterThanStartTime,
 		required: true
 	},
+<<<<<<< HEAD
+	startAsset: {
+=======
 	relativeStartTime: {
+>>>>>>> 17f0056c0590db29439fd0311bc15551d54e56f3
 		type: Number,
 		required: true
 	},
-	duration: {
+	durationInSeconds: {
 		type: Number,
 		required: true
 	},
@@ -36,6 +40,7 @@ var VideoCompartmentSchema = new Schema({
 });
 
 module.exports = VideoCompartmentSchema;
+
 
 function validateGreaterThanStartTime(obj) {
 	if (obj.startTime <= obj.endTime) {

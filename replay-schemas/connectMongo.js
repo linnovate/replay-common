@@ -1,39 +1,46 @@
+var util = require('util');
 var mongoose = require('mongoose'),
 	Promise = require('bluebird');
 
 mongoose.Promise = Promise;
 
-var keepAliveInSeconds = 60 * 60 * 24 * 30; // 30 days
+var _mongoConnectionStringFormat = 'mongodb://%s:%s@%s:%s/%s'; //  Username, Password, Host, Port, Database
+var _keepAliveInSeconds = 60 * 60 * 24 * 30; // 30 days
 // initialize options
 var _options = {
 	server: {
 		'socketOptions': {
-			keepAlive: keepAliveInSeconds
+			keepAlive: _keepAliveInSeconds
 		},
 		'auto_reconnect': true
 	},
 	replset: {
 		socketOptions: {
-			keepAlive: keepAliveInSeconds
+			keepAlive: _keepAliveInSeconds
 		}
+	},
+	auth: {
+		authdb: 'admin'
 	}
 };
 
 // used to count connection re-try seconds
 var _connectRetryInSeconds = 0;
 var _isFirstConnection = true;
-module.exports = function(_host, _port, _database) {
+module.exports = function (_host, _port, _database, _username, _password) {
 	var host = _host || 'localhost';
 	var port = _port || 27017;
 	var database = _database || 'replay_dev';
-	var uri = 'mongodb://' + host + ':' + port + '/' + database;
+	var username = _username || 'replay';
+	var password = _password || 'replay';
+	var uri = util.format(_mongoConnectionStringFormat, username, password, host, port, database);
 
 	// connect if not connected
 	if (mongoose.connection && mongoose.connection.readyState !== 1) {
 		setConnectionListeners(uri, database, host, port);
 		// connect to mongo, the empty function is a stub to make it return promise (it's mongoose known bug)
-		return mongoose.connect(uri, _options, function() {})
-			.then(function() {
+		return mongoose.connect(uri, _options, function () { })
+			.then(function () {
 				console.log('Connected to mongo.');
 				return Promise.resolve();
 			});
@@ -46,16 +53,16 @@ function setConnectionListeners(uri, database, host, port) {
 	// set event listeners on connection
 	var connection = mongoose.connection;
 
-	connection.on('connecting', function() {
+	connection.on('connecting', function () {
 		console.log('Connecting to mongo...', 'Database:', database, '. URI:', host + ':' + port + '.');
 	});
 
-	connection.on('error', function(error) {
+	connection.on('error', function (error) {
 		console.error('Error in mongo connection: ' + error);
 		console.log('Disconnecting from mongo...');
 		mongoose.disconnect();
 	});
-	connection.on('connected', function() {
+	connection.on('connected', function () {
 		// do not print to log if this is the first connection
 		if (_isFirstConnection) {
 			_isFirstConnection = false;
@@ -63,18 +70,18 @@ function setConnectionListeners(uri, database, host, port) {
 		}
 		console.log('Connected to mongo.');
 	});
-	connection.once('open', function() {
+	connection.once('open', function () {
 
 	});
-	connection.on('reconnected', function() {
+	connection.on('reconnected', function () {
 		console.log('Mongo has reconnected.');
 	});
-	connection.on('disconnected', function() {
+	connection.on('disconnected', function () {
 		console.log('Disconnected from mongo.');
 
 		// retry to connect with exponential backoff in order to off-load mongo
-		exponentialBackoff(function() {
-			mongoose.connect(uri, _options, function(err) {
+		exponentialBackoff(function () {
+			mongoose.connect(uri, _options, function (err) {
 				if (err) {
 					console.log(err);
 				}
