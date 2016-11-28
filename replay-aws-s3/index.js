@@ -53,7 +53,7 @@ module.exports = new function() {
 					progressAmount: uploader.progressAmount,
 					progressTotal: uploader.progressTotal
 				};
-				logger.info({ progress: progress }, 'upload file progress');
+				logger.trace({ progress: progress }, 'upload file progress');
 			});
 			uploader.on('end', function(data) {
 				logger.info({ data: data }, 'done uploading file');
@@ -82,7 +82,7 @@ module.exports = new function() {
 					progressAmount: downloader.progressAmount,
 					progressTotal: downloader.progressTotal
 				};
-				logger.info({ progress: progress }, 'download file progress');
+				logger.trace({ progress: progress }, 'download file progress');
 			});
 			downloader.on('end', function() {
 				logger.info('done downloading file');
@@ -108,7 +108,7 @@ module.exports = new function() {
 					progressAmount: downloader.progressAmount,
 					progressTotal: downloader.progressTotal
 				};
-				logger.info({ progress: progress }, 'download buffer progress');
+				logger.trace({ progress: progress }, 'download buffer progress');
 			});
 			downloader.on('end', function(buffer) {
 				logger.info('done downloading buffer');
@@ -143,7 +143,7 @@ module.exports = new function() {
 					objectsFound: lister.objectsFound,
 					dirsFound: lister.dirsFound
 				};
-				logger.info({ progress: progress }, 'list objects progress');
+				logger.trace({ progress: progress }, 'list objects progress');
 			});
 			lister.on('data', function(data) {
 				logger.debug({ data: data }, 'list objects data');
@@ -186,7 +186,7 @@ module.exports = new function() {
 					progressAmount: deleter.progressAmount,
 					progressTotal: deleter.progressTotal
 				};
-				logger.info({ progress: progress }, 'delete objects progress');
+				logger.trace({ progress: progress }, 'delete objects progress');
 			});
 			deleter.on('data', function(data) {
 				logger.debug({ data: data }, 'delete objects data');
@@ -247,7 +247,7 @@ module.exports = new function() {
 					doneFindingObjects: uploader.doneFindingObjects,
 					doneMd5: uploader.doneMd5
 				};
-				logger.info({ progress: progress }, 'upload dir progress');
+				logger.trace({ progress: progress }, 'upload dir progress');
 			});
 
 			uploader.on('end', function() {
@@ -309,7 +309,7 @@ module.exports = new function() {
 					doneFindingObjects: downloader.doneFindingObjects,
 					doneMd5: downloader.doneMd5
 				};
-				logger.info({ progress: progress }, 'download dir progress');
+				logger.trace({ progress: progress }, 'download dir progress');
 			});
 			downloader.on('end', function() {
 				logger.info('done downloading dir');
@@ -336,7 +336,7 @@ module.exports = new function() {
 					progressAmount: deleter.progressAmount,
 					progressTotal: deleter.progressTotal
 				};
-				logger.info({ progress: progress }, 'delete dir progress');
+				logger.trace({ progress: progress }, 'delete dir progress');
 			});
 			deleter.on('end', function() {
 				logger.info('done deleting dir');
