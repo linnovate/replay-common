@@ -8,7 +8,6 @@ Using the [S3 npm package](https://www.npmjs.com/package/s3) for high level clie
 
 | Name                         | Description                  | Default                      |
 |------------------------------|------------------------------|------------------------------|
-| STORAGE_PATH                 | Shared storage path          | **required**                 |
 | AWS_ACCESS_KEY_ID            | AWS S3 access key id         | **required**                 |
 | AWS_SECRET_ACCESS_KEY        | AWS S3 secret access key     | **required**                 |
 | AWS_ENDPOINT                 | AWS S3 endpoint              | Amazon default: something like `http://s3-{region}.amazonaws.com` |
