@@ -6,7 +6,7 @@ var clone = require('clone'),
 	mkdirp = require('mkdirp'),
 	bunyan = require('bunyan'),
 	stripAnsi = require('strip-ansi'),
-	bunyanSyslog = require('bunyan-syslog'),
+	// bunyanSyslog = require('bunyan-syslog'),
 	bunyanFormat = require('bunyan-format'),
 	RotatingFileStream = require('bunyan-rotating-file-stream');
 
@@ -96,19 +96,19 @@ exports.rotatingFileStream = function(level, serviceName, logPath) {
 	};
 };
 
-exports.syslogStream = function(level) {
-	var bunyanSyslogStream = bunyanSyslog.createBunyanStream({
-		type: 'sys',
-		facility: bunyanSyslog.local0
-		// host: '192.168.0.1',
-		// port: 514
-	});
-	var outStream = bunyanFormatStream(new MyStripColorsStream(bunyanSyslogStream));
-	return {
-		type: 'raw',
-		name: 'syslogStream',
-		level: level,
-		reemitErrorEvents: true,
-		stream: new MyRawStream(outStream)
-	};
-};
+// exports.syslogStream = function(level) {
+// 	var bunyanSyslogStream = bunyanSyslog.createBunyanStream({
+// 		type: 'sys',
+// 		facility: bunyanSyslog.local0
+// 		// host: '192.168.0.1',
+// 		// port: 514
+// 	});
+// 	var outStream = bunyanFormatStream(new MyStripColorsStream(bunyanSyslogStream));
+// 	return {
+// 		type: 'raw',
+// 		name: 'syslogStream',
+// 		level: level,
+// 		reemitErrorEvents: true,
+// 		stream: new MyRawStream(outStream)
+// 	};
+// };
