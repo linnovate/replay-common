@@ -3,8 +3,6 @@ var Promise = require('bluebird'),
 	ReplayLogger = require('replay-logger'),
 	s3 = require('s3');
 
-var path = require('path');
-
 var logger = new ReplayLogger('replay-aws-s3');
 
 module.exports = new function() {
@@ -34,7 +32,7 @@ module.exports = new function() {
 	function uploadFile(filePath, bucket, key) {
 		return new Promise(function(resolve, reject) {
 			var params = {
-				localFile: resolvePath(filePath),
+				localFile: filePath,
 				defaultContentType: 'application/octet-stream', // default value
 				s3Params: { // See: http://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#putObject-property
 					Bucket: bucket,
@@ -65,7 +63,7 @@ module.exports = new function() {
 	function downloadFile(filePath, bucket, key) {
 		return new Promise(function(resolve, reject) {
 			var params = {
-				localFile: resolvePath(filePath),
+				localFile: filePath,
 				s3Params: { // See: http://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#getObject-property
 					Bucket: bucket,
 					Key: key
@@ -217,7 +215,7 @@ module.exports = new function() {
 			}
 
 			var params = {
-				localDir: resolvePath(dirPath),
+				localDir: dirPath,
 				getS3Params: getS3Params,
 				defaultContentType: 'application/octet-stream', // default value
 				deleteRemoved: false, // default value, whether to remove s3 objects that have no corresponding local file
@@ -280,7 +278,7 @@ module.exports = new function() {
 			}
 
 			var params = {
-				localDir: resolvePath(dirPath),
+				localDir: dirPath,
 				getS3Params: getS3Params,
 				deleteRemoved: false, // default value, whether to remove s3 objects that have no corresponding local file
 				followSymlinks: true, // default value, whether to ignore symlinks
@@ -404,7 +402,6 @@ module.exports = new function() {
 		process.env.MAX_SOCKETS = process.env.MAX_SOCKETS || 20;
 		process.env.AWS_REGION = process.env.AWS_REGION || 'eu-west-1';
 
-		logger.info('Storage path: %s', process.env.STORAGE_PATH);
 		logger.info('AWS access key id: %s', process.env.AWS_ACCESS_KEY_ID);
 		logger.info('AWS secret access key: %s', process.env.AWS_SECRET_ACCESS_KEY);
 		logger.info('AWS endpoint: %s', process.env.AWS_ENDPOINT);
@@ -412,14 +409,10 @@ module.exports = new function() {
 		logger.info('Max sockets: %s', process.env.MAX_SOCKETS);
 
 		// validate required process environment variables
-		if (!process.env.STORAGE_PATH || !process.env.AWS_ACCESS_KEY_ID || !process.env.AWS_SECRET_ACCESS_KEY) {
+		if (!process.env.AWS_ACCESS_KEY_ID || !process.env.AWS_SECRET_ACCESS_KEY) {
 			return false;
 		}
 		return true;
-	}
-
-	function resolvePath(filePath) {
-		return path.join(process.env.STORAGE_PATH, filePath);
 	}
 
 	if (validateProcessEnv()) {
