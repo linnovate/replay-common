@@ -15,8 +15,7 @@ var VideoMetadataSchema = new Schema({
 	},
 	missionId: {
 		type: Schema.Types.ObjectId,
-		ref: 'Mission',
-		required: true
+		ref: 'Mission'
 	},
 	receivingMethod: ReceivingMethod,
 	timestamp: {
