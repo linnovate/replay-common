@@ -1,12 +1,13 @@
 {
 	"name": "replay-aws-s3",
-	"version": "1.0.1",
+	"version": "1.0.5",
 	"description": "Amazon Web Services (AWS) - Amazon S3 (Amazon Simple Storage Service) wrapper for Replay project",
 	"main": "index.js",
 	"scripts": {
 		"test": "echo \"Error: no test specified\" && exit 1"
 	},
 	"dependencies": {
+		"replay-logger": "^1.0.2",
 		"bluebird": "^3.4.6",
 		"s3": "^4.4.0"
 	},

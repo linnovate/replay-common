@@ -11,9 +11,9 @@ var Logger = function(serviceName) {
 
 	function getDevStreams() {
 		return [
-			streamFactory.formatRawStream('trace'),
-			// streamFactory.syslogStream('trace'),
-			streamFactory.rotatingFileStream('trace', serviceName, LOG_PATH)
+			streamFactory.formatRawStream('debug'),
+			// streamFactory.syslogStream('debug'),
+			streamFactory.rotatingFileStream('debug', serviceName, LOG_PATH)
 		];
 	}
 
