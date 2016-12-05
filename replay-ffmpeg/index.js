@@ -321,87 +321,86 @@ var Ffmpeg = function() {
 
 		return promise;
 	};
+};
 
-	/*****************************************************************************************************************
+/*****************************************************************************************************************
 
 											helper methods
 
 	******************************************************************************************************************/
 
-	function _validateInputPath(params) {
-		return (params && params.inputPath && typeof params.inputPath === 'string');
-	}
+function _validateInputPath(params) {
+	return (params && params.inputPath && typeof params.inputPath === 'string');
+}
 
-	function _validateDurationParameters(params) {
-		return (params && params.filePath && typeof params.filePath === 'string');
-	}
+function _validateDurationParameters(params) {
+	return (params && params.filePath && typeof params.filePath === 'string');
+}
 
-	// validate the necessary prameters.
-	function _validateRecordParameters(params) {
-		return (params && params.input && params.output);
-	}
+// validate the necessary prameters.
+function _validateRecordParameters(params) {
+	return (params && params.input && params.output);
+}
 
-	function _inputHelper(command, input) {
-		command
-			.input(input);
-		return command;
-	}
+function _inputHelper(command, input) {
+	command
+		.input(input);
+	return command;
+}
 
-	function _converterHelper(command, output, divideResolutions, paths) {
-		command
-			.output(output + VIDEO_POSTFIX)
-			.outputOptions(['-c:v copy', '-copyts', '-movflags faststart']);
-		if (divideResolutions) {
-			command = divide360P(command, output, paths);
-			command = divide480P(command, output, paths);
-		}
-		paths.videoPath = output + VIDEO_POSTFIX;
-		return command;
+function _converterHelper(command, output, divideResolutions, paths) {
+	command
+		.output(output + VIDEO_POSTFIX)
+		.outputOptions(['-c:v copy', '-copyts', '-movflags faststart']);
+	if (divideResolutions) {
+		command = divide360P(command, output, paths);
+		command = divide480P(command, output, paths);
 	}
+	paths.videoPath = output + VIDEO_POSTFIX;
+	return command;
+}
 
-	function _onStartEvent(command) {
-		command.on('start', function(commandLine) {
-			console.log('FFmpeg was activated with the command:\n' + commandLine);
-		});
-		return command;
-	}
+function _onStartEvent(command) {
+	command.on('start', function(commandLine) {
+		console.log('FFmpeg was activated with the command:\n' + commandLine);
+	});
+	return command;
+}
 
-	function _extractHelper(command, output, paths) {
-		command
-			.output(output + DATA_POSTFIX)
-			.outputOptions(['-map data-re', '-codec copy', '-f data']);
-		paths.dataPath = output + DATA_POSTFIX;
-		return command;
-	}
+function _extractHelper(command, output, paths) {
+	command
+		.output(output + DATA_POSTFIX)
+		.outputOptions(['-map data-re', '-codec copy', '-f data']);
+	paths.dataPath = output + DATA_POSTFIX;
+	return command;
+}
 
-	function _runHelper(command) {
-		command.run();
-		return command;
-	}
+function _runHelper(command) {
+	command.run();
+	return command;
+}
 
-	// check if there is resolution option.
-	function _checkresolution(divide) {
-		return (typeof divide === 'boolean' && divide);
-	}
+// check if there is resolution option.
+function _checkresolution(divide) {
+	return (typeof divide === 'boolean' && divide);
+}
 
-	// Define a 360p video output
-	function divide360P(command, output, paths) {
-		command.output(output + R_360P + VIDEO_POSTFIX)
-			.size('480x360');
-		paths.additionalPaths.push(output + R_360P + VIDEO_POSTFIX);
-		return command;
-	}
+// Define a 360p video output
+function divide360P(command, output, paths) {
+	command.output(output + R_360P + VIDEO_POSTFIX)
+		.size('480x360');
+	paths.additionalPaths.push(output + R_360P + VIDEO_POSTFIX);
+	return command;
+}
 
-	// Define a 480p video output
-	function divide480P(command, output, paths) {
-		command.output(output + R_480P + VIDEO_POSTFIX)
-			.size('640x480');
-		paths.additionalPaths.push(output + R_480P + VIDEO_POSTFIX);
-		return command;
-	}
-
-	/******************************************************************************************************************/
-};
+// Define a 480p video output
+function divide480P(command, output, paths) {
+	command.output(output + R_480P + VIDEO_POSTFIX)
+		.size('640x480');
+	paths.additionalPaths.push(output + R_480P + VIDEO_POSTFIX);
+	return command;
+}
+/******************************************************************************************************************/
 
 // Inhertis from the eventEmitter object
 util.inherits(Ffmpeg, event);
